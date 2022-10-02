@@ -1,0 +1,6 @@
+{
+  "execMap": {
+    "js": "node --inspect -r sucrase/register"
+  },
+  "ignore": ["_tests_", "node_modules"]
+}
