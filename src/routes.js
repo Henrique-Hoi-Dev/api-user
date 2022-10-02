@@ -7,6 +7,7 @@ import FreightController from './app/controller/FreightController';
 import FinancialStatementsController from './app/controller/FinancialStatementsController';
 import CartController from './app/controller/CartController';
 import NotificationController from './app/controller/NotificationController';
+import DriverController from './app/controller/DriverController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -15,7 +16,8 @@ const routes = new Router();
 // cadastro
 routes.post('/user/register', UserController.createUser);
 routes.post('/user/authenticate', SessionController.sessionUser);
-// routes.post('/driver/register', DriverController.createDriver)
+
+routes.post('/driver/register', DriverController.createDriver);
 
 // autenticação
 routes.use(authMiddleware);
@@ -26,12 +28,11 @@ routes.put('/user/:id', UserController.updateUser)
       .get('/users', UserController.getAllUser)
       .delete('/user/:id', UserController.deleteUser);
 
-// trucks
-routes.post('/truck', TruckController.createTruck)
-      .put('/truck/:id', TruckController.updateTruck)
-      .get('/truck/:id', TruckController.getIdTruck)
-      .get('/trucks', TruckController.getAllTruck)
-      .delete('/truck/:id', TruckController.deleteTruck);
+// users driver
+routes.put('/driver/:id', DriverController.updateDriver)
+      .get('/driver/:id', DriverController.getIdDriver)
+      .get('/drivers', DriverController.getAllDriver)
+      .delete('/driver/:id', DriverController.deleteDriver);
 
 // financial statements
 routes.post('/financialStatement', FinancialStatementsController.createFinancialStatements)
@@ -52,6 +53,13 @@ routes.get('/notifications', NotificationController.getAllNotification);
 routes.get('/notificationss', NotificationController.getAll);
 routes.put('/notification/:id', NotificationController.updateNotification);
 routes.put('/notifications/:id', NotificationController.update);
+
+// trucks
+routes.post('/truck', TruckController.createTruck)
+      .put('/truck/:id', TruckController.updateTruck)
+      .get('/truck/:id', TruckController.getIdTruck)
+      .get('/trucks', TruckController.getAllTruck)
+      .delete('/truck/:id', TruckController.deleteTruck);
 
 // cart
 routes.post('/cart', CartController.createCart)
