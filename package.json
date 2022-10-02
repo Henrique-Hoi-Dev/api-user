@@ -1,8 +1,8 @@
 {
-  "name": "titon",
+  "name": "titon-api-user",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/Henrique-Hoi-Dev/titon.git",
+  "repository": "https://github.com/Henrique-Hoi-Dev/titon-api-user",
   "author": "Henrique Hoinacki <riqueah@gmail.com>",
   "license": "MIT",
   "dependencies": {
