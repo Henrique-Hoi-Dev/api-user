@@ -108,26 +108,43 @@ export default {
       ]
     });
 
+    if (!freight) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Financial not found' }      
+      return result
+    }
+
     //validar valor liquido do frete
     // precisa do km total que sera feito na viagem
     // e multiplicar pelo valor do disel
     // pegar api do gle para calcular as kms de cidades
 
-    const valueGross = freight.preview_tonne * freight.value_tonne
+    const value_tonne = freight.value_tonne / 100
+    // predicted fuel value
+    const preview_valueDiesel = freight.preview_value_diesel / 100
+    // predicted gross value
+    const preview_valueGross = freight.preview_tonne * value_tonne
+    // fuel consumption forecast
+    const amountSpentOnFuel = freight.travel_km / freight.preview_average_fuel  
 
-    const valueDiesel = freight.preview_value_diesel / 100
+    const resultValue = amountSpentOnFuel * preview_valueDiesel
 
-    const amountSpentOnFuel = freight.travel_km / freight.average_fuel  
+    const discounted_fuel = resultValue - preview_valueGross
 
-    const resultValue = amountSpentOnFuel * valueDiesel
-
-    console.log("valores", resultValue)
+    console.log("valores", discounted_fuel)
     
 
     if (!freight) {
       result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'Freight not found' }}      
       return result
     }
+
+
+    // const quantityProduct = products.map(function (res) {
+    //   return parseInt(res.dataValues.quantity)
+    // })
+    // const totalQuantityProduct = quantityProduct.reduce(function(previousValue, currentValue) {
+    //   return Number(previousValue) + Number(currentValue);
+    // }, 0 && quantityProduct)
 
     result = { 
       httpStatus: httpStatus.OK, 
@@ -144,8 +161,9 @@ export default {
           preview_value_diesel: freight.preview_value_diesel,
           value_tonne: freight.value_tonne,
           status_check_order: freight.status_check_order,
-          amountSpentOnFuel: resultValue,
-          freight_fuel_price: (resultValue - valueGross),
+
+          preview_amountSpentOnFuel: resultValue,
+          preview_freight_fuel_price: (discounted_fuel),
         },
         // check apoapproved
         second_check: {

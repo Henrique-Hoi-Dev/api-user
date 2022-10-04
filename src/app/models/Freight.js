@@ -11,7 +11,7 @@ class Freight extends Model {
         contractor: Sequelize.STRING,
         start_km: Sequelize.DOUBLE,
         travel_km: Sequelize.DOUBLE,
-        average_fuel: Sequelize.DOUBLE,
+        preview_average_fuel: Sequelize.DOUBLE,
         preview_tonne: Sequelize.DOUBLE,
         preview_value_diesel: Sequelize.DOUBLE,
         value_tonne: Sequelize.DOUBLE,

@@ -38,7 +38,7 @@ module.exports = {
         type: Sequelize.DOUBLE,
         allowNull: true,
       },
-      average_fuel: {
+      preview_average_fuel: {
         type: Sequelize.DOUBLE,
         allowNull: true,
       },
