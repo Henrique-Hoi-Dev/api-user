@@ -22,7 +22,7 @@ export default {
 
     await Cart.create(cartBody);
 
-    result = { httpStatus: httpStatus.OK, status: "successful" }      
+    result = { httpStatus: httpStatus.CREATED, status: "successful" }      
     return result
   },
 

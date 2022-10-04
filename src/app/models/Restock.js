@@ -23,6 +23,7 @@ class Restock extends Model {
   }
 
   static associate(models) {
+    this.belongsTo(models.Freight, { foreignKey: 'freight_id', as: 'freights' });
     this.belongsTo(models.FinancialStatements, { foreignKey: 'financial_statements_id', as: 'financialStatements' });
   }
 }

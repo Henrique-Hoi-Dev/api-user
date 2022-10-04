@@ -1,7 +1,6 @@
 import httpStatus from 'http-status-codes';
 
 import User from '../app/models/User';
-import Driver from '../app/models/Driver';
 // import Notification from "../app/schemas/Notification";
 import Notifications from "../app/models/Notification";
 
@@ -45,7 +44,7 @@ export default {
     const notificationss = await Notifications.findAll({
       where: { user_id: req.userId },
       order: [["createdAt", "desc"]],
-      attributes: [ 'id', 'content', 'user_id', 'read' ]
+      attributes: [ 'id', 'content', 'read' ]
     })
 
     result = { httpStatus: httpStatus.OK, status: "successful", dataResult: notificationss } 
@@ -76,6 +75,16 @@ export default {
 
     if (!notificationReq) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Notification not found' }      
+      return result
+    }
+
+    if (notificationReq.user_id === null) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Do not have permission for this notification' }      
+      return result
+    }
+
+    if (notificationReq.read === true) {
+      result = {httpStatus: httpStatus.CONFLICT, dataResult: { msg: 'Has already been read.' }}      
       return result
     }
 

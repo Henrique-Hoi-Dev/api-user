@@ -7,30 +7,38 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
+      creator_user_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'users', key: 'id' },
+        allowNull: false,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       driver_id: {
         type: Sequelize.INTEGER,
         references: { model: 'drivers', key: 'id' },
-        allowNull: true,
+        allowNull: false,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       truck_id: {
         type: Sequelize.INTEGER,
         references: { model: 'trucks', key: 'id' },
-        allowNull: true,
+        allowNull: false,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       cart_id: {
         type: Sequelize.INTEGER,
         references: { model: 'carts', key: 'id' },
-        allowNull: true,
+        allowNull: false,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       status: {
         type: Sequelize.BOOLEAN,
-        allowNull: true,
+        allowNull: false,
+        defaultValue: true
       },
       start_km: {
         type: Sequelize.DOUBLE,

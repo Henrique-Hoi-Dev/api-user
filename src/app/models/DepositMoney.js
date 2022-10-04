@@ -22,6 +22,7 @@ class DepositMoney extends Model {
 
   static associate(models) {
     this.belongsTo(models.FinancialStatements, { foreignKey: 'financial_statements_id', as: 'financialStatements' });
+    this.belongsTo(models.Freight, { foreignKey: 'freight_id', as: 'freights' });
   }
 }
 

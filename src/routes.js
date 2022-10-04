@@ -29,44 +29,44 @@ routes.put('/user/:id', UserController.updateUser)
       .delete('/user/:id', UserController.deleteUser);
 
 // users driver
-routes.put('/driver/:id', DriverController.updateDriver)
-      .get('/driver/:id', DriverController.getIdDriver)
-      .get('/drivers', DriverController.getAllDriver)
-      .delete('/driver/:id', DriverController.deleteDriver);
+routes.put('/user/driver/:id', DriverController.updateDriver)
+      .get('/user/driver/:id', DriverController.getIdDriver)
+      .get('/user/drivers', DriverController.getAllDriver)
+      .delete('/user/driver/:id', DriverController.deleteDriver);
 
 // financial statements
-routes.post('/financialStatement', FinancialStatementsController.createFinancialStatements)
-      .put('/financialStatement/:id', FinancialStatementsController.updateFinancialStatements)
-      .get('/financialStatement/:id', FinancialStatementsController.getIdFinancialStatements)
+routes.post('/user/financialStatement', FinancialStatementsController.createFinancialStatements)
+      .put('/user/financialStatement/:id', FinancialStatementsController.updateFinancialStatements)
+      .get('/user/financialStatement/:id', FinancialStatementsController.getIdFinancialStatements)
       .get('/financialStatements', FinancialStatementsController.getAllFinancialStatements)
-      .delete('/financialStatement/:id', FinancialStatementsController.deleteFinancialStatements);
+      .delete('/user/financialStatement/:id', FinancialStatementsController.deleteFinancialStatements);
 
 // freight
-routes.post('/freight', FreightController.createFreight)
-      .put('/freight/:id', FreightController.updateFreight)
-      .get('/freight/:id', FreightController.getIdFreight)
+routes.post('/user/freight', FreightController.createFreight)
+      .put('/user/freight/:id', FreightController.updateFreight)
+      .get('/user/freight/:id', FreightController.getIdFreight)
       .get('/freights', FreightController.getAllFreight)
-      .delete('/freight/:id', FreightController.deleteFreight)
+      .delete('/user/freight/:id', FreightController.deleteFreight)
 
 // notification
-routes.get('/notifications', NotificationController.getAllNotification);
-routes.get('/notificationss', NotificationController.getAll);
+// routes.get('/user/notifications', NotificationController.getAllNotification);
+routes.get('/notifications', NotificationController.getAll);
 routes.put('/notification/:id', NotificationController.updateNotification);
 routes.put('/notifications/:id', NotificationController.update);
 
 // trucks
-routes.post('/truck', TruckController.createTruck)
-      .put('/truck/:id', TruckController.updateTruck)
-      .get('/truck/:id', TruckController.getIdTruck)
-      .get('/trucks', TruckController.getAllTruck)
-      .delete('/truck/:id', TruckController.deleteTruck);
+routes.post('/user/truck', TruckController.createTruck)
+      .put('/user/truck/:id', TruckController.updateTruck)
+      .get('/user/truck/:id', TruckController.getIdTruck)
+      .get('/user/trucks', TruckController.getAllTruck)
+      .delete('/user/truck/:id', TruckController.deleteTruck);
 
 // cart
-routes.post('/cart', CartController.createCart)
-      .put('/cart/:id', CartController.updateCart)
-      .get('/cart/:id', CartController.getIdCart)
-      .get('/carts', CartController.getAllCart)
-      .delete('/cart/:id', CartController.deleteCart);
+routes.post('/user/cart', CartController.createCart)
+      .put('/user/cart/:id', CartController.updateCart)
+      .get('/user/cart/:id', CartController.getIdCart)
+      .get('/user/carts', CartController.getAllCart)
+      .delete('/user/cart/:id', CartController.deleteCart);
 
 
 export default routes;

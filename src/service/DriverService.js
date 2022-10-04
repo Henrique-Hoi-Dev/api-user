@@ -40,7 +40,7 @@ export default {
 
     await Driver.create(body);
 
-    result = { httpStatus: httpStatus.OK, status: "successful" }      
+    result = { httpStatus: httpStatus.CREATED, status: "successful" }      
     return result
   },
 

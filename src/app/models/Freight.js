@@ -39,6 +39,9 @@ class Freight extends Model {
 
   static associate(models) {
     this.belongsTo(models.FinancialStatements, { foreignKey: 'financial_statements_id', as: 'financialStatements' });
+    this.hasMany(models.DepositMoney, { foreignKey: 'freight_id', as: 'deposit_money' });
+    this.hasMany(models.Restock, { foreignKey: 'freight_id', as: 'restock' });
+    this.hasMany(models.TravelExpenses, { foreignKey: 'freight_id', as: 'travel_expense' })
   }
 }
 

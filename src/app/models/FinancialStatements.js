@@ -4,10 +4,14 @@ class FinancialStatements extends Model {
   static init(sequelize) {
     super.init(
       {
+        creator_user_id: Sequelize.INTEGER,
         driver_id: Sequelize.INTEGER,
         truck_id: Sequelize.INTEGER,
         cart_id: Sequelize.INTEGER,
-        status: Sequelize.BOOLEAN,
+        status: {
+          type: Boolean,
+          defaultValue: true
+        },
         start_km: Sequelize.DOUBLE,
         final_km: Sequelize.DOUBLE,
         start_date: Sequelize.DATEONLY,

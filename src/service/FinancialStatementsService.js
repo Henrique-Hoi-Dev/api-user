@@ -10,11 +10,17 @@ import FinancialStatements from "../app/models/FinancialStatements";
 export default {
   async createFinancialStatements(req, res) {
     let result = {}
-    let { driver_id, truck_id, cart_id, start_date } = req;
+    let { driver_id, truck_id, cart_id, creator_user_id, start_date } = req;
 
+    const userAdmin = await Driver.findByPk(creator_user_id)
     const driver = await Driver.findByPk(driver_id)
     const truck = await Truck.findByPk(truck_id)
     const cart = await Cart.findByPk(cart_id)
+
+    if (!userAdmin) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' }      
+      return result
+    }
 
     if (!driver) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Driver not found' }      
@@ -56,11 +62,11 @@ export default {
     const { truck_models, truck_board, truck_avatar } = truck.dataValues
     const { cart_models, cart_board } = cart.dataValues
 
-    const body = { 
+    const body = {
+      creator_user_id,
       driver_id, 
       truck_id,
       cart_id,
-      status: true,
       start_date, 
       driver_name, 
       truck_models, 
@@ -74,7 +80,7 @@ export default {
 
     await FinancialStatements.create(body);
     
-    result = { httpStatus: httpStatus.OK, status: "successful" }      
+    result = { httpStatus: httpStatus.CREATED, status: "successful" }      
     return result
   },
 
@@ -92,6 +98,7 @@ export default {
       offset: (page - 1) ? (page - 1) * limit : 0,
       attributes: [ 
         'id', 
+        'creator_user_id',
         'driver_id',
         'truck_id',
         'cart_id',
@@ -157,6 +164,7 @@ export default {
     let financialStatement = await FinancialStatements.findByPk(req.id, {
       attributes: [ 
         'id', 
+        'creator_user_id',
         'driver_id',
         'truck_id',
         'cart_id',
@@ -258,39 +266,4 @@ export default {
     result = {httpStatus: httpStatus.OK, status: "successful", responseData: { msg: 'Deleted Financial Statements ' }}      
     return result
   },
-
-  async getDataDriver(req, res) {
-    let result = {}
-
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id' } = req.query;
-    const total = (await DataDriver.findAll()).length;
-
-    const totalPages = Math.ceil(total / limit);
-
-    const dataDrivers = await DataDriver.findAll({
-      order: [[ sort_field, sort_order ]],
-      limit: limit,
-      offset: (page - 1) ? (page - 1) * limit : 0,
-      attributes: [ 
-        'id', 
-        'credit',
-        'driver_name',
-        'truck_models',
-        'cart_models',
-      ],
-    });
-
-    const currentPage = Number(page)
-
-    result = { 
-      httpStatus: httpStatus.OK, 
-      status: "successful", 
-      total, 
-      totalPages, 
-      currentPage, 
-      dataResult: dataDrivers 
-    }      
-    
-    return result
-  }
 }
