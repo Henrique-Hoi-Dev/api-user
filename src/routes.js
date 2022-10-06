@@ -31,7 +31,7 @@ routes.put('/user/:id', UserController.updateUser)
 // users driver
 routes.put('/user/driver/:id', DriverController.updateDriver)
       .get('/user/driver/:id', DriverController.getIdDriver)
-      .get('/user/drivers', DriverController.getAllDriver)
+      .get('/drivers', DriverController.getAllDriver)
       .delete('/user/driver/:id', DriverController.deleteDriver);
 
 // financial statements

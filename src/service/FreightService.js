@@ -2,7 +2,6 @@ import httpStatus from 'http-status-codes';
 
 import Freight from "../app/models/Freight";
 import User from "../app/models/User";
-// import Notification from "../app/schemas/Notification";
 import Notification from "../app/models/Notification";
 import FinancialStatements from "../app/models/FinancialStatements";
 import Restock from '../app/models/Restock';
@@ -21,10 +20,17 @@ export default {
       return result
     }
 
+    const userFinancial = await User.findByPk(financial.creator_user_id)
+
+    if (!userFinancial) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' }      
+      return result
+    }
+
     await Freight.create(freightBody);
 
     await Notification.create({
-      content: `${financial.driver_name}, Requisitando Um Novo Check Frete!`,
+      content: `${userFinancial.name}, Requisitou Um Novo Frete Para Você!`,
       driver_id: financial.driver_id,
     })
 
@@ -79,7 +85,8 @@ export default {
             'city', 
             'date', 
             'value_fuel', 
-            'total_nota_value', 
+            'total_nota_value',
+            'total_value_fuel',
             'liters_fuel'
           ]
         },
@@ -112,39 +119,42 @@ export default {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Financial not found' }      
       return result
     }
-
-    //validar valor liquido do frete
-    // precisa do km total que sera feito na viagem
-    // e multiplicar pelo valor do disel
-    // pegar api do gle para calcular as kms de cidades
-
+    // ton value and predicted fuel value 
     const value_tonne = freight.value_tonne / 100
-    // predicted fuel value
     const preview_valueDiesel = freight.preview_value_diesel / 100
+    const preview_tonne = freight.preview_tonne * 100
     // predicted gross value
-    const preview_valueGross = freight.preview_tonne * value_tonne
+    const preview_valueGross = preview_tonne * value_tonne
     // fuel consumption forecast
-    const amountSpentOnFuel = freight.travel_km / freight.preview_average_fuel  
+    const amountSpentOnFuel = preview_valueDiesel / freight.preview_average_fuel
+    const resultValue = Math.round(freight.travel_km/1000) * Math.round(amountSpentOnFuel)
 
-    const resultValue = amountSpentOnFuel * preview_valueDiesel
+    const discounted_fuel = preview_valueGross - Math.round(resultValue)*100
 
-    const discounted_fuel = resultValue - preview_valueGross
+    // total value supplied
+    const quantityRestock = freight.restock.map(function (res) {
+      return parseInt(res.dataValues.total_value_fuel)
+    })
+    const totalQuantityRestock = quantityRestock.reduce(function(previousValue, currentValue) {
+      return Number(previousValue) + Number(currentValue);
+    }, 0 && quantityRestock)
+    // total amount expenses
+    const quantityExpenses = freight.travel_expense.map(function (res) {
+      return parseInt(res.dataValues.value)
+    })
+    const totalQuantityExpenses = quantityExpenses.reduce(function(previousValue, currentValue) {
+      return Number(previousValue) + Number(currentValue);
+    }, 0 && quantityRestock)
+    // total amount deposit money
+    const quantityDepositMoney = freight.deposit_money.map(function (res) {
+      return parseInt(res.dataValues.value)
+    })
+    const totalQuantityDepositMoney = quantityDepositMoney.reduce(function(previousValue, currentValue) {
+      return Number(previousValue) + Number(currentValue);
+    }, 0 && quantityRestock)
 
-    console.log("valores", discounted_fuel)
-    
+    console.log("valores", totalQuantityRestock, totalQuantityExpenses)
 
-    if (!freight) {
-      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'Freight not found' }}      
-      return result
-    }
-
-
-    // const quantityProduct = products.map(function (res) {
-    //   return parseInt(res.dataValues.quantity)
-    // })
-    // const totalQuantityProduct = quantityProduct.reduce(function(previousValue, currentValue) {
-    //   return Number(previousValue) + Number(currentValue);
-    // }, 0 && quantityProduct)
 
     result = { 
       httpStatus: httpStatus.OK, 
@@ -161,9 +171,11 @@ export default {
           preview_value_diesel: freight.preview_value_diesel,
           value_tonne: freight.value_tonne,
           status_check_order: freight.status_check_order,
-
-          preview_amountSpentOnFuel: resultValue,
-          preview_freight_fuel_price: (discounted_fuel),
+          item_total: {  
+            preview_valueGross: preview_valueGross,
+            preview_fuel_expense: Math.round(resultValue)*100,
+            fuel_discount_on_shipping: discounted_fuel,
+          },
         },
         // check apoapproved
         second_check: {
@@ -173,7 +185,12 @@ export default {
           discharge: freight.discharge,
           img_proof_cte: freight.img_proof_cte,
           img_proof_ticket: freight.img_proof_ticket,
-          img_proof_freight_letter: freight.img_proof_freight_letter, 
+          img_proof_freight_letter: freight.img_proof_freight_letter,
+          item_total: {
+            total_value_fuel: totalQuantityRestock,
+            total_value_expenses: totalQuantityExpenses,
+            total_deposit_money: totalQuantityDepositMoney
+          } 
         },
         restock: freight.restock,
         travel_expense: freight.travel_expense,
