@@ -58,14 +58,14 @@ routes.put('/notifications/:id', NotificationController.update);
 routes.post('/user/truck', TruckController.createTruck)
       .put('/user/truck/:id', TruckController.updateTruck)
       .get('/user/truck/:id', TruckController.getIdTruck)
-      .get('/user/trucks', TruckController.getAllTruck)
+      .get('/trucks', TruckController.getAllTruck)
       .delete('/user/truck/:id', TruckController.deleteTruck);
 
 // cart
 routes.post('/user/cart', CartController.createCart)
       .put('/user/cart/:id', CartController.updateCart)
       .get('/user/cart/:id', CartController.getIdCart)
-      .get('/user/carts', CartController.getAllCart)
+      .get('/carts', CartController.getAllCart)
       .delete('/user/cart/:id', CartController.deleteCart);
 
 
