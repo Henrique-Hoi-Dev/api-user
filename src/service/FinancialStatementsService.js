@@ -4,15 +4,17 @@ import Driver from '../app/models/Driver';
 import Truck from '../app/models/Truck';
 import Cart from '../app/models/Cart';
 import Freight from '../app/models/Freight';
-import DataDriver from "../app/models/DataDriver";
+import Notification from '../app/models/Notification';
 import FinancialStatements from "../app/models/FinancialStatements";
+import User from '../app/models/User';
 
 export default {
   async createFinancialStatements(req, res) {
     let result = {}
+
     let { driver_id, truck_id, cart_id, creator_user_id, start_date } = req;
 
-    const userAdmin = await Driver.findByPk(creator_user_id)
+    const userAdmin = await User.findByPk(creator_user_id)
     const driver = await Driver.findByPk(driver_id)
     const truck = await Truck.findByPk(truck_id)
     const cart = await Cart.findByPk(cart_id)
@@ -79,6 +81,11 @@ export default {
     }
 
     await FinancialStatements.create(body);
+
+    await Notification.create({
+      content: `${userAdmin.name}, Criou Uma Nova Ficha!`,
+      driver_id: driver_id,
+    })      
     
     result = { httpStatus: httpStatus.CREATED, status: "successful" }      
     return result
@@ -252,11 +259,29 @@ export default {
     
     const id  = req.id;
 
+    const propsFinancial = await FinancialStatements.findByPk(id)
+    const nameUser = await User.findByPk(propsFinancial.creator_user_id)
+
+    if (!propsFinancial) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Financial not found' }      
+      return result
+    }
+
+    if (!nameUser) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' }      
+      return result
+    }
+
     const financialStatement = await FinancialStatements.destroy({
       where: {
         id: id,
       },
     });
+
+    await Notification.create({
+      content: `${nameUser.name}, Excluio Sua Ficha!`,
+      driver_id: propsFinancial.driver_id,
+    })  
 
     if (!financialStatement) {
       result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'Financial Statements not found' }}      
