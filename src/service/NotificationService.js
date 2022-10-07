@@ -44,7 +44,7 @@ export default {
     const notificationss = await Notifications.findAll({
       where: { user_id: req.userId },
       order: [["createdAt", "desc"]],
-      attributes: [ 'id', 'content', 'read' ]
+      attributes: [ 'id', 'content', 'read', 'created_at' ]
     })
 
     result = { httpStatus: httpStatus.OK, status: "successful", dataResult: notificationss } 
