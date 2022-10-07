@@ -41,13 +41,13 @@ export default {
       return result
     } 
     
-    const notificationss = await Notifications.findAll({
-      where: { user_id: req.userId },
-      order: [["createdAt", "desc"]],
+    const notifications = await Notifications.findAll({
+      where: { user_id: req.userId, read: false },
+      order: [["created_at", "DESC"]],
       attributes: [ 'id', 'content', 'read', 'created_at' ]
     })
 
-    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: notificationss } 
+    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: notifications } 
     return result
   },
 
