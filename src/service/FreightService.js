@@ -153,9 +153,6 @@ export default {
       return Number(previousValue) + Number(currentValue);
     }, 0 && quantityRestock)
 
-    console.log("valores", totalQuantityRestock, totalQuantityExpenses)
-
-
     result = { 
       httpStatus: httpStatus.OK, 
       status: "successful", 

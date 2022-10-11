@@ -14,12 +14,12 @@ export default {
 
     let { driver_id, truck_id, cart_id, creator_user_id, start_date } = req;
 
-    const userAdmin = await User.findByPk(creator_user_id)
+    const user = await User.findByPk(creator_user_id)
     const driver = await Driver.findByPk(driver_id)
     const truck = await Truck.findByPk(truck_id)
     const cart = await Cart.findByPk(cart_id)
 
-    if (!userAdmin) {
+    if (!user) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' }      
       return result
     }
@@ -60,7 +60,7 @@ export default {
       return result
     }
 
-    const driver_name = driver.dataValues.name
+    const { name } = driver.dataValues
     const { truck_models, truck_board, truck_avatar } = truck.dataValues
     const { cart_models, cart_board } = cart.dataValues
 
@@ -70,14 +70,13 @@ export default {
       truck_id,
       cart_id,
       start_date, 
-      driver_name, 
+      driver_name: name, 
       truck_models, 
       truck_board, 
       truck_avatar,
       cart_models,
       cart_board,
-      total_value: 0,
-      total_amount_paid: 0
+      total_value,
     }
 
     await FinancialStatements.create(body);
@@ -85,7 +84,11 @@ export default {
     await Notification.create({
       content: `${userAdmin.name}, Criou Uma Nova Ficha!`,
       driver_id: driver_id,
-    })      
+    })
+
+    const creditUser = total_value
+
+    await driver.update({ credit: creditUser, truck: truck_models, cart: cart_models });
     
     result = { httpStatus: httpStatus.CREATED, status: "successful" }      
     return result
@@ -244,11 +247,9 @@ export default {
     
     const driverFinancial = await Driver.findByPk(resultUpdate.driver_id);
 
-    const creditUser = 0
+    const { truck_models, cart_models, total_value } = resultUpdate
 
-    const { truck_models, cart_models } = resultUpdate
-
-    await driverFinancial.update({ credit: creditUser, truck: truck_models, cart: cart_models });
+    await driverFinancial.update({ credit: total_value, truck: truck_models, cart: cart_models });
 
     result = { httpStatus: httpStatus.OK, status: "successful" }      
     return result

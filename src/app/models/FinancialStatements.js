@@ -24,7 +24,10 @@ class FinancialStatements extends Model {
         cart_board: Sequelize.STRING,
         invoicing_all: Sequelize.DOUBLE,
         medium_fuel_all: Sequelize.DOUBLE,
-        total_value: Sequelize.DOUBLE,
+        total_value: {
+          type: Sequelize.DOUBLE,
+          defaultValue: 0
+        },
       },
       {
         sequelize,
