@@ -119,17 +119,18 @@ export default {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Financial not found' }      
       return result
     }
-    // ton value and predicted fuel value 
-    const value_tonne = freight.value_tonne / 100
-    const preview_valueDiesel = freight.preview_value_diesel / 100
-    const preview_tonne = freight.preview_tonne * 100
-    // predicted gross value
-    const preview_valueGross = preview_tonne * value_tonne
-    // fuel consumption forecast
+
+    const preview_valueDiesel = freight.preview_value_diesel
+
+    const preview_valueGross = ((freight.preview_tonne * 100) * (freight.value_tonne / 100))
+    console.log("previa", freight.preview_tonne)
+    console.log("valor brutto", preview_valueGross)
+
     const amountSpentOnFuel = preview_valueDiesel / freight.preview_average_fuel
     const resultValue = Math.round(freight.travel_km/1000) * Math.round(amountSpentOnFuel)
 
     const discounted_fuel = preview_valueGross - Math.round(resultValue)*100
+    console.log("valor cobustivel", discounted_fuel)
 
     // total value supplied
     const quantityRestock = freight.restock.map(function (res) {
