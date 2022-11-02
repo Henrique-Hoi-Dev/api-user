@@ -35,6 +35,14 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
+      percentage_commission: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0
+      },
+      fixed_commission: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0
+      },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

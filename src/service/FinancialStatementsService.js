@@ -12,7 +12,15 @@ export default {
   async createFinancialStatements(req, res) {
     let result = {}
 
-    let { driver_id, truck_id, cart_id, creator_user_id, start_date } = req;
+    let { 
+      driver_id, 
+      truck_id, 
+      cart_id, 
+      creator_user_id, 
+      percentage_commission,
+      fixed_commission,
+      start_date 
+    } = req;
 
     const user = await User.findByPk(creator_user_id)
     const driver = await Driver.findByPk(driver_id)
@@ -69,24 +77,25 @@ export default {
       driver_id, 
       truck_id,
       cart_id,
-      start_date, 
+      start_date,
+      percentage_commission,
+      fixed_commission,
       driver_name: name, 
       truck_models, 
       truck_board, 
       truck_avatar,
       cart_models,
       cart_board,
-      total_value,
     }
 
     await FinancialStatements.create(body);
 
     await Notification.create({
-      content: `${userAdmin.name}, Criou Uma Nova Ficha!`,
+      content: `${user.name}, Criou Uma Nova Ficha!`,
       driver_id: driver_id,
     })
 
-    const creditUser = total_value
+    const creditUser = 0
 
     await driver.update({ credit: creditUser, truck: truck_models, cart: cart_models });
     

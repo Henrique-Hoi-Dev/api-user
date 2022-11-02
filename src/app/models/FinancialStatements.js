@@ -8,6 +8,14 @@ class FinancialStatements extends Model {
         driver_id: Sequelize.INTEGER,
         truck_id: Sequelize.INTEGER,
         cart_id: Sequelize.INTEGER,
+        percentage_commission: {
+          type:  Sequelize.DOUBLE,
+          defaultValue: 0
+        },
+        fixed_commission: {
+          type:  Sequelize.DOUBLE,
+          defaultValue: 0
+        },
         status: {
           type: Boolean,
           defaultValue: true

@@ -196,6 +196,19 @@ export default {
       }
     }  
 
+    if (freight.status_check_order === "finished") {
+      const financial = await FinancialStatements.findByPk(freight.financial_statements_id)
+      const value = freight.final_total_tonne * freight.value_tonne
+
+      console.log("entro", value)
+
+      const discount = value - (totalQuantityRestock + totalQuantityExpenses)
+
+      await financial.update({
+        total_value: discount,
+      });
+    }
+
     if (freight.final_km === null) delete result.dataResult.second_check.final_km
     if (freight.final_total_tonne === null) delete result.dataResult.second_check.final_total_tonne
     if (freight.toll_value === null) delete result.dataResult.second_check.toll_value
