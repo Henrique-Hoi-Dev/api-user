@@ -1,11 +1,11 @@
 require('dotenv/config');
 
 module.exports = {
-  dialect: process.env.AWS_DIALECT,
-  host: process.env.AWS_HOST,
-  username: process.env.AWS_USER,
-  password: process.env.AWS_PASS,
-  database: process.env.AWS_NAME,
+  dialect: process.env.HER_DIALECT,
+  host: process.env.HER_HOST,
+  username: process.env.HER_USER,
+  password: process.env.HER_PASS,
+  database: process.env.HER_NAME,
   dialectOptions: {
     ssl: {
       require: true,

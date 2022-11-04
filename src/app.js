@@ -5,7 +5,7 @@ import sequelize from './database/sequelize';
 import "dotenv/config"
 
 // só para rodar migration na Produção ou confinguração local
-// import './database';
+import './database';
 
 class App {
   constructor() {
