@@ -2,6 +2,7 @@ import express from 'express';
 import routes from './routes';
 import cors from 'cors';
 import sequelize from './database/sequelize';
+
 import "dotenv/config"
 
 // só para rodar migration na Produção ou confinguração local
