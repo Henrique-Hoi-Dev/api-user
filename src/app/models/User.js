@@ -9,12 +9,12 @@ class User extends Model {
         email: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
-        type_position: Sequelize.ENUM(
-          { 
-            values: ['master', 'director',  'manager', 'collaborator']
-          }
-        ),
-        cpf: Sequelize.STRING,
+        type_positions: {
+          type: Sequelize.ENUM,
+          values: ["MASTER", "MANAGER", "DIRECTOR", "COLLABORATOR"],
+          defaultValue: "MASTER"
+        },
+        permission_id: Sequelize.INTEGER
       },
       {
         sequelize,
@@ -31,11 +31,9 @@ class User extends Model {
     return this;
   }
 
-  // static associate(models) {
-  //   this.hasOne(models.Adress, { foreignKey: 'user_id', as: 'adress' });
-  //   this.hasMany(models.FinancialBox, { foreignKey: 'user_id', as: 'financialBox' });
-  //   this.hasMany(models.Order, { foreignKey: 'seller_id', as: 'order' });
-  // }
+  static associate(models) {
+    this.belongsTo(models.Permission, { foreignKey: 'permission_id', as: 'permissions' });
+  }
 
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);

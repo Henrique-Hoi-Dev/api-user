@@ -17,8 +17,6 @@ export default {
       truck_id, 
       cart_id, 
       creator_user_id, 
-      percentage_commission,
-      fixed_commission,
       start_date 
     } = req;
 
@@ -68,7 +66,7 @@ export default {
       return result
     }
 
-    const { name } = driver.dataValues
+    const { name, value_fix, percentage, daily } = driver.dataValues
     const { truck_models, truck_board, truck_avatar } = truck.dataValues
     const { cart_models, cart_board } = cart.dataValues
 
@@ -78,8 +76,9 @@ export default {
       truck_id,
       cart_id,
       start_date,
-      percentage_commission,
-      fixed_commission,
+      percentage_commission: percentage,
+      fixed_commission: value_fix,
+      daily: daily,
       driver_name: name, 
       truck_models, 
       truck_board, 
@@ -127,14 +126,17 @@ export default {
         'start_date',
         'final_date',
         'driver_name',
+        'percentage_commission',
+        'fixed_commission',
+        'daily',
         'truck_models',
-        'truck_avatar',
         'truck_board',
         'cart_models',
         'cart_board',
         'invoicing_all',
         'medium_fuel_all',
         'total_value',
+        'truck_avatar',
       ],
       include: {
         model: Freight,
@@ -193,14 +195,17 @@ export default {
         'start_date',
         'final_date',
         'driver_name',
+        'daily',
+        'percentage_commission',
+        'fixed_commission',
         'truck_models',
-        'truck_avatar',
         'truck_board',
         'cart_models',
         'cart_board',
         'invoicing_all',
         'medium_fuel_all',
         'total_value',
+        'truck_avatar',
       ],
       include: {
         model: Freight,

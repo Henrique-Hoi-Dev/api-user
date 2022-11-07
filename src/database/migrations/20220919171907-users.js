@@ -16,14 +16,14 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      cpf: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      type_position: {
+      type_positions: {
         type: Sequelize.ENUM,
-        values: ['master', 'director', 'manager', 'collaborator'],
-        defaultValue: null,
+        values: ["MASTER", "MANAGER", "DIRECTOR", "COLLABORATOR"],
+        defaultValue: "MASTER"
+      },
+      permission_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       password_hash: {
         type: Sequelize.STRING,

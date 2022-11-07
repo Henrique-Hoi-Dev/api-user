@@ -51,9 +51,18 @@ module.exports = {
         type: Sequelize.DATEONLY,
         allowNull: true,
       },
-      type_position: {
+      status: {
+        type: Sequelize.ENUM,
+        values: ["ACTIVE", "INACTIVE", "INCOMPLETE"],
+        defaultValue: "ACTIVE"
+      },
+      type_positions: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      permission_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       cart: {
         type: Sequelize.STRING,

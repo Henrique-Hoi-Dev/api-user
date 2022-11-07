@@ -16,6 +16,10 @@ class FinancialStatements extends Model {
           type:  Sequelize.DOUBLE,
           defaultValue: 0
         },
+        daily: {
+          type:  Sequelize.DOUBLE,
+          defaultValue: 0
+        },
         status: {
           type: Boolean,
           defaultValue: true

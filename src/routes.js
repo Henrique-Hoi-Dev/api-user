@@ -8,6 +8,7 @@ import FinancialStatementsController from './app/controller/FinancialStatementsC
 import CartController from './app/controller/CartController';
 import NotificationController from './app/controller/NotificationController';
 import DriverController from './app/controller/DriverController';
+import PermissionController from './app/controller/PermissionController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -68,5 +69,8 @@ routes.post('/user/cart', CartController.createCart)
       .get('/carts', CartController.getAllCart)
       .delete('/user/cart/:id', CartController.deleteCart);
 
+// permission
+routes.post('/user/permission', PermissionController.createPermission)
+      .get('/permissions', PermissionController.getAllPermission);
 
 export default routes;

@@ -11,6 +11,7 @@ import DepositMoney from '../app/models/DepositMoney';
 import DataDriver from '../app/models/DataDriver';
 import Notification from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
+import Permission from '../app/models/Permission';
 
 import "dotenv/config"
 
@@ -42,6 +43,7 @@ const models = [
   FinancialStatements,
   TravelExpenses,
   Restock,
+  Permission,
 ];
 
 models

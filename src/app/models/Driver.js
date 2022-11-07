@@ -9,17 +9,29 @@ class Driver extends Model {
         name_user: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
-        number_cnh: Sequelize.STRING,
-        type_position: Sequelize.STRING,
+        status: {
+          type: Sequelize.ENUM,
+          values: ["ACTIVE", "INACTIVE", "INCOMPLETE"],
+          defaultValue: "ACTIVE"
+        },
+        type_positions: {
+          type: Sequelize.STRING,
+          defaultValue: "COLLABORATOR"
+        },
+        permission_id: Sequelize.INTEGER,
+        // driver personal data
         cpf: Sequelize.STRING,
+        number_cnh: Sequelize.STRING,
         valid_cnh: Sequelize.DATEONLY,
         date_valid_mopp: Sequelize.DATEONLY,
         date_valid_nr20: Sequelize.DATEONLY,
         date_valid_nr35: Sequelize.DATEONLY,
         date_admission: Sequelize.DATEONLY,
         date_birthday: Sequelize.DATEONLY,
+        // walking data
         cart: Sequelize.STRING,
         truck: Sequelize.STRING,
+        // financial data
         credit: Sequelize.DOUBLE,
         value_fix: Sequelize.DOUBLE,
         percentage: Sequelize.DOUBLE,

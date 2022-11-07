@@ -43,6 +43,10 @@ module.exports = {
         type: Sequelize.DOUBLE,
         defaultValue: 0
       },
+      daily: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0
+      },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

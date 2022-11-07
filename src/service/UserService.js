@@ -1,11 +1,14 @@
 import * as Yup from 'yup';
-import User from "../app/models/User";
 import httpStatus from 'http-status-codes';
+
+import User from "../app/models/User";
+import Permission from "../app/models/Permission";
 
 export default {
   async createUser(req, res) {
     let result = {}
-    let user = req
+
+    let { email, name, password, type_positions } = req
     
     const schema = Yup.object().shape({
       name: Yup.string().required(),
@@ -13,20 +16,36 @@ export default {
       password: Yup.string().required().min(6),
     });
 
-    if (!(await schema.isValid(user))) {
+    if (!(await schema.isValid(req))) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Validation failed!' };
       return result
     }
 
     // doing email verification
-    const userExist = await User.findOne({ where: { email: user.email } });
+    const userExist = await User.findOne({ where: { email: email } });
 
     if (userExist) {
       result = { httpStatus: httpStatus.CONFLICT, msg: 'This user email already exists.' };
       return result;
     }
 
-    await User.create(user);
+    const resultUser = await User.create({
+      name,
+      email,
+      password,
+      type_positions
+    });
+
+    const addPermissions = await Permission.findOne({ where: { role: resultUser.type_positions }})
+
+    if (!addPermissions) {
+      result = { httpStatus: httpStatus.NOT_FOUND, msg: 'Permission not founds.' };
+      return result;
+    }
+
+    await resultUser.update({
+      permission_id: addPermissions.id
+    })
 
     result = { httpStatus: httpStatus.OK, status: "successful" }      
     return result
@@ -48,9 +67,13 @@ export default {
         'id', 
         'name', 
         'email', 
-        'type_position', 
-        'cpf',
+        'type_positions', 
       ], 
+      include: {
+        model: Permission,
+        as: "permissions",
+        attributes: [ 'id', 'role', 'actions']
+      }
     });
 
     const currentPage = Number(page)
@@ -75,9 +98,13 @@ export default {
         'id',
         'name', 
         'email', 
-        'type_position', 
-        'cpf',
-      ],  
+        'type_positions', 
+      ],
+      include: {
+        model: Permission,
+        as: "permissions",
+        attributes: [ 'id', 'role', 'actions']
+      }
     });
 
     if (!user) {
@@ -138,7 +165,6 @@ export default {
         'name', 
         'email', 
         'type_position', 
-        'cpf', 
       ],
     });
 

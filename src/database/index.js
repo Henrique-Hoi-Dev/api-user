@@ -12,6 +12,7 @@ import DataDriver from '../app/models/DataDriver';
 import DepositMoney from '../app/models/DepositMoney';
 import Notification from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
+import Permission from '../app/models/Permission';
 
 import databaseConfig from '../config/database.js';
 
@@ -27,6 +28,7 @@ const models = [
   FinancialStatements,
   TravelExpenses,
   Restock,
+  Permission,
 ];
 
 class Database {

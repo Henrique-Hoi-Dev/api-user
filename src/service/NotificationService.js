@@ -9,7 +9,7 @@ export default {
     let result = {}
 
     const checkIsMaster = await User.findOne({
-      where: { id: req.userId, type_position: "master" }
+      where: { id: req.userId, type_positions: "MASTER" }
     })
 
     if (!checkIsMaster) {

@@ -4,6 +4,7 @@ import httpStatus from 'http-status-codes';
 
 import User from '../app/models/User';
 import authConfig from '../config/auth';
+import Permission from '../app/models/Permission';
 
 export default {
 
@@ -35,10 +36,12 @@ export default {
       return result
     }
 
-    const { id, name, type_position, cpf } = user;
+    const { id, name, type_positions, permission_id } = user;
 
-    const users = { id, name, email, type_position, cpf },
-      token = jwt.sign({ id }, authConfig.secret, {
+    const permissions = await Permission.findByPk(permission_id, { attributes: ["role", "actions"]})
+
+    const users = { id, name, email, type_positions, permissions },
+      token = jwt.sign({ id, type_positions, permissions }, authConfig.secret, {
       expiresIn: authConfig.expiresIn,
     });
 
