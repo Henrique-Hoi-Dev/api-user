@@ -1,8 +1,8 @@
 import httpStatus from 'http-status-codes';
 
-import User from '../app/models/User';
-// import Notification from "../app/schemas/Notification";
-import Notifications from "../app/models/Notification";
+import User from '../models/User';
+// import Notification from "../schemas/Notification";
+import Notifications from "../models/Notification";
 
 export default {
   async getAll(req, res) {

@@ -1,4 +1,4 @@
-import NotificationService from '../../service/NotificationService';
+import NotificationService from '../service/NotificationService';
 
 class NotificationController {
 

@@ -1,6 +1,7 @@
 import httpStatus from 'http-status-codes';
+import { Op } from 'sequelize';
 
-import Cart from "../app/models/Cart";
+import Cart from "../models/Cart";
 
 export default {
   async createCart(req, res) {
@@ -29,12 +30,17 @@ export default {
   async getAllCart(req, res) {
     let result = {}
     
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id' } = req.query;
-    const total = (await Cart.findAll()).length;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', cart_models, id } = req.query;
 
+    const where = {};
+    if (cart_models) where.cart_models = { [Op.iLike]: "%" + cart_models + "%" };
+    if (id) where.id = id;
+
+    const total = (await Cart.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const carts = await Cart.findAll({
+      where: where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,

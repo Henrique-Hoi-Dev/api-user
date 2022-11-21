@@ -1,8 +1,9 @@
 import * as Yup from 'yup';
 import httpStatus from 'http-status-codes';
+import { Op } from 'sequelize';
 
-import User from "../app/models/User";
-import Permission from "../app/models/Permission";
+import User from "../models/User";
+import Permission from "../models/Permission";
 
 export default {
   async createUser(req, res) {
@@ -54,12 +55,17 @@ export default {
   async getAllUser(req, res) {
     let result = {}
 
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'name' } = req.query;
-    const total = (await User.findAll()).length;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'name', name, id } = req.query;
 
+    const where = {}
+    if (name) where.name = { [Op.iLike]: "%" + name + "%" };
+    if (id) where.id = id;
+    
+    const total = (await User.findAll()).length;
     const totalPages = Math.ceil(total / limit)
 
     const users = await User.findAll({
+      where: where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,

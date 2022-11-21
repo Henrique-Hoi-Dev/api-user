@@ -1,7 +1,8 @@
 import * as Yup from 'yup';
 import httpStatus from 'http-status-codes';
+import { Op } from 'sequelize';
 
-import Driver from "../app/models/Driver";
+import Driver from "../models/Driver";
 
 export default {
   async createDriver(req, res) {
@@ -47,12 +48,17 @@ export default {
   async getAllDriver(req, res) {
     let result = {}
 
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id' } = req.query;
-    const total = (await Driver.findAll()).length;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', name, id } = req.query;
+    
+    const where = {}
+    if (name) where.name = { [Op.iLike]: "%" + name + "%" };
+    if (id) where.id = id;
 
+    const total = (await Driver.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const drivers = await Driver.findAll({
+      where: where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,

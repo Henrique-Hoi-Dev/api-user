@@ -1,5 +1,5 @@
 import httpStatus from 'http-status-codes';
-import Permission from "../app/models/Permission";
+import Permission from "../models/Permission";
 
 export default {
   async createPermission(req, res) {
