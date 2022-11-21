@@ -5,26 +5,26 @@ class Freight extends Model {
     super.init(
       {
         financial_statements_id: Sequelize.INTEGER,
-        start_city: Sequelize.STRING,
-        final_city: Sequelize.STRING,
-        location_of_the_truck: Sequelize.STRING,
-        contractor: Sequelize.STRING,
-        start_km: Sequelize.DOUBLE,
-        travel_km: Sequelize.DOUBLE,
-        preview_average_fuel: Sequelize.DOUBLE,
+        start_freight_city: Sequelize.STRING, // cidade iniciar do frete
+        final_freight_city: Sequelize.STRING, // cidade final do frete
+        location_of_the_truck: Sequelize.STRING, // local atual do caminhão
+        contractor: Sequelize.STRING, // empresa que foi pego o frete
+        truck_current_km: Sequelize.DOUBLE, // km atual registrado no caminhão
+        travel_km_total: Sequelize.DOUBLE, // km total da viagem
+        liter_of_fuel_per_km: Sequelize.DOUBLE, // media do caminhão
         preview_tonne: Sequelize.DOUBLE,
         preview_value_diesel: Sequelize.DOUBLE,
         value_tonne: Sequelize.DOUBLE,
-        status_check_order: Sequelize.ENUM(
+        status_check: Sequelize.ENUM(
           { 
-            values: ['approval_process', 'approved', 'denied', 'finished']
+            values: ['APPROVAL_PROCESS', 'APPROVED','DENIED', 'FINISHED']
           }
         ),
         // level two
-        final_km: Sequelize.DOUBLE,
-        final_total_tonne: Sequelize.DOUBLE,
-        toll_value: Sequelize.DOUBLE,
-        discharge: Sequelize.DOUBLE,
+        tons_loaded: Sequelize.DOUBLE, // total da tonelada carregada
+        toll_value: Sequelize.DOUBLE, // valor do pedagio 
+        truck_km_completed_trip: Sequelize.DOUBLE, // km do caminhão do final da viagem 
+        discharge: Sequelize.DOUBLE, // 
         img_proof_cte: Sequelize.STRING,
         img_proof_ticket: Sequelize.STRING,
         img_proof_freight_letter: Sequelize.STRING,

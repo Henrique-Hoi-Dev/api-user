@@ -14,61 +14,61 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      start_city: {
+      start_freight_city: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      final_city: {
+      final_freight_city: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       location_of_the_truck: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       contractor: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      start_km: {
+      truck_current_km: {
         type: Sequelize.DOUBLE,
-        allowNull: true,
+        allowNull: false,
       },
-      travel_km: {
+      travel_km_total: {
         type: Sequelize.DOUBLE,
-        allowNull: true,
+        allowNull: false,
       },
-      preview_average_fuel: {
+      liter_of_fuel_per_km: {
         type: Sequelize.DOUBLE,
-        allowNull: true,
+        allowNull: false,
       },
       preview_tonne: {
         type: Sequelize.DOUBLE,
-        allowNull: true,
+        allowNull: false,
       },
       value_tonne: {
         type: Sequelize.DOUBLE,
-        allowNull: true,
+        allowNull: false,
       },
       preview_value_diesel: {
         type: Sequelize.DOUBLE,
-        allowNull: true,
+        allowNull: false,
       },
-      status_check_order: {
+      status_check: {
         type: Sequelize.ENUM,
-        values: ['approval_process', 'approved', 'denied', 'finished'],
-        defaultValue: 'approval_process',
+        values: ['APPROVAL_PROCESS', 'APPROVED','DENIED', 'FINISHED'],
+        defaultValue: 'APPROVAL_PROCESS',
       },
       // level two
-      final_km: {
-        type: Sequelize.DOUBLE,
-        allowNull: true,
-      },
-      final_total_tonne: {
+      tons_loaded: {
         type: Sequelize.DOUBLE,
         allowNull: true,
       },
       toll_value: {
+        type: Sequelize.DOUBLE,
+        allowNull: true,
+      },
+      truck_km_completed_trip: {
         type: Sequelize.DOUBLE,
         allowNull: true,
       },

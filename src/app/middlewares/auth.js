@@ -23,3 +23,19 @@ export default async (req, res, next) => {
     return res.status(401).json({ error: 'User token invalid' });
   }
 };
+
+export function verifyIfUserHasRole(role) {
+  return function (req, res, next) {
+    try {
+      const user = req.userProps 
+
+      if (user.type_positions === "MASTER") {
+        next()
+      } else {
+        return res.status(401).json({ error: 'User role invalid' });
+      }
+    } catch (err) {
+      next(err)
+    }
+  }
+}

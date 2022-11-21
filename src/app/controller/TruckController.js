@@ -1,4 +1,4 @@
-import TruckService from '../../service/TruckService';
+import TruckService from '../service/TruckService';
 
 class TruckController {
 

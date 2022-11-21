@@ -1,4 +1,4 @@
-import SessionService from '../../service/SessionService';
+import SessionService from '../service/SessionService';
 
 class SessionController {
   

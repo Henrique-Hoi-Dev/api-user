@@ -1,4 +1,4 @@
-import DriverService from '../../service/DriverService';
+import DriverService from '../service/DriverService';
 
 class DriverController {
 

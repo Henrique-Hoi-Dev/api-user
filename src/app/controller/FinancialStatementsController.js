@@ -1,4 +1,4 @@
-import FinancialStatementsService from '../../service/FinancialStatementsService';
+import FinancialStatementsService from '../service/FinancialStatementsService';
 
 class FinancialStatementsController {
 
