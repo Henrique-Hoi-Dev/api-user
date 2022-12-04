@@ -1,5 +1,6 @@
-import Truck from "../app/models/Truck";
+import Truck from "../models/Truck";
 import httpStatus from 'http-status-codes';
+import { Op } from "sequelize";
 
 export default {
   async createTruck(req, res) {
@@ -48,12 +49,17 @@ export default {
   async getAllTruck(req, res) {
     let result = {}
     
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id' } = req.query;
-    const total = (await Truck.findAll()).length;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', truck_models, id } = req.query;
+    
+    const where = {}
+    if (truck_models) where.truck_models = { [Op.iLike]: "%" + truck_models + "%" };
+    if (id) where.id = id;
 
+    const total = (await Truck.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const trucks = await Truck.findAll({
+      where: where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,

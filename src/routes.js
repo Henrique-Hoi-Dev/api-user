@@ -10,7 +10,7 @@ import NotificationController from './app/controller/NotificationController';
 import DriverController from './app/controller/DriverController';
 import PermissionController from './app/controller/PermissionController';
 
-import authMiddleware from './app/middlewares/auth';
+import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
 const routes = new Router();
 
@@ -24,14 +24,13 @@ routes.post('/driver/register', DriverController.createDriver);
 routes.use(authMiddleware);
 
 // users
-routes.put('/user/:id', UserController.updateUser)
-      .get('/user/:id', UserController.getIdUser)
-      .get('/users', UserController.getAllUser)
-      .delete('/user/:id', UserController.deleteUser);
+routes.put('/user/:id',verifyIfUserHasRole('MASTER'), UserController.updateUser)
+      .get('/user/:id', verifyIfUserHasRole('MASTER'), UserController.getIdUser)
+      .get('/users', verifyIfUserHasRole('MASTER'), UserController.getAllUser)
+      .delete('/user/:id', verifyIfUserHasRole('MASTER'), UserController.deleteUser);
 
 // users driver
-routes.put('/user/driver/:id', DriverController.updateDriver)
-      .get('/user/driver/:id', DriverController.getIdDriver)
+routes.get('/user/driver/:id', DriverController.getIdDriver)
       .get('/drivers', DriverController.getAllDriver)
       .delete('/user/driver/:id', DriverController.deleteDriver);
 

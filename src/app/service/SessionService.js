@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import * as Yup from 'yup';
 import httpStatus from 'http-status-codes';
 
-import User from '../app/models/User';
-import authConfig from '../config/auth';
-import Permission from '../app/models/Permission';
+import User from '../models/User';
+import authConfig from '../../config/auth';
+import Permission from '../models/Permission';
 
 export default {
 

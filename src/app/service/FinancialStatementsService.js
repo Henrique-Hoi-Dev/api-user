@@ -1,12 +1,13 @@
 import httpStatus from 'http-status-codes';
+import { Op } from 'sequelize';
 
-import Driver from '../app/models/Driver';
-import Truck from '../app/models/Truck';
-import Cart from '../app/models/Cart';
-import Freight from '../app/models/Freight';
-import Notification from '../app/models/Notification';
-import FinancialStatements from "../app/models/FinancialStatements";
-import User from '../app/models/User';
+import Driver from '../models/Driver';
+import Truck from '../models/Truck';
+import Cart from '../models/Cart';
+import Freight from '../models/Freight';
+import Notification from '../models/Notification';
+import FinancialStatements from "../models/FinancialStatements";
+import User from '../models/User';
 
 export default {
   async createFinancialStatements(req, res) {
@@ -105,12 +106,28 @@ export default {
   async getAllFinancialStatements(req, res) {
     let result = {}
 
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id' } = req.query;
-    const total = (await FinancialStatements.findAll()).length;
+    const { 
+      page = 1, 
+      limit = 100, 
+      sort_order = 'ASC', 
+      sort_field = 'id', 
+      truck_board, 
+      driver_name,
+      status_check
+    } = req.query;
 
+    const where = {};
+    if (truck_board) where.truck_board = { [Op.iLike]: "%" + truck_board + "%" };
+    if (driver_name) where.driver_name = { [Op.iLike]: "%" + driver_name + "%" };
+    
+    const whereStatus = {};
+    if (status_check) whereStatus.status_check = status_check;
+
+    const total = (await FinancialStatements.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const financialStatements = await FinancialStatements.findAll({
+      where: where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,
@@ -140,22 +157,23 @@ export default {
       ],
       include: {
         model: Freight,
+        where: whereStatus,
         as: "freigth",
         attributes: [
           "id",
           "financial_statements_id",
-          "start_city",
-          "final_city",
+          "start_freight_city",
+          "final_freight_city",
           "location_of_the_truck",
           "contractor",
-          "start_km",
-          "status_check_order",
+          "truck_current_km",
+          "status_check",
           "preview_tonne",
           "value_tonne",
-          'preview_average_fuel',
+          'liter_of_fuel_per_km',
           "preview_value_diesel",
-          "final_km",
-          "final_total_tonne",
+          "truck_km_completed_trip",
+          "tons_loaded",
           "toll_value",
           "discharge",
           "img_proof_cte",

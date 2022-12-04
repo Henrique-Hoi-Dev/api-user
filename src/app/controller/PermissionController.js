@@ -1,4 +1,4 @@
-import PermissionService from '../../service/PermissionService';
+import PermissionService from '../service/PermissionService';
 
 class PermissionController {
 

@@ -1,4 +1,4 @@
-import CartService from '../../service/CartService';
+import CartService from '../service/CartService';
 
 class CartController {
 
