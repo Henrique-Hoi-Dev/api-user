@@ -67,7 +67,7 @@ export default {
         'id', 
         'name', 
         'email', 
-        'type_positions', 
+        'type_role', 
       ], 
       include: {
         model: Permission,
@@ -98,7 +98,7 @@ export default {
         'id',
         'name', 
         'email', 
-        'type_positions', 
+        'type_role', 
       ],
       include: {
         model: Permission,
