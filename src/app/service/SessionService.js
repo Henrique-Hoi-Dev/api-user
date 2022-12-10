@@ -38,10 +38,10 @@ export default {
 
     const { id, name, type_positions, permission_id } = user;
 
-    const permissions = await Permission.findByPk(permission_id, { attributes: ["role", "actions"]})
+    // const permissions = await Permission.findByPk(permission_id, { attributes: ["role", "actions"]})
 
-    const users = { id, name, email, type_positions, permissions },
-      token = jwt.sign({ id, type_positions, permissions }, authConfig.secret, {
+    const users = { id, name, email, type_positions },
+      token = jwt.sign({ id, type_positions }, authConfig.secret, {
       expiresIn: authConfig.expiresIn,
     });
 
