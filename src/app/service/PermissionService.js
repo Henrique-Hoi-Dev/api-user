@@ -18,6 +18,22 @@ export default {
     result = { httpStatus: httpStatus.OK, status: "successful", dataResult: resultPermission }      
     return result
   },
+  
+  async updatePermission(req, res) {
+    let result = {}
+    
+    const permission = await Permission.findByPk(res.id);
+
+    if (!permission) {
+      result = { httpStatus: httpStatus.CONFLICT, msg: 'This permission role already exists.' };
+      return result;
+    }
+
+    const resultPermission = await permission.update(req);
+
+    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: resultPermission }      
+    return result
+  },
 
   async getAllPermission() {
     let result = {}
@@ -25,8 +41,6 @@ export default {
     const permissao = await Permission.findAll({
       attributes: ["id", "role", "actions"]
     });
-
-    console.log("get permissao", permissao)
 
     result = { httpStatus: httpStatus.OK, status: "successful", dataResult: permissao } 
     

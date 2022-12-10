@@ -24,7 +24,7 @@ routes.post('/driver/register', DriverController.createDriver);
 routes.use(authMiddleware);
 
 // users
-routes.put('/user/:id',verifyIfUserHasRole('MASTER'), UserController.updateUser)
+routes.put('/user/:id', verifyIfUserHasRole('MASTER'), UserController.updateUser)
       .get('/user/:id', verifyIfUserHasRole('MASTER'), UserController.getIdUser)
       .get('/users', verifyIfUserHasRole('MASTER'), UserController.getAllUser)
       .delete('/user/:id', verifyIfUserHasRole('MASTER'), UserController.deleteUser);
@@ -69,7 +69,8 @@ routes.post('/user/cart', CartController.createCart)
       .delete('/user/cart/:id', CartController.deleteCart);
 
 // permission
-routes.post('/user/permission', PermissionController.createPermission)
-      .get('/permissions', PermissionController.getAllPermission);
+routes.post('/user/permission', verifyIfUserHasRole('MASTER'), PermissionController.createPermission)
+      .put('/user/permission/:id', verifyIfUserHasRole('MASTER'), PermissionController.updatePermission)
+      .get('/permissions', verifyIfUserHasRole('MASTER'), PermissionController.getAllPermission);
 
 export default routes;

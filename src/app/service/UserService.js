@@ -36,7 +36,7 @@ export default {
       password
     });
 
-    const addPermissions = await Permission.findOne({ where: { role: resultUser.type_positions }})
+    const addPermissions = await Permission.findOne({ where: { role: resultUser.type_role }})
 
     await resultUser.update({
       permission_id: addPermissions.id
@@ -164,7 +164,7 @@ export default {
         'id',
         'name', 
         'email', 
-        'type_position', 
+        'type_role', 
       ],
     });
 

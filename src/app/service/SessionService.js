@@ -24,7 +24,7 @@ export default {
 
     const { email, password } = body;
     
-    const user = await User.findOne({  where: { email } });
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' }      
@@ -36,12 +36,12 @@ export default {
       return result
     }
 
-    const { id, name, type_positions, permission_id } = user;
+    const { id, name, type_role, permission_id } = user;
 
     const permissions = await Permission.findByPk(permission_id, { attributes: ["role", "actions"]})
 
-    const users = { id, name, email, type_positions, permissions },
-      token = jwt.sign({ id, type_positions, permissions }, authConfig.secret, {
+    const users = { id, name, email, type_role, permissions },
+      token = jwt.sign({ id, type_role, permissions }, authConfig.secret, {
       expiresIn: authConfig.expiresIn,
     });
 
