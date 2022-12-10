@@ -9,12 +9,12 @@ export default {
   async createUser(req, res) {
     let result = {}
 
-    let { email, name, password, type_positions } = req
+    let { email, name, password } = req
     
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
-      password: Yup.string().required().min(6),
+      password: Yup.string().required().min(8),
     });
 
     if (!(await schema.isValid(req))) {
@@ -33,22 +33,16 @@ export default {
     const resultUser = await User.create({
       name,
       email,
-      password,
-      type_positions
+      password
     });
 
     const addPermissions = await Permission.findOne({ where: { role: resultUser.type_positions }})
-
-    if (!addPermissions) {
-      result = { httpStatus: httpStatus.NOT_FOUND, msg: 'Permission not founds.' };
-      return result;
-    }
 
     await resultUser.update({
       permission_id: addPermissions.id
     })
 
-    result = { httpStatus: httpStatus.OK, status: "successful" }      
+    result = { httpStatus: httpStatus.OK, status: "Registered User Successful!" }      
     return result
   },
 

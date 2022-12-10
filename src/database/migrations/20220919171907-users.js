@@ -16,10 +16,10 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      type_positions: {
+      type_role: {
         type: Sequelize.ENUM,
-        values: ["MASTER", "MANAGER", "DIRECTOR", "COLLABORATOR"],
-        defaultValue: "MASTER"
+        values: ["MASTER", "USER", "MANAGER", "DIRECTOR", "COLLABORATOR"],
+        defaultValue: "USER"
       },
       permission_id: {
         type: Sequelize.INTEGER,
