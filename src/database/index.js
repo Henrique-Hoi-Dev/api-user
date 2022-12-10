@@ -10,11 +10,15 @@ import Restock from '../app/models/Restock';
 import TravelExpenses from '../app/models/TravelExpenses';
 import DataDriver from '../app/models/DataDriver';
 import DepositMoney from '../app/models/DepositMoney';
-import Notification from '../app/models/Notification';
+import Notifications from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
 import Permission from '../app/models/Permission';
 
+import Notification from '../app/schemas/Notification';
+
 import databaseConfig from '../config/database.js';
+
+import "dotenv/config"
 
 const models = [ 
   User,
@@ -24,6 +28,7 @@ const models = [
   Freight,
   DepositMoney,
   DataDriver,
+  Notifications,
   Notification,
   FinancialStatements,
   TravelExpenses,
@@ -34,7 +39,7 @@ const models = [
 class Database {
   constructor() {
     this.init();
-    this.mongo()
+    this.mongo();
   }
 
   init() {
@@ -49,8 +54,12 @@ class Database {
 
   mongo() {
     this.mongoConnection = mongoose.connect(
-      'mongodb://localhost:27017/titon',
-      { useNewUrlParser: true }
+      process.env.DATABASE_URL_MONGO,
+      { 
+        useNewUrlParser: true, 
+        // useFindAndModify: true
+      },
+      console.log("moongo URL", process.env.DATABASE_URL_MONGO) 
     )
   }
 }
