@@ -62,6 +62,21 @@ class UserController {
     }
   } 
 
+  async addRole(req, res) {
+    try {
+      let response = await UserService.addRole(req.body, req.params);
+
+      if (response.httpStatus === 200) {
+        return res.send(response);
+      } else {
+        return res.status(response.httpStatus).json(response)
+      }
+
+    } catch (error) {
+      return res.status(400).json({ mgs: error.message })
+    }
+  } 
+
   async deleteUser(req, res) {
     try {
       let response = await UserService.deleteUser(req.params);

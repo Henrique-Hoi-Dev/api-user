@@ -40,12 +40,12 @@ export default {
 
     const permissions = await Permission.findByPk(permission_id, { attributes: ["role", "actions"]})
 
-    const users = { id, name, email, type_role, permissions },
+    const userProps = { id, name, email, type_role, permissions },
       token = jwt.sign({ id, type_role, permissions }, authConfig.secret, {
       expiresIn: authConfig.expiresIn,
     });
 
-    result = { httpStatus: httpStatus.OK, dataResult: {users, token} }      
+    result = { httpStatus: httpStatus.OK, dataResult: {userProps, token} }      
     return result
   },
 }

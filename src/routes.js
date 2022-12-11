@@ -50,9 +50,9 @@ routes.post('/user/freight', FreightController.createFreight)
 
 // notification
 // routes.get('/user/notifications', NotificationController.getAllNotification);
-routes.get('/notifications', NotificationController.getAll);
-routes.put('/notification/:id', NotificationController.updateNotification);
-routes.put('/notifications/:id', NotificationController.update);
+routes.get('/notifications', verifyIfUserHasRole('MASTER'), NotificationController.getAll);
+routes.put('/notification/:id', verifyIfUserHasRole('MASTER'), NotificationController.updateNotification);
+routes.put('/notifications/:id', verifyIfUserHasRole('MASTER'), NotificationController.update);
 
 // trucks
 routes.post('/user/truck', TruckController.createTruck)
@@ -72,5 +72,9 @@ routes.post('/user/cart', CartController.createCart)
 routes.post('/user/permission', verifyIfUserHasRole('MASTER'), PermissionController.createPermission)
       .put('/user/permission/:id', verifyIfUserHasRole('MASTER'), PermissionController.updatePermission)
       .get('/permissions', verifyIfUserHasRole('MASTER'), PermissionController.getAllPermission);
+
+// add Role 
+routes.put('/user/add-role/:id', verifyIfUserHasRole('MASTER'), UserController.addRole);
+
 
 export default routes;

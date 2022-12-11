@@ -157,7 +157,11 @@ export default {
       return result;
     }
 
-    await user.update(users);
+    await user.update({
+      name: users.name,
+      password: users.password,
+      confirmPassword: users.confirmPassword
+    });
 
     const userResult = await User.findByPk(userId, {
       attributes: [
@@ -169,6 +173,31 @@ export default {
     });
 
     result = { httpStatus: httpStatus.OK, status: "successful", dataResult: userResult }      
+    return result
+  },
+
+
+  async addRole(req, res) {
+    let result = {}
+
+    const findUser = await User.findByPk(res.id);
+
+    if (!findUser) {
+      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'User not found' }}      
+      return result
+    }
+
+    await findUser.update({ 
+      type_role: req.role.toUpperCase()
+     })
+
+    const addPermissions = await Permission.findOne({ where: { role: findUser.type_role }})
+
+    await findUser.update({
+      permission_id: addPermissions.id
+    })
+
+    result = {httpStatus: httpStatus.OK, status: "successful"}      
     return result
   },
   
