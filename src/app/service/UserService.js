@@ -220,4 +220,22 @@ export default {
     result = {httpStatus: httpStatus.OK, status: "successful", responseData: { msg: 'Deleted user' }}      
     return result
   }
+
+  // sistema de relatorios
+  //   const fs = require("fs");
+  // const XLSX = require("xlsx");
+
+  // // Carregue o arquivo JSON como um objeto JavaScript
+  // const data = JSON.parse(fs.readFileSync("meu_arquivo.json", "utf8"));
+
+  // // Crie um objeto de planilha com o conteúdo do JSON
+  // const ws = XLSX.utils.json_to_sheet(data);
+
+  // // Crie um objeto de workbook com a planilha criada
+  // const wb = XLSX.utils.book_new();
+  // XLSX.utils.book_append_sheet(wb, ws);
+
+  // // Salve o workbook em formato xlsx
+  // XLSX.writeFile(wb, "meu_arquivo.xlsx");
+
 }

@@ -12,6 +12,8 @@ import PermissionController from './app/controller/PermissionController';
 
 import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
+// const fs = require("fs");
+
 const routes = new Router();
 
 // cadastro
@@ -19,6 +21,19 @@ routes.post('/user/register', UserController.createUser);
 routes.post('/user/authenticate', SessionController.sessionUser);
 
 routes.post('/driver/register', DriverController.createDriver);
+
+// sistema de relatorios
+// routes.get("/download", (req, res) => {
+// // Lê o conteúdo do arquivo xlsx
+// const file = fs.readFileSync("./sales-18-12-2022.xlsx");
+
+// // Define o cabeçalho da resposta para indicar que está enviando um arquivo xlsx
+// res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+// res.setHeader("Content-Disposition", "attachment; filename=meu_arquivo.xlsx");
+
+// // Envia o conteúdo do arquivo como resposta
+// res.send(file);
+// });
 
 // autenticação
 routes.use(authMiddleware);
