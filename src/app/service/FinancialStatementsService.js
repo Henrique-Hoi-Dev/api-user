@@ -113,12 +113,14 @@ export default {
       sort_field = 'id', 
       truck_board, 
       driver_name,
-      status_check
+      status_check,
+      status
     } = req.query;
 
     const where = {};
     if (truck_board) where.truck_board = { [Op.iLike]: "%" + truck_board + "%" };
     if (driver_name) where.driver_name = { [Op.iLike]: "%" + driver_name + "%" };
+    if (status) where.status = status;
     
     const whereStatus = {};
     if (status_check) whereStatus.status_check = status_check;
@@ -157,7 +159,7 @@ export default {
       ],
       include: {
         model: Freight,
-        where: whereStatus,
+        // where: whereStatus,
         as: "freigth",
         attributes: [
           "id",
