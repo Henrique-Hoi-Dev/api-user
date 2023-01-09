@@ -1,6 +1,5 @@
 import httpStatus from 'http-status-codes';
-import { Op, fn, col, literal } from 'sequelize';
-import sequelize from 'sequelize';
+import { Op } from 'sequelize';
 
 import Driver from '../models/Driver';
 import Truck from '../models/Truck';
