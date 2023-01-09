@@ -49,17 +49,22 @@ export default {
   async getAllTruck(req, res) {
     let result = {}
     
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', truck_models, id } = req.query;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', truck_models, id, search } = req.query;
     
     const where = {}
-    if (truck_models) where.truck_models = { [Op.iLike]: "%" + truck_models + "%" };
-    if (id) where.id = id;
+    // if (id) where.id = id;
 
     const total = (await Truck.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const trucks = await Truck.findAll({
-      where: where,
+      where: search ? {[Op.or]: [
+        { id: search },
+        { truck_name_brand: { [Op.iLike]: `%${search}%`} },
+        { truck_year: { [Op.iLike]: `%${search}%`} },
+        { truck_color: { [Op.iLike]: `%${search}%`} },
+        { truck_models: { [Op.iLike]: `%${search}%`} },
+      ]} : where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,

@@ -30,17 +30,22 @@ export default {
   async getAllCart(req, res) {
     let result = {}
     
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', cart_models, id } = req.query;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', cart_models, id, search } = req.query;
 
     const where = {};
-    if (cart_models) where.cart_models = { [Op.iLike]: "%" + cart_models + "%" };
-    if (id) where.id = id;
+    // if (id) where.id = id;
 
     const total = (await Cart.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const carts = await Cart.findAll({
-      where: where,
+      where: search ? {[Op.or]: [
+        { id: search },
+        { cart_color: { [Op.iLike]: `%${search}%`} },
+        { cart_models: { [Op.iLike]: `%${search}%`} },
+        { cart_year: { [Op.iLike]: `%${search}%`} },
+        { cart_brand: { [Op.iLike]: `%${search}%`} },
+      ]} : where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,

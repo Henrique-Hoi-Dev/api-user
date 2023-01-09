@@ -48,17 +48,20 @@ export default {
   async getAllDriver(req, res) {
     let result = {}
 
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', name, id } = req.query;
+    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', name, id, search } = req.query;
     
     const where = {}
-    if (name) where.name = { [Op.iLike]: "%" + name + "%" };
-    if (id) where.id = id;
+    // if (id) where.id = id;
 
     const total = (await Driver.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const drivers = await Driver.findAll({
-      where: where,
+      where: search ? {[Op.or]: [
+        { id: search },
+        { truck: { [Op.iLike]: `%${search}%`} },
+        { name: { [Op.iLike]: `%${search}%`} },
+      ]} : where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,
