@@ -59,7 +59,7 @@ export default {
 
     const trucks = await Truck.findAll({
       where: search ? {[Op.or]: [
-        { id: search },
+        // { id: search },
         { truck_name_brand: { [Op.iLike]: `%${search}%`} },
         { truck_year: { [Op.iLike]: `%${search}%`} },
         { truck_color: { [Op.iLike]: `%${search}%`} },

@@ -58,7 +58,7 @@ export default {
 
     const drivers = await Driver.findAll({
       where: search ? {[Op.or]: [
-        { id: search },
+        // { id: search },
         { truck: { [Op.iLike]: `%${search}%`} },
         { name: { [Op.iLike]: `%${search}%`} },
       ]} : where,

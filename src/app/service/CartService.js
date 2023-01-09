@@ -40,7 +40,7 @@ export default {
 
     const carts = await Cart.findAll({
       where: search ? {[Op.or]: [
-        { id: search },
+        // { id: search },
         { cart_color: { [Op.iLike]: `%${search}%`} },
         { cart_models: { [Op.iLike]: `%${search}%`} },
         { cart_year: { [Op.iLike]: `%${search}%`} },
