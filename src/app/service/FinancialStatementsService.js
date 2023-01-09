@@ -1,5 +1,6 @@
 import httpStatus from 'http-status-codes';
-import { Op } from 'sequelize';
+import { Op, fn, col, literal } from 'sequelize';
+import sequelize from 'sequelize';
 
 import Driver from '../models/Driver';
 import Truck from '../models/Truck';
@@ -111,17 +112,15 @@ export default {
       limit = 100, 
       sort_order = 'ASC', 
       sort_field = 'id', 
-      truck_board, 
-      driver_name,
       status_check,
-      status
+      status,
+      search
     } = req.query;
-
-    const where = {};
-    if (truck_board) where.truck_board = { [Op.iLike]: "%" + truck_board + "%" };
-    if (driver_name) where.driver_name = { [Op.iLike]: "%" + driver_name + "%" };
-    if (status) where.status = status;
     
+    const where = {}
+
+    if (status) where.status = status;
+
     const whereStatus = {};
     if (status_check) whereStatus.status_check = status_check;
 
@@ -129,7 +128,10 @@ export default {
     const totalPages = Math.ceil(total / limit);
 
     const financialStatements = await FinancialStatements.findAll({
-      where: where,
+      where: search ? {[Op.or]: [
+        { truck_board: { [Op.iLike]: `%${search}%`} },
+        { driver_name: { [Op.iLike]: `%${search}%`} },
+      ]} : where,
       order: [[ sort_field, sort_order ]],
       limit: limit,
       offset: (page - 1) ? (page - 1) * limit : 0,
