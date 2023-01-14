@@ -21,7 +21,13 @@ export default {
     }
 
     const notifications = await Notifications.findAll({
-      where: { user_id: req.userId },
+      where: { user_id: req.userId, read: false },
+      order: [['created_at', 'DESC']],
+      attributes: ['id', 'content', 'read', 'created_at'],
+    });
+
+    const history = await Notifications.findAll({
+      where: { user_id: req.userId, read: true },
       order: [['created_at', 'DESC']],
       attributes: ['id', 'content', 'read', 'created_at'],
     });
@@ -29,8 +35,9 @@ export default {
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
-      dataResult: notifications,
+      dataResult: { notifications, history },
     };
+
     return result;
   },
 
