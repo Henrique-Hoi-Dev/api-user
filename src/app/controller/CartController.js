@@ -1,7 +1,6 @@
 import CartService from '../service/CartService';
 
 class CartController {
-
   async createCart(req, res) {
     try {
       let response = await CartService.createCart(req.body);
@@ -9,11 +8,10 @@ class CartController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-            
     } catch (error) {
-      return res.status(400).json({ error: error.message })
+      return res.status(400).json({ error: error.message });
     }
   }
 
@@ -24,26 +22,38 @@ class CartController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      return res.status(400).json({ mgs: error.message });
     }
   }
 
-  async getIdCart(req, res) { 
+  async getAllSelect(req, res) {
+    try {
+      let response = await CartService.getAllSelect(req, res);
+
+      if (response.httpStatus === 200) {
+        return res.send(response);
+      } else {
+        return res.status(response.httpStatus).json(response);
+      }
+    } catch (error) {
+      return res.status(400).json({ mgs: error.message });
+    }
+  }
+
+  async getIdCart(req, res) {
     try {
       let response = await CartService.getIdCart(req.params);
 
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      return res.status(400).json({ mgs: error.message });
     }
   }
 
@@ -54,13 +64,12 @@ class CartController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      return res.status(400).json({ mgs: error.message });
     }
-  } 
+  }
 
   async deleteCart(req, res) {
     try {
@@ -69,11 +78,10 @@ class CartController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(200).json({ mgs: error.message})
+      return res.status(200).json({ mgs: error.message });
     }
   }
 }
