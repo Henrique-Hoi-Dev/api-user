@@ -14,13 +14,11 @@ import Notifications from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
 import Permission from '../app/models/Permission';
 
-import Notification from '../app/schemas/Notification';
-
 import databaseConfig from '../config/database.js';
 
-import "dotenv/config"
+import 'dotenv/config';
 
-const models = [ 
+const models = [
   User,
   Driver,
   Truck,
@@ -55,12 +53,12 @@ class Database {
   mongo() {
     this.mongoConnection = mongoose.connect(
       process.env.DATABASE_URL_MONGO,
-      { 
-        useNewUrlParser: true, 
+      {
+        useNewUrlParser: true,
         // useFindAndModify: true
       },
-      console.log("moongo URL", process.env.DATABASE_URL_MONGO) 
-    )
+      console.log('moongo URL', process.env.DATABASE_URL_MONGO)
+    );
   }
 }
 
