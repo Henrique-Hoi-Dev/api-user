@@ -104,10 +104,8 @@ export default {
       driver_id: driver_id,
     });
 
-    const creditUser = 0;
-
     await driver.update({
-      credit: creditUser,
+      credit: 0,
       truck: truck_models,
       cart: cart_bodyworks,
     });
