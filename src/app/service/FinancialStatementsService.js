@@ -109,7 +109,7 @@ export default {
     await driver.update({
       credit: creditUser,
       truck: truck_models,
-      cart: cart_models,
+      cart: cart_bodyworks,
     });
 
     result = { httpStatus: httpStatus.CREATED, status: 'successful' };
