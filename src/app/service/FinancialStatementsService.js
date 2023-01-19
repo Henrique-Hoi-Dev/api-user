@@ -174,7 +174,7 @@ export default {
       ],
       include: {
         model: Freight,
-        where: status ? whereStatus : null,
+        where: status_check ? whereStatus : null,
         as: 'freigth',
         attributes: [
           'id',
