@@ -15,7 +15,7 @@ class Freight extends Model {
         preview_tonne: Sequelize.DOUBLE, // previa de tonelada
         preview_value_diesel: Sequelize.DOUBLE, // previa de valor do combustivel
         value_tonne: Sequelize.DOUBLE, // valor da tonelada
-        status_check: Sequelize.ENUM({
+        status: Sequelize.ENUM({
           values: [
             'APPROVAL_PROCESS',
             'APPROVED',

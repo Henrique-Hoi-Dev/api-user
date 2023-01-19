@@ -54,7 +54,7 @@ module.exports = {
         type: Sequelize.DOUBLE,
         allowNull: false,
       },
-      status_check: {
+      status: {
         type: Sequelize.ENUM,
         values: [
           'APPROVAL_PROCESS',
