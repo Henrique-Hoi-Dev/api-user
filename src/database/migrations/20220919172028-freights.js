@@ -56,7 +56,13 @@ module.exports = {
       },
       status_check: {
         type: Sequelize.ENUM,
-        values: ['APPROVAL_PROCESS', 'APPROVED','DENIED', 'FINISHED'],
+        values: [
+          'APPROVAL_PROCESS',
+          'APPROVED',
+          'STARTING_TRIP',
+          'DENIED',
+          'FINISHED',
+        ],
         defaultValue: 'APPROVAL_PROCESS',
       },
       // level two
