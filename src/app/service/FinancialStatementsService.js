@@ -131,7 +131,7 @@ export default {
     if (status) where.status = status;
 
     const whereStatus = {};
-    if (status_check) whereStatus.status_check = status_check;
+    if (status_check) whereStatus.status = status_check;
 
     const total = (await FinancialStatements.findAll()).length;
     const totalPages = Math.ceil(total / limit);
@@ -174,7 +174,7 @@ export default {
       ],
       include: {
         model: Freight,
-        where: status_check ? whereStatus : null,
+        where: status ? whereStatus : null,
         as: 'freigth',
         attributes: [
           'id',
@@ -184,7 +184,7 @@ export default {
           'location_of_the_truck',
           'contractor',
           'truck_current_km',
-          'status_check',
+          'status',
           'preview_tonne',
           'value_tonne',
           'liter_of_fuel_per_km',
@@ -253,7 +253,7 @@ export default {
           'location_of_the_truck',
           'contractor',
           'truck_current_km',
-          'status_check',
+          'status',
           'preview_tonne',
           'value_tonne',
           'liter_of_fuel_per_km',
