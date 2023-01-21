@@ -29,7 +29,7 @@ export default {
     const history = await Notifications.findAll({
       where: { user_id: req.userId, read: true },
       order: [['created_at', 'DESC']],
-      attributes: ['id', 'content', 'read', 'created_at'],
+      attributes: ['id', 'content', 'read', 'created_at', 'freight_id'],
     });
 
     result = {
