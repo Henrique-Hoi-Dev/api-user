@@ -3,6 +3,7 @@ import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
 
 import Driver from '../models/Driver';
+import FinancialStatements from '../models/FinancialStatements';
 
 export default {
   async createDriver(req, res) {
@@ -70,12 +71,28 @@ export default {
           ),
         },
       },
+      attributes: ['id', 'name'],
+    });
+
+    const selectFinancial = await Driver.findAll({
+      attributes: ['id', 'name'],
+      include: [
+        {
+          model: FinancialStatements,
+          as: 'financialStatements',
+          required: true,
+          where: {
+            status: false,
+          },
+          attributes: ['id', 'driver_id', 'driver_name'],
+        },
+      ],
     });
 
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
-      dataResult: select,
+      dataResult: [...select.concat(...selectFinancial)],
     };
 
     return result;

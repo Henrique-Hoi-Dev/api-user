@@ -1,6 +1,8 @@
-import Truck from '../models/Truck';
 import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
+
+import FinancialStatements from '../models/FinancialStatements';
+import Truck from '../models/Truck';
 
 export default {
   async createTruck(req, res) {
@@ -66,12 +68,28 @@ export default {
           ),
         },
       },
+      attributes: ['id', 'truck_models'],
+    });
+
+    const selectFinancial = await Truck.findAll({
+      attributes: ['id', 'truck_models'],
+      include: [
+        {
+          model: FinancialStatements,
+          as: 'financialStatements',
+          required: true,
+          where: {
+            status: false,
+          },
+          attributes: ['id', 'truck_id', 'truck_models'],
+        },
+      ],
     });
 
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
-      dataResult: select,
+      dataResult: [...select.concat(...selectFinancial)],
     };
 
     return result;

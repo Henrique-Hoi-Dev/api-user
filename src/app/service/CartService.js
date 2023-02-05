@@ -2,6 +2,7 @@ import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
 
 import Cart from '../models/Cart';
+import FinancialStatements from '../models/FinancialStatements';
 
 export default {
   async createCart(req, res) {
@@ -45,12 +46,28 @@ export default {
           [Op.notIn]: literal(`(SELECT "cart_id" FROM "financial_statements")`),
         },
       },
+      attributes: ['id', 'cart_models'],
+    });
+
+    const selectFinancial = await Cart.findAll({
+      attributes: ['id', 'cart_models'],
+      include: [
+        {
+          model: FinancialStatements,
+          as: 'financialStatements',
+          required: true,
+          where: {
+            status: false,
+          },
+          attributes: ['id', 'cart_id', 'cart_models'],
+        },
+      ],
     });
 
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
-      dataResult: select,
+      dataResult: [...select.concat(...selectFinancial)],
     };
 
     return result;
