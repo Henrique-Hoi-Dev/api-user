@@ -412,16 +412,14 @@ export default {
     return result;
   },
 
-  async approvedFreight(req, res) {
+  async approvedFreight(body, res) {
     let result = {};
-
-    let freightReq = req;
 
     const freight = await Freight.findByPk(res.id);
 
-    const typeUser = await User.findByPk(req.user_id);
+    const typeUser = await User.findByPk(body.user_id);
 
-    const driverId = await Driver.findByPk(req.driver_id);
+    const driverId = await Driver.findByPk(body.driver_id);
 
     if (!freight) {
       result = {
@@ -442,7 +440,7 @@ export default {
     if (!typeUser) {
       result = {
         httpStatus: httpStatus.BAD_REQUEST,
-        dataResult: { msg: 'Type user not found' },
+        dataResult: { msg: 'This user is not MASTER' },
       };
       return result;
     }
@@ -457,7 +455,7 @@ export default {
 
     if (typeUser.type_role === 'MASTER') {
       await freight.update({
-        status: freightReq.status,
+        status: body.status,
       });
 
       await Notification.create({
