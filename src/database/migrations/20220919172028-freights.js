@@ -32,11 +32,7 @@ module.exports = {
       },
       truck_current_km: {
         type: Sequelize.DOUBLE,
-        allowNull: false,
-      },
-      travel_km_total: {
-        type: Sequelize.DOUBLE,
-        allowNull: false,
+        allowNull: true,
       },
       liter_of_fuel_per_km: {
         type: Sequelize.DOUBLE,
@@ -65,6 +61,7 @@ module.exports = {
         ],
         defaultValue: 'APPROVAL_PROCESS',
       },
+
       // level two
       tons_loaded: {
         type: Sequelize.DOUBLE,

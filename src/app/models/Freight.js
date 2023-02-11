@@ -10,7 +10,6 @@ class Freight extends Model {
         location_of_the_truck: Sequelize.STRING, // local atual do caminhão
         contractor: Sequelize.STRING, // empresa que foi pego o frete
         truck_current_km: Sequelize.DOUBLE, // km atual registrado no caminhão
-        travel_km_total: Sequelize.DOUBLE, // km total da viagem
         liter_of_fuel_per_km: Sequelize.DOUBLE, // media do caminhão
         preview_tonne: Sequelize.DOUBLE, // previa de tonelada
         preview_value_diesel: Sequelize.DOUBLE, // previa de valor do combustivel

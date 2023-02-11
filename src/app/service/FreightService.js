@@ -323,14 +323,6 @@ export default {
 
     const freight = await Freight.findByPk(id);
 
-    if (!freight) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Freight not found' },
-      };
-      return result;
-    }
-
     const driver = await FinancialStatements.findByPk(
       freight.financial_statements_id
     );
@@ -340,6 +332,30 @@ export default {
       freight.final_freight_city,
       'driving'
     );
+
+    if (!freight) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Freight not found' },
+      };
+      return result;
+    }
+
+    if (!driver) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Driver not found' },
+      };
+      return result;
+    }
+
+    if (!kmTravel) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Erro api google' },
+      };
+      return result;
+    }
 
     function calculatesLiters(distance, consumption) {
       var distanceInKm = distance / 1000;
