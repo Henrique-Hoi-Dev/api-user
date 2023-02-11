@@ -394,6 +394,7 @@ export default {
     result = {
       httpStatus: httpStatus.OK,
       responseData: {
+        status: freight.status,
         start_freight_city: freight.start_freight_city,
         final_freight_city: freight.final_freight_city,
         previous_average: freight.liter_of_fuel_per_km,
