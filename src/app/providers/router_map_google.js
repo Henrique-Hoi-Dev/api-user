@@ -26,7 +26,7 @@ export default {
           try {
             var data = JSON.parse(body);
 
-            resolve(data.routes[0]?.legs[0]);
+            resolve(data.routes[0].legs[0]);
           } catch (error) {
             reject(error);
           }
