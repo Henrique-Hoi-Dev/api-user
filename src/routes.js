@@ -82,7 +82,12 @@ routes
 // freight
 routes
   .post('/user/freight', FreightController.createFreight)
-  .put('/user/freight/:id', FreightController.updateFreight)
+  .patch(
+    '/user/freight/:id',
+    verifyIfUserHasRole('MASTER'),
+    FreightController.approvedFreight
+  )
+  .get('/user/first-check/:id', FreightController.firstCheckId)
   .get('/user/freight/:id', FreightController.getIdFreight)
   .get('/freights', FreightController.getAllFreight)
   .delete('/user/freight/:id', FreightController.deleteFreight);

@@ -7,6 +7,9 @@ import FinancialStatements from '../models/FinancialStatements';
 import Restock from '../models/Restock';
 import TravelExpenses from '../models/TravelExpenses';
 import DepositMoney from '../models/DepositMoney';
+import Driver from '../models/Driver';
+
+import ApiGoogle from '../providers/router_map_google';
 
 export default {
   async _findValurDriver(id) {
@@ -315,7 +318,85 @@ export default {
     return result;
   },
 
-  async updateFreight(req, res) {
+  async firstCheckId(id) {
+    let result = {};
+
+    const freight = await Freight.findByPk(id);
+
+    if (!freight) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Freight not found' },
+      };
+      return result;
+    }
+
+    const driver = await FinancialStatements.findByPk(
+      freight.financial_statements_id
+    );
+
+    const kmTravel = await ApiGoogle.getRoute(
+      freight.start_freight_city,
+      freight.final_freight_city,
+      'driving'
+    );
+
+    function calculatesLiters(distance, consumption) {
+      var distanceInKm = distance / 1000;
+      return Math.round((distanceInKm / consumption) * 100) / 100;
+    }
+
+    function valuePerKm(distance, consumption, fuelValue) {
+      const litrosNecessarios = calculatesLiters(distance, consumption);
+      return fuelValue / litrosNecessarios;
+    }
+
+    function valueTotalGasto(distance, consumption, fuelValue) {
+      const valuePerKmResult = valuePerKm(distance, consumption, fuelValue);
+      return distance * valuePerKmResult;
+    }
+
+    const totalLiters = calculatesLiters(
+      kmTravel.distance.value,
+      freight.liter_of_fuel_per_km
+    );
+
+    const totalValuePerKm = valuePerKm(
+      kmTravel.distance.value,
+      freight.liter_of_fuel_per_km,
+      freight.preview_value_diesel / 100
+    );
+
+    const totalAmountSpent = valueTotalGasto(
+      kmTravel.distance.value,
+      freight.liter_of_fuel_per_km,
+      freight.preview_value_diesel / 100
+    );
+
+    const totalFreight = freight.preview_tonne * freight.value_tonne;
+
+    result = {
+      httpStatus: httpStatus.OK,
+      responseData: {
+        start_freight_city: freight.start_freight_city,
+        final_freight_city: freight.final_freight_city,
+        previous_average: freight.liter_of_fuel_per_km,
+        distance: kmTravel.distance.text,
+        consumption: totalLiters,
+        KM_price: Math.round(totalValuePerKm * 100) / 100,
+        fuel_estimate: Math.round(totalAmountSpent * 100) / 100,
+        full_freight: totalFreight,
+        driver_commission: driver.percentage_commission
+          ? (totalFreight * driver.percentage_commission) / 100
+          : totalFreight - driver.fixed_commission,
+        net_freight: 0,
+      },
+    };
+
+    return result;
+  },
+
+  async approvedFreight(req, res) {
     let result = {};
 
     let freightReq = req;
@@ -324,7 +405,7 @@ export default {
 
     const typeUser = await User.findByPk(req.user_id);
 
-    const driverId = await User.findByPk(req.driver_id);
+    const driverId = await Driver.findByPk(req.driver_id);
 
     if (!freight) {
       result = {
@@ -358,7 +439,7 @@ export default {
       return result;
     }
 
-    if (typeUser.type_position === 'MASTER') {
+    if (typeUser.type_role === 'MASTER') {
       await freight.update({
         status: freightReq.status,
       });
@@ -366,7 +447,7 @@ export default {
       await Notification.create({
         content: `${
           typeUser.name
-        }, Aceitou Seu Check Frete, DE ${freight.start_city.toUpperCase()} PARA ${freight.final_city.toUpperCase()} Tenha uma BOA VIAGEM`,
+        }, Aceitou Seu Check Frete, DE ${freight.start_freight_city.toUpperCase()} PARA ${freight.final_freight_city.toUpperCase()} Tenha uma BOA VIAGEM`,
         driver_id: driverId.id,
       });
 
