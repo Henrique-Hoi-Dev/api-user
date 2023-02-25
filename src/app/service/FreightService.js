@@ -357,10 +357,17 @@ export default {
       return result;
     }
 
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
     function calculatesLiters(distance, consumption) {
       var distanceInKm = distance / 1000;
       return Math.round((distanceInKm / consumption) * 100) / 100;
     }
+
+    console.log('valore', formatter.format(freight.preview_value_diesel / 100));
 
     function valuePerKm(distance, consumption, fuelValue) {
       const litrosNecessarios = calculatesLiters(distance, consumption);
