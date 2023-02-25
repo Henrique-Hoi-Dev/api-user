@@ -9,10 +9,10 @@ class Restock extends Model {
         name_establishment: Sequelize.STRING,
         city: Sequelize.STRING,
         date: Sequelize.DATEONLY,
-        value_fuel: Sequelize.DOUBLE,
-        liters_fuel: Sequelize.DOUBLE,
-        total_value_fuel: Sequelize.DOUBLE,
-        total_nota_value: Sequelize.DOUBLE,
+        value_fuel: Sequelize.DECIMAL,
+        liters_fuel: Sequelize.DECIMAL,
+        total_value_fuel: Sequelize.DECIMAL,
+        total_nota_value: Sequelize.DECIMAL,
       },
       {
         sequelize,
@@ -23,8 +23,14 @@ class Restock extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Freight, { foreignKey: 'freight_id', as: 'freights' });
-    this.belongsTo(models.FinancialStatements, { foreignKey: 'financial_statements_id', as: 'financialStatements' });
+    this.belongsTo(models.Freight, {
+      foreignKey: 'freight_id',
+      as: 'freights',
+    });
+    this.belongsTo(models.FinancialStatements, {
+      foreignKey: 'financial_statements_id',
+      as: 'financialStatements',
+    });
   }
 }
 

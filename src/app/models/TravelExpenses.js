@@ -10,7 +10,7 @@ class TravelExpenses extends Model {
         name_establishment: Sequelize.STRING,
         expense_description: Sequelize.STRING,
         dfe: Sequelize.STRING,
-        value: Sequelize.DOUBLE,
+        value: Sequelize.DECIMAL,
         proof_img: Sequelize.STRING,
       },
       {
@@ -22,8 +22,14 @@ class TravelExpenses extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.Freight, { foreignKey: 'freight_id', as: 'freights' });
-    this.belongsTo(models.FinancialStatements, { foreignKey: 'financial_statements_id', as: 'financialStatements' });
+    this.belongsTo(models.Freight, {
+      foreignKey: 'freight_id',
+      as: 'freights',
+    });
+    this.belongsTo(models.FinancialStatements, {
+      foreignKey: 'financial_statements_id',
+      as: 'financialStatements',
+    });
   }
 }
 

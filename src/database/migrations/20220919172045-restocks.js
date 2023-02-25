@@ -34,19 +34,19 @@ module.exports = {
         allowNull: true,
       },
       value_fuel: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       liters_fuel: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       total_value_fuel: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       total_nota_value: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       created_at: {

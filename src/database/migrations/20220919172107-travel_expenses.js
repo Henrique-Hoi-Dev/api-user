@@ -38,7 +38,7 @@ module.exports = {
         allowNull: true,
       },
       value: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       proof_img: {

@@ -9,7 +9,7 @@ class DepositMoney extends Model {
         type_transaction: Sequelize.STRING,
         local: Sequelize.STRING,
         type_bank: Sequelize.STRING,
-        value: Sequelize.DOUBLE,
+        value: Sequelize.DECIMAL,
         proof_img: Sequelize.STRING,
       },
       {
@@ -21,8 +21,14 @@ class DepositMoney extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.FinancialStatements, { foreignKey: 'financial_statements_id', as: 'financialStatements' });
-    this.belongsTo(models.Freight, { foreignKey: 'freight_id', as: 'freights' });
+    this.belongsTo(models.FinancialStatements, {
+      foreignKey: 'financial_statements_id',
+      as: 'financialStatements',
+    });
+    this.belongsTo(models.Freight, {
+      foreignKey: 'freight_id',
+      as: 'freights',
+    });
   }
 }
 
