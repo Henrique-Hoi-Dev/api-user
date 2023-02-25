@@ -11,12 +11,12 @@ class Driver extends Model {
         password_hash: Sequelize.STRING,
         status: {
           type: Sequelize.ENUM,
-          values: ["ACTIVE", "INACTIVE", "INCOMPLETE"],
-          defaultValue: "ACTIVE"
+          values: ['ACTIVE', 'INACTIVE', 'INCOMPLETE'],
+          defaultValue: 'INCOMPLETE',
         },
         type_positions: {
           type: Sequelize.STRING,
-          defaultValue: "COLLABORATOR"
+          defaultValue: 'COLLABORATOR',
         },
         permission_id: Sequelize.INTEGER,
         // driver personal data
@@ -53,7 +53,10 @@ class Driver extends Model {
   }
 
   static associate(models) {
-    this.hasMany(models.FinancialStatements, { foreignKey: 'driver_id', as: 'financialStatements' });
+    this.hasMany(models.FinancialStatements, {
+      foreignKey: 'driver_id',
+      as: 'financialStatements',
+    });
   }
 
   checkPassword(password) {

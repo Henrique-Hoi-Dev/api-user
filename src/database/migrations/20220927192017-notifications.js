@@ -19,10 +19,14 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
+      freight_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       read: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        value: false
+        value: false,
       },
       created_at: {
         type: Sequelize.DATE,

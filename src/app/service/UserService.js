@@ -9,12 +9,12 @@ export default {
   async createUser(req, res) {
     let result = {}
 
-    let { email, name, password, type_positions } = req
+    let { email, name, password } = req
     
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
-      password: Yup.string().required().min(6),
+      password: Yup.string().required().min(8),
     });
 
     if (!(await schema.isValid(req))) {
@@ -33,22 +33,16 @@ export default {
     const resultUser = await User.create({
       name,
       email,
-      password,
-      type_positions
+      password
     });
 
-    const addPermissions = await Permission.findOne({ where: { role: resultUser.type_positions }})
-
-    if (!addPermissions) {
-      result = { httpStatus: httpStatus.NOT_FOUND, msg: 'Permission not founds.' };
-      return result;
-    }
+    const addPermissions = await Permission.findOne({ where: { role: resultUser.type_role }})
 
     await resultUser.update({
       permission_id: addPermissions.id
     })
 
-    result = { httpStatus: httpStatus.OK, status: "successful" }      
+    result = { httpStatus: httpStatus.OK, status: "Registered User Successful!" }      
     return result
   },
 
@@ -73,7 +67,7 @@ export default {
         'id', 
         'name', 
         'email', 
-        'type_positions', 
+        'type_role', 
       ], 
       include: {
         model: Permission,
@@ -104,7 +98,7 @@ export default {
         'id',
         'name', 
         'email', 
-        'type_positions', 
+        'type_role', 
       ],
       include: {
         model: Permission,
@@ -163,18 +157,47 @@ export default {
       return result;
     }
 
-    await user.update(users);
+    await user.update({
+      name: users.name,
+      password: users.password,
+      confirmPassword: users.confirmPassword
+    });
 
     const userResult = await User.findByPk(userId, {
       attributes: [
         'id',
         'name', 
         'email', 
-        'type_position', 
+        'type_role', 
       ],
     });
 
     result = { httpStatus: httpStatus.OK, status: "successful", dataResult: userResult }      
+    return result
+  },
+
+
+  async addRole(req, res) {
+    let result = {}
+
+    const findUser = await User.findByPk(res.id);
+
+    if (!findUser) {
+      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'User not found' }}      
+      return result
+    }
+
+    await findUser.update({ 
+      type_role: req.role.toUpperCase()
+     })
+
+    const addPermissions = await Permission.findOne({ where: { role: findUser.type_role }})
+
+    await findUser.update({
+      permission_id: addPermissions.id
+    })
+
+    result = {httpStatus: httpStatus.OK, status: "successful"}      
     return result
   },
   
@@ -197,4 +220,22 @@ export default {
     result = {httpStatus: httpStatus.OK, status: "successful", responseData: { msg: 'Deleted user' }}      
     return result
   }
+
+  // sistema de relatorios
+  //   const fs = require("fs");
+  // const XLSX = require("xlsx");
+
+  // // Carregue o arquivo JSON como um objeto JavaScript
+  // const data = JSON.parse(fs.readFileSync("meu_arquivo.json", "utf8"));
+
+  // // Crie um objeto de planilha com o conteúdo do JSON
+  // const ws = XLSX.utils.json_to_sheet(data);
+
+  // // Crie um objeto de workbook com a planilha criada
+  // const wb = XLSX.utils.book_new();
+  // XLSX.utils.book_append_sheet(wb, ws);
+
+  // // Salve o workbook em formato xlsx
+  // XLSX.writeFile(wb, "meu_arquivo.xlsx");
+
 }

@@ -31,26 +31,26 @@ module.exports = {
       cart_id: {
         type: Sequelize.INTEGER,
         references: { model: 'carts', key: 'id' },
-        allowNull: false,
+        allowNull: true,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       percentage_commission: {
         type: Sequelize.DOUBLE,
-        defaultValue: 0
+        defaultValue: 0,
       },
       fixed_commission: {
         type: Sequelize.DOUBLE,
-        defaultValue: 0
+        defaultValue: 0,
       },
       daily: {
         type: Sequelize.DOUBLE,
-        defaultValue: 0
+        defaultValue: 0,
       },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
       },
       start_km: {
         type: Sequelize.DOUBLE,

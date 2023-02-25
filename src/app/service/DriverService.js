@@ -1,31 +1,44 @@
 import * as Yup from 'yup';
 import httpStatus from 'http-status-codes';
-import { Op } from 'sequelize';
+import { Op, literal } from 'sequelize';
 
-import Driver from "../models/Driver";
+import Driver from '../models/Driver';
+import FinancialStatements from '../models/FinancialStatements';
 
 export default {
   async createDriver(req, res) {
-    let result = {}
+    let result = {};
 
-    let { name_user, password, name, value_fix = 0, percentage = 0, daily = 0 } = req;
+    let {
+      name_user,
+      password,
+      name,
+      value_fix = 0,
+      percentage = 0,
+      daily = 0,
+    } = req;
 
-    let body = { 
-      name_user: name_user.toLowerCase(), 
-      password, 
-      name, 
-      type_position: "collaborator",
+    let body = {
+      name_user: name_user.toLowerCase(),
+      password,
+      name,
+      type_position: 'collaborator',
       credit: 0,
       value_fix,
       percentage,
       daily,
-    }
+    };
 
     // doing name user verification
-    const driverExist = await Driver.findOne({ where: { name_user: body.name_user } });
+    const driverExist = await Driver.findOne({
+      where: { name_user: body.name_user },
+    });
 
     if (driverExist) {
-      result = { httpStatus: httpStatus.CONFLICT, msg: 'This driver name user already exists.' };
+      result = {
+        httpStatus: httpStatus.CONFLICT,
+        msg: 'This driver name user already exists.',
+      };
       return result;
     }
 
@@ -35,37 +48,92 @@ export default {
     });
 
     if (!(await schema.isValid(body))) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Validation failed!' };
-      return result
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        msg: 'Validation failed!',
+      };
+      return result;
     }
 
     await Driver.create(body);
 
-    result = { httpStatus: httpStatus.CREATED, status: "successful" }      
-    return result
+    result = { httpStatus: httpStatus.CREATED, status: 'successful' };
+    return result;
+  },
+
+  async getAllSelect(req, res) {
+    let result = {};
+    const select = await Driver.findAll({
+      where: {
+        id: {
+          [Op.notIn]: literal(
+            `(SELECT "driver_id" FROM "financial_statements")`
+          ),
+        },
+      },
+      attributes: ['id', 'name'],
+    });
+
+    const selectFinancial = await Driver.findAll({
+      attributes: ['id', 'name'],
+      include: [
+        {
+          model: FinancialStatements,
+          as: 'financialStatements',
+          required: true,
+          where: {
+            status: false,
+          },
+          attributes: ['id', 'driver_id', 'driver_name'],
+        },
+      ],
+    });
+
+    result = {
+      httpStatus: httpStatus.OK,
+      status: 'successful',
+      dataResult: [...select.concat(...selectFinancial)],
+    };
+
+    return result;
   },
 
   async getAllDriver(req, res) {
-    let result = {}
+    let result = {};
 
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', name, id } = req.query;
-    
-    const where = {}
-    if (name) where.name = { [Op.iLike]: "%" + name + "%" };
-    if (id) where.id = id;
+    const {
+      page = 1,
+      limit = 100,
+      sort_order = 'ASC',
+      sort_field = 'id',
+      name,
+      id,
+      search,
+    } = req.query;
+
+    const where = {};
+    // if (id) where.id = id;
 
     const total = (await Driver.findAll()).length;
     const totalPages = Math.ceil(total / limit);
 
     const drivers = await Driver.findAll({
-      where: where,
-      order: [[ sort_field, sort_order ]],
+      where: search
+        ? {
+            [Op.or]: [
+              // { id: search },
+              { truck: { [Op.iLike]: `%${search}%` } },
+              { name: { [Op.iLike]: `%${search}%` } },
+            ],
+          }
+        : where,
+      order: [[sort_field, sort_order]],
       limit: limit,
-      offset: (page - 1) ? (page - 1) * limit : 0,
-      attributes: [ 
+      offset: page - 1 ? (page - 1) * limit : 0,
+      attributes: [
         'id',
         'name',
-        "name_user",
+        'name_user',
         'credit',
         'value_fix',
         'percentage',
@@ -75,76 +143,94 @@ export default {
       ],
     });
 
-    const currentPage = Number(page)
+    const currentPage = Number(page);
 
-    result = { 
-      httpStatus: httpStatus.OK, 
-      status: "successful", 
-      total, 
-      totalPages, 
-      currentPage, 
-      dataResult: drivers
-    } 
+    result = {
+      httpStatus: httpStatus.OK,
+      status: 'successful',
+      total,
+      totalPages,
+      currentPage,
+      dataResult: drivers,
+    };
 
-    return result
+    return result;
   },
 
   async getIdDriver(req, res) {
-    let result = {}
+    let result = {};
 
     let driver = await Driver.findByPk(req.id, {
-      attributes: [ 
+      attributes: [
         'id',
-        'name', 
-        'number_cnh', 
-        'valid_cnh', 
-        'date_valid_mopp', 
-        'date_valid_nr20', 
-        'date_valid_nr35', 
-        'cpf', 
-        'date_admission', 
-        'date_birthday', 
+        'name',
+        'number_cnh',
+        'valid_cnh',
+        'date_valid_mopp',
+        'date_valid_nr20',
+        'date_valid_nr35',
+        'cpf',
+        'date_admission',
+        'date_birthday',
         'credit',
         'value_fix',
         'percentage',
         'daily',
-      ],  
+      ],
     });
 
     if (!driver) {
-      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'Driver not found' }}      
-      return result
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Driver not found' },
+      };
+      return result;
     }
 
-    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: driver }      
-    return result
+    result = {
+      httpStatus: httpStatus.OK,
+      status: 'successful',
+      dataResult: driver,
+    };
+    return result;
   },
 
-  async updateDriver(req, res) {   
-    let result = {}
+  async updateDriver(req, res) {
+    let result = {};
 
-    let drivers = req
-    let driverId = res.id
+    let drivers = req;
+    let driverId = res.id;
 
     const schema = Yup.object().shape({
-        name: Yup.string(),
-        oldPassword: Yup.string().min(8),
-        password: Yup.string().min(8).when('oldPassword', (oldPassword, field) => oldPassword ? field.required() : field),
-        confirmPassword: Yup.string().when('password', (password, field) => password ? field.required().oneOf([Yup.ref('password')]) : field
+      name: Yup.string(),
+      oldPassword: Yup.string().min(8),
+      password: Yup.string()
+        .min(8)
+        .when('oldPassword', (oldPassword, field) =>
+          oldPassword ? field.required() : field
+        ),
+      confirmPassword: Yup.string().when('password', (password, field) =>
+        password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
     });
 
     if (!(await schema.isValid(drivers))) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Validation failed!' };
-      return result
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        msg: 'Validation failed!',
+      };
+      return result;
     }
 
-    const { oldPassword } = drivers ;
-    
+    const { oldPassword } = drivers;
+
     const driver = await Driver.findByPk(driverId);
 
     if (oldPassword && !(await driver.checkPassword(oldPassword))) {
-      result = { httpStatus: httpStatus.METHOD_FAILURE, msg: 'Password does not match!' };
+      result = {
+        httpStatus: httpStatus.METHOD_FAILURE,
+        msg: 'Password does not match!',
+      };
       return result;
     }
 
@@ -154,15 +240,15 @@ export default {
       attributes: [
         'id',
         'name',
-        "name_user",
-        'number_cnh', 
-        'valid_cnh', 
-        'date_valid_mopp', 
-        'date_valid_nr20', 
-        'date_valid_nr35', 
-        'cpf', 
-        'date_admission', 
-        'date_birthday', 
+        'name_user',
+        'number_cnh',
+        'valid_cnh',
+        'date_valid_mopp',
+        'date_valid_nr20',
+        'date_valid_nr35',
+        'cpf',
+        'date_admission',
+        'date_birthday',
         'credit',
         'value_fix',
         'percentage',
@@ -170,14 +256,18 @@ export default {
       ],
     });
 
-    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: driverResult }      
-    return result
+    result = {
+      httpStatus: httpStatus.OK,
+      status: 'successful',
+      dataResult: driverResult,
+    };
+    return result;
   },
-  
+
   async deleteDriver(req, res) {
-    let result = {}
-    
-    const id  = req.id;
+    let result = {};
+
+    const id = req.id;
 
     const driver = await Driver.destroy({
       where: {
@@ -186,11 +276,18 @@ export default {
     });
 
     if (!driver) {
-      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'Driver not found' }}      
-      return result
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Driver not found' },
+      };
+      return result;
     }
 
-    result = {httpStatus: httpStatus.OK, status: "successful", responseData: { msg: 'Deleted driver' }}      
-    return result
-  }
-}
+    result = {
+      httpStatus: httpStatus.OK,
+      status: 'successful',
+      responseData: { msg: 'Deleted driver' },
+    };
+    return result;
+  },
+};

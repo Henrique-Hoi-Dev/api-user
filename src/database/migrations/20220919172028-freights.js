@@ -31,49 +31,67 @@ module.exports = {
         allowNull: false,
       },
       truck_current_km: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
-      },
-      travel_km_total: {
-        type: Sequelize.DOUBLE,
-        allowNull: false,
+        validate: {
+          isDecimal: { decimalNumbers: true },
+        },
       },
       liter_of_fuel_per_km: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: false,
+        validate: {
+          isDecimal: { decimalNumbers: true },
+        },
       },
       preview_tonne: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: false,
+        validate: {
+          isDecimal: { decimalNumbers: true },
+        },
       },
       value_tonne: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: false,
+        validate: {
+          isDecimal: { decimalNumbers: true },
+        },
       },
       preview_value_diesel: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: false,
+        validate: {
+          isDecimal: { decimalNumbers: true },
+        },
       },
-      status_check: {
+      status: {
         type: Sequelize.ENUM,
-        values: ['APPROVAL_PROCESS', 'APPROVED','DENIED', 'FINISHED'],
+        values: [
+          'APPROVAL_PROCESS',
+          'APPROVED',
+          'STARTING_TRIP',
+          'DENIED',
+          'FINISHED',
+        ],
         defaultValue: 'APPROVAL_PROCESS',
       },
+
       // level two
       tons_loaded: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       toll_value: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       truck_km_completed_trip: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       discharge: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.DECIMAL,
         allowNull: true,
       },
       img_proof_cte: {

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 
 import authConfig from '../../config/auth';
+
 // faz validação do usuário para que possa fazer mudanças no seu cadastro
 export default async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -29,10 +30,10 @@ export function verifyIfUserHasRole(role) {
     try {
       const user = req.userProps 
 
-      if (user.type_positions === "MASTER") {
+      if (user.type_role === "MASTER") {
         next()
       } else {
-        return res.status(401).json({ error: 'User role invalid' });
+        return res.status(401).json({ error: 'User not role "MASTER"' });
       }
     } catch (err) {
       next(err)

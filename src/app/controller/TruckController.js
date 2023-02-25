@@ -1,7 +1,6 @@
 import TruckService from '../service/TruckService';
 
 class TruckController {
-
   async createTruck(req, res) {
     try {
       let response = await TruckService.createTruck(req.body);
@@ -9,11 +8,10 @@ class TruckController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-            
     } catch (error) {
-      return res.status(400).json({ error: error.message })
+      return res.status(400).json({ error: error.message });
     }
   }
 
@@ -24,26 +22,38 @@ class TruckController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      return res.status(400).json({ mgs: error.message });
     }
   }
 
-  async getIdTruck(req, res) { 
+  async getAllSelect(req, res) {
+    try {
+      let response = await TruckService.getAllSelect(req, res);
+
+      if (response.httpStatus === 200) {
+        return res.send(response);
+      } else {
+        return res.status(response.httpStatus).json(response);
+      }
+    } catch (error) {
+      return res.status(400).json({ mgs: error.message });
+    }
+  }
+
+  async getIdTruck(req, res) {
     try {
       let response = await TruckService.getIdTruck(req.params);
 
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      return res.status(400).json({ mgs: error.message });
     }
   }
 
@@ -54,13 +64,12 @@ class TruckController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      return res.status(400).json({ mgs: error.message });
     }
-  } 
+  }
 
   async deleteTruck(req, res) {
     try {
@@ -69,11 +78,10 @@ class TruckController {
       if (response.httpStatus === 200) {
         return res.send(response);
       } else {
-        return res.status(response.httpStatus).json(response)
+        return res.status(response.httpStatus).json(response);
       }
-
     } catch (error) {
-      return res.status(200).json({ mgs: error.message})
+      return res.status(200).json({ mgs: error.message });
     }
   }
 }

@@ -1,23 +1,23 @@
 require('dotenv/config');
 
-// module.exports = {
-//   dialect: process.env.HER_DIALECT,
-//   host: process.env.HER_HOST,
-//   username: process.env.HER_USER,
-//   password: process.env.HER_PASS,
-//   database: process.env.HER_NAME,
-//   dialectOptions: {
-//     ssl: {
-//       require: true,
-//       rejectUnauthorized: false
-//     }
-//   },
-//   define: {
-//     timestamps: true,
-//     underscored: true,
-//     underscoredAll: true,
-//   },
-// }
+module.exports = {
+  dialect: process.env.HER_DIALECT,
+  host: process.env.HER_HOST,
+  username: process.env.HER_USER,
+  password: process.env.HER_PASS,
+  database: process.env.HER_DATABASE,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  define: {
+    timestamps: true,
+    underscored: true,
+    underscoredAll: true,
+  },
+}
 
 // keys local
 

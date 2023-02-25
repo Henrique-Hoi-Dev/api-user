@@ -9,10 +9,10 @@ class User extends Model {
         email: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
-        type_positions: {
+        type_role: {
           type: Sequelize.ENUM,
-          values: ["MASTER", "MANAGER", "DIRECTOR", "COLLABORATOR"],
-          defaultValue: "MASTER"
+          values: ["MASTER", "USER", "MANAGER", "DIRECTOR", "COLLABORATOR"],
+          defaultValue: "USER"
         },
         permission_id: Sequelize.INTEGER
       },

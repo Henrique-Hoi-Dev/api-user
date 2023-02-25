@@ -17,6 +17,21 @@ class PermissionController {
     }
   }
 
+  async updatePermission(req, res) {
+    try {
+      let response = await PermissionService.updatePermission(req.body, req.params);
+
+      if (response.httpStatus === 200) {
+        return res.send(response);
+      } else {
+        return res.status(response.httpStatus).json(response)
+      }
+            
+    } catch (error) {
+      return res.status(400).json({ error: error.message })
+    }
+  }
+
   async getAllPermission(req, res) {
     try {
       let response = await PermissionService.getAllPermission();
