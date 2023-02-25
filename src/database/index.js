@@ -36,7 +36,6 @@ const models = [
 class Database {
   constructor() {
     this.init();
-    this.mongo();
   }
 
   init() {
@@ -47,17 +46,6 @@ class Database {
       .map(
         (model) => model.associate && model.associate(this.connetion.models)
       );
-  }
-
-  mongo() {
-    this.mongoConnection = mongoose.connect(
-      process.env.DATABASE_URL_MONGO,
-      {
-        useNewUrlParser: true,
-        // useFindAndModify: true
-      },
-      console.log('moongo URL', process.env.DATABASE_URL_MONGO)
-    );
   }
 }
 

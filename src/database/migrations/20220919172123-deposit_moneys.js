@@ -38,7 +38,7 @@ module.exports = {
         allowNull: true,
       },
       proof_img: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       created_at: {
