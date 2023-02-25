@@ -10,7 +10,7 @@ import Restock from '../app/models/Restock';
 import TravelExpenses from '../app/models/TravelExpenses';
 import DataDriver from '../app/models/DataDriver';
 import DepositMoney from '../app/models/DepositMoney';
-import Notifications from '../app/models/Notification';
+import Notification from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
 import Permission from '../app/models/Permission';
 
@@ -26,7 +26,6 @@ const models = [
   Freight,
   DepositMoney,
   DataDriver,
-  Notifications,
   Notification,
   FinancialStatements,
   TravelExpenses,
