@@ -1,7 +1,6 @@
 import httpStatus from 'http-status-codes';
 
 import User from '../models/User';
-// import Notification from "../schemas/Notification";
 import Notifications from '../models/Notification';
 
 export default {

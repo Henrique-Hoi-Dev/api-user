@@ -16,7 +16,6 @@ import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
 const routes = new Router();
 
-// cadastro
 routes.post('/user/register', UserController.createUser);
 routes.post('/user/authenticate', SessionController.sessionUser);
 
@@ -35,10 +34,8 @@ routes.post('/driver/register', DriverController.createDriver);
 // res.send(file);
 // });
 
-// autenticação
 routes.use(authMiddleware);
 
-// users
 routes
   .put('/user/:id', verifyIfUserHasRole('MASTER'), UserController.updateUser)
   .get('/user/:id', verifyIfUserHasRole('MASTER'), UserController.getIdUser)
@@ -49,14 +46,12 @@ routes
     UserController.deleteUser
   );
 
-// users driver
 routes
   .get('/user/driver/:id', DriverController.getIdDriver)
   .get('/drivers', DriverController.getAllDriver)
   .get('/drivers-select', DriverController.getAllSelect)
   .delete('/user/driver/:id', DriverController.deleteDriver);
 
-// financial statements
 routes
   .post(
     '/user/financialStatement',
@@ -92,17 +87,10 @@ routes
   .get('/freights', FreightController.getAllFreight)
   .delete('/user/freight/:id', FreightController.deleteFreight);
 
-// notification
-// routes.get('/user/notifications', NotificationController.getAllNotification);
 routes.get(
   '/notifications',
   verifyIfUserHasRole('MASTER'),
   NotificationController.getAll
-);
-routes.put(
-  '/notification/:id',
-  verifyIfUserHasRole('MASTER'),
-  NotificationController.updateNotification
 );
 routes.put(
   '/notifications/:id',
@@ -110,7 +98,6 @@ routes.put(
   NotificationController.update
 );
 
-// trucks
 routes
   .post('/user/truck', TruckController.createTruck)
   .put('/user/truck/:id', TruckController.updateTruck)
@@ -119,7 +106,6 @@ routes
   .get('/trucks-select', TruckController.getAllSelect)
   .delete('/user/truck/:id', TruckController.deleteTruck);
 
-// cart
 routes
   .post('/user/cart', CartController.createCart)
   .put('/user/cart/:id', CartController.updateCart)
@@ -128,7 +114,6 @@ routes
   .get('/carts-select', CartController.getAllSelect)
   .delete('/user/cart/:id', CartController.deleteCart);
 
-// permission
 routes
   .post(
     '/user/permission',
@@ -146,7 +131,6 @@ routes
     PermissionController.getAllPermission
   );
 
-// add Role
 routes.put(
   '/user/add-role/:id',
   verifyIfUserHasRole('MASTER'),
