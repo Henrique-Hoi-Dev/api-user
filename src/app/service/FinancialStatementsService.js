@@ -1,5 +1,6 @@
 import httpStatus from 'http-status-codes';
 import { Op } from 'sequelize';
+import { format, formatISO, isAfter, parseISO } from 'date-fns';
 
 import Driver from '../models/Driver';
 import Truck from '../models/Truck';
@@ -10,17 +11,34 @@ import FinancialStatements from '../models/FinancialStatements';
 import User from '../models/User';
 
 export default {
-  async createFinancialStatements(req, res) {
+  async createFinancialStatements(user, body) {
     let result = {};
 
-    let { driver_id, truck_id, cart_id, creator_user_id, start_date } = req;
+    let { driver_id, truck_id, cart_id, start_date } = body;
 
-    const user = await User.findByPk(creator_user_id);
+    const userAdm = await User.findByPk(user.userId);
     const driver = await Driver.findByPk(driver_id);
     const truck = await Truck.findByPk(truck_id);
     const cart = await Cart.findByPk(cart_id);
 
-    if (!user) {
+    const currentDate = new Date();
+    const previousDate = new Date(currentDate.getTime());
+    previousDate.setDate(currentDate.getDate() - 1);
+
+    if (
+      !isAfter(
+        parseISO(start_date),
+        previousDate.setDate(currentDate.getDate() - 1)
+      )
+    ) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        msg: 'Cannot create fixed in the past',
+      };
+      return result;
+    }
+
+    if (!userAdm) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' };
       return result;
     }
@@ -80,8 +98,8 @@ export default {
     const { truck_models, truck_board, truck_avatar } = truck.dataValues;
     const { cart_bodyworks, cart_board } = cart.dataValues;
 
-    const body = {
-      creator_user_id,
+    await FinancialStatements.create({
+      creator_user_id: user.userId,
       driver_id,
       truck_id,
       cart_id,
@@ -95,9 +113,7 @@ export default {
       truck_avatar,
       cart_models: cart_bodyworks,
       cart_board,
-    };
-
-    await FinancialStatements.create(body);
+    });
 
     await Notification.create({
       content: `${user.name}, Criou Uma Nova Ficha!`,

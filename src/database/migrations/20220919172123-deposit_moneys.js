@@ -34,7 +34,7 @@ module.exports = {
         allowNull: true,
       },
       value: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       proof_img: {

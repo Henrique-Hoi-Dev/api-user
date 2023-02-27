@@ -36,15 +36,15 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       percentage_commission: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         defaultValue: 0,
       },
       fixed_commission: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         defaultValue: 0,
       },
       daily: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         defaultValue: 0,
       },
       status: {
@@ -53,19 +53,19 @@ module.exports = {
         defaultValue: true,
       },
       start_km: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       final_km: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       start_date: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       final_date: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       driver_name: {
@@ -93,15 +93,15 @@ module.exports = {
         allowNull: true,
       },
       invoicing_all: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       medium_fuel_all: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       total_value: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       created_at: {

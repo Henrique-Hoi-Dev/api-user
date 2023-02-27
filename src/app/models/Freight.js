@@ -9,11 +9,13 @@ class Freight extends Model {
         final_freight_city: Sequelize.STRING, // cidade final do frete
         location_of_the_truck: Sequelize.STRING, // local atual do caminhão
         contractor: Sequelize.STRING, // empresa que foi pego o frete
-        truck_current_km: Sequelize.DECIMAL, // km atual registrado no caminhão
-        liter_of_fuel_per_km: Sequelize.DECIMAL, // media do caminhão
-        preview_tonne: Sequelize.DECIMAL, // previa de tonelada
-        preview_value_diesel: Sequelize.DECIMAL, // previa de valor do combustivel
-        value_tonne: Sequelize.DECIMAL, // valor da tonelada
+        truck_current_km: {
+          type: Sequelize.INTEGER,
+        }, // km atual registrado no caminhão
+        liter_of_fuel_per_km: Sequelize.INTEGER, // media do caminhão
+        preview_tonne: Sequelize.INTEGER, // previa de tonelada
+        preview_value_diesel: Sequelize.INTEGER, // previa de valor do combustivel
+        value_tonne: Sequelize.INTEGER, // valor da tonelada
         status: Sequelize.ENUM({
           values: [
             'APPROVAL_PROCESS',
@@ -24,10 +26,10 @@ class Freight extends Model {
           ],
         }),
         // level two
-        tons_loaded: Sequelize.DECIMAL, // total da tonelada carregada
-        toll_value: Sequelize.DECIMAL, // valor do pedagio
-        truck_km_completed_trip: Sequelize.DECIMAL, // km do caminhão do final da viagem
-        discharge: Sequelize.DECIMAL, // tonelada descarregada
+        tons_loaded: Sequelize.INTEGER, // total da tonelada carregada
+        toll_value: Sequelize.INTEGER, // valor do pedagio
+        truck_km_completed_trip: Sequelize.INTEGER, // km do caminhão do final da viagem
+        discharge: Sequelize.INTEGER, // tonelada descarregada
         img_proof_cte: Sequelize.STRING, // url imagem cte
         img_proof_ticket: Sequelize.STRING, // url imagem ticket
         img_proof_freight_letter: Sequelize.STRING, // url imagem carta frete

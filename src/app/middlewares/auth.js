@@ -28,15 +28,15 @@ export default async (req, res, next) => {
 export function verifyIfUserHasRole(role) {
   return function (req, res, next) {
     try {
-      const user = req.userProps 
+      const user = req.userProps;
 
-      if (user.type_role === "MASTER") {
-        next()
+      if (user.type_role === 'MASTER') {
+        next();
       } else {
         return res.status(401).json({ error: 'User not role "MASTER"' });
       }
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }

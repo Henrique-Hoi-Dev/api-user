@@ -30,23 +30,23 @@ module.exports = {
         allowNull: true,
       },
       date: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       value_fuel: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       liters_fuel: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       total_value_fuel: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       total_nota_value: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       created_at: {

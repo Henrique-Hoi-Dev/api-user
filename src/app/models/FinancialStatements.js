@@ -9,36 +9,36 @@ class FinancialStatements extends Model {
         truck_id: Sequelize.INTEGER,
         cart_id: Sequelize.INTEGER,
         percentage_commission: {
-          type:  Sequelize.DOUBLE,
-          defaultValue: 0
+          type: Sequelize.INTEGER,
+          defaultValue: 0,
         },
         fixed_commission: {
-          type:  Sequelize.DOUBLE,
-          defaultValue: 0
+          type: Sequelize.INTEGER,
+          defaultValue: 0,
         },
         daily: {
-          type:  Sequelize.DOUBLE,
-          defaultValue: 0
+          type: Sequelize.INTEGER,
+          defaultValue: 0,
         },
         status: {
           type: Boolean,
-          defaultValue: true
+          defaultValue: true,
         },
-        start_km: Sequelize.DOUBLE,
-        final_km: Sequelize.DOUBLE,
-        start_date: Sequelize.DATEONLY,
-        final_date: Sequelize.DATEONLY,
+        start_km: Sequelize.INTEGER,
+        final_km: Sequelize.INTEGER,
+        start_date: Sequelize.DATE,
+        final_date: Sequelize.DATE,
         driver_name: Sequelize.STRING,
         truck_models: Sequelize.STRING,
         truck_board: Sequelize.STRING,
         truck_avatar: Sequelize.STRING,
         cart_models: Sequelize.STRING,
         cart_board: Sequelize.STRING,
-        invoicing_all: Sequelize.DOUBLE,
-        medium_fuel_all: Sequelize.DOUBLE,
+        invoicing_all: Sequelize.INTEGER,
+        medium_fuel_all: Sequelize.INTEGER,
         total_value: {
-          type: Sequelize.DOUBLE,
-          defaultValue: 0
+          type: Sequelize.INTEGER,
+          defaultValue: 0,
         },
       },
       {
@@ -53,10 +53,22 @@ class FinancialStatements extends Model {
     this.belongsTo(models.Driver, { foreignKey: 'driver_id', as: 'driver' });
     this.belongsTo(models.Truck, { foreignKey: 'truck_id', as: 'truck' });
     this.belongsTo(models.Cart, { foreignKey: 'cart_id', as: 'cart' });
-    this.hasMany(models.Freight, { foreignKey: 'financial_statements_id', as: 'freigth' });
-    this.hasMany(models.DepositMoney, { foreignKey: 'financial_statements_id', as: 'deposit_money' });
-    this.hasMany(models.Restock, { foreignKey: 'financial_statements_id', as: 'restock' });
-    this.hasMany(models.TravelExpenses, { foreignKey: 'financial_statements_id', as: 'travel_expense' });
+    this.hasMany(models.Freight, {
+      foreignKey: 'financial_statements_id',
+      as: 'freigth',
+    });
+    this.hasMany(models.DepositMoney, {
+      foreignKey: 'financial_statements_id',
+      as: 'deposit_money',
+    });
+    this.hasMany(models.Restock, {
+      foreignKey: 'financial_statements_id',
+      as: 'restock',
+    });
+    this.hasMany(models.TravelExpenses, {
+      foreignKey: 'financial_statements_id',
+      as: 'travel_expense',
+    });
   }
 }
 

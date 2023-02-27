@@ -24,19 +24,19 @@ module.exports = {
         allowNull: true,
       },
       valid_cnh: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       date_valid_mopp: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       date_valid_nr20: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       date_valid_nr35: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       cpf: {
@@ -44,17 +44,17 @@ module.exports = {
         allowNull: true,
       },
       date_admission: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       date_birthday: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
         allowNull: true,
       },
       status: {
         type: Sequelize.ENUM,
-        values: ["ACTIVE", "INACTIVE", "INCOMPLETE"],
-        defaultValue: "ACTIVE"
+        values: ['ACTIVE', 'INACTIVE', 'INCOMPLETE'],
+        defaultValue: 'ACTIVE',
       },
       type_positions: {
         type: Sequelize.STRING,
@@ -73,19 +73,19 @@ module.exports = {
         allowNull: true,
       },
       credit: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       value_fix: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       percentage: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       daily: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       created_at: {

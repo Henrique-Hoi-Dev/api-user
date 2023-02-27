@@ -31,39 +31,24 @@ module.exports = {
         allowNull: false,
       },
       truck_current_km: {
-        type: Sequelize.DECIMAL(10, 2),
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          isDecimal: { decimalNumbers: true },
-        },
       },
       liter_of_fuel_per_km: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          isDecimal: { decimalNumbers: true },
-        },
       },
       preview_tonne: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          isDecimal: { decimalNumbers: true },
-        },
       },
       value_tonne: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          isDecimal: { decimalNumbers: true },
-        },
       },
       preview_value_diesel: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-          isDecimal: { decimalNumbers: true },
-        },
       },
       status: {
         type: Sequelize.ENUM,
@@ -79,19 +64,19 @@ module.exports = {
 
       // level two
       tons_loaded: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       toll_value: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       truck_km_completed_trip: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       discharge: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       img_proof_cte: {
