@@ -16,10 +16,12 @@ export default {
 
     let { driver_id, truck_id, cart_id, start_date } = body;
 
-    const userAdm = await User.findByPk(user.userId);
-    const driver = await Driver.findByPk(driver_id);
-    const truck = await Truck.findByPk(truck_id);
-    const cart = await Cart.findByPk(cart_id);
+    const [userAdm, driver, truck, cart] = await Promise.all([
+      User.findByPk(user.userId),
+      Driver.findByPk(driver_id),
+      Truck.findByPk(truck_id),
+      Cart.findByPk(cart_id),
+    ]);
 
     const currentDate = new Date();
     const previousDate = new Date(currentDate.getTime());
@@ -36,24 +38,16 @@ export default {
         msg: 'Cannot create fixed in the past',
       };
       return result;
-    }
-
-    if (!userAdm) {
+    } else if (!userAdm) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' };
       return result;
-    }
-
-    if (!driver) {
+    } else if (!driver) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Driver not found' };
       return result;
-    }
-
-    if (!truck) {
+    } else if (!truck) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Truck not found' };
       return result;
-    }
-
-    if (!cart) {
+    } else if (!cart) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Cart not found' };
       return result;
     }
@@ -230,6 +224,7 @@ export default {
       dataResult: {
         ...financial.dataValues,
         freight: freight.map((res) => ({
+          data: res.createdAt,
           status: res.status,
           locationTruck: res.location_of_the_truck,
           finalFreightCity: res.final_freight_city,
