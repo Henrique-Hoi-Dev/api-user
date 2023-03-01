@@ -318,6 +318,12 @@ export default {
     return result;
   },
 
+  _unmaskMoney(string) {
+    return Number(
+      string.toString()?.replace('.', '').replace('.', '').replace(/\D/g, '')
+    );
+  },
+
   async firstCheckId(id) {
     let result = {};
 
@@ -325,12 +331,6 @@ export default {
 
     const driver = await FinancialStatements.findByPk(
       freight.financial_statements_id
-    );
-
-    const kmTravel = await ApiGoogle.getRoute(
-      freight.start_freight_city,
-      freight.final_freight_city,
-      'driving'
     );
 
     if (!freight) {
@@ -349,6 +349,12 @@ export default {
       return result;
     }
 
+    const kmTravel = await ApiGoogle.getRoute(
+      freight.start_freight_city,
+      freight.final_freight_city,
+      'driving'
+    );
+
     if (!kmTravel) {
       result = {
         httpStatus: httpStatus.BAD_REQUEST,
@@ -363,20 +369,57 @@ export default {
     });
 
     function calculatesLiters(distance, consumption) {
-      var distanceInKm = distance / 1000;
-      return Math.round((distanceInKm / consumption) * 100) / 100;
+      const distanceInKm = distance / 1000;
+      const consumptionLt = consumption / 100;
+
+      const calculate = distanceInKm / consumptionLt;
+      return Number(calculate.toFixed(0));
     }
 
-    console.log('valore', formatter.format(freight.preview_value_diesel / 100));
+    function valuePerKm(distance, totalLiters, fuelValue) {
+      const distanceInKm = distance / 1000;
+      const fuelValueReal = fuelValue / 100;
 
-    function valuePerKm(distance, consumption, fuelValue) {
-      const litrosNecessarios = calculatesLiters(distance, consumption);
-      return fuelValue / litrosNecessarios;
+      const calculate = (totalLiters * fuelValueReal) / distanceInKm;
+
+      return formatter.format(calculate.toFixed(2));
     }
 
-    function valueTotalGasto(distance, consumption, fuelValue) {
-      const valuePerKmResult = valuePerKm(distance, consumption, fuelValue);
-      return distance * valuePerKmResult;
+    function valueTotalGasto(totalLiters, fuelValue) {
+      const fuelValueReal = fuelValue / 100;
+
+      const calculate = totalLiters * fuelValueReal;
+
+      return formatter.format(calculate.toFixed(2));
+    }
+
+    function valueTotalTonne(tonne, valueTonne) {
+      const valueTonneReal = valueTonne / 100;
+      const tonneDiv = tonne / 1000;
+
+      const calculate = tonneDiv * valueTonneReal;
+
+      return formatter.format(calculate.toFixed(2));
+    }
+
+    function valueDriver(percentage, fixedValue, totalFreight) {
+      if (percentage > 0) {
+        const percentageReal = percentage / 100;
+        const freightReal = totalFreight / 100;
+
+        const calculate = freightReal * percentageReal;
+
+        return formatter.format(calculate.toFixed(2));
+      } else {
+        return formatter.format(fixedValue / 100);
+      }
+    }
+
+    function valueNetFreight(totalDriver, totalFreight, totalAmountSpent) {
+      const totalDiscount = totalDriver + totalAmountSpent;
+      const calculate = totalFreight - totalDiscount;
+
+      return formatter.format(calculate / 100);
     }
 
     const totalLiters = calculatesLiters(
@@ -386,17 +429,31 @@ export default {
 
     const totalValuePerKm = valuePerKm(
       kmTravel.distance.value,
-      freight.liter_of_fuel_per_km,
-      freight.preview_value_diesel / 100
+      totalLiters,
+      freight.preview_value_diesel
     );
 
     const totalAmountSpent = valueTotalGasto(
-      kmTravel.distance.value,
-      freight.liter_of_fuel_per_km,
-      freight.preview_value_diesel / 100
+      totalLiters,
+      freight.preview_value_diesel
     );
 
-    const totalFreight = freight.preview_tonne * freight.value_tonne;
+    const totalFreight = valueTotalTonne(
+      freight.preview_tonne,
+      freight.value_tonne
+    );
+
+    const totalDriver = valueDriver(
+      driver.percentage_commission,
+      driver.fixed_commission,
+      this._unmaskMoney(totalFreight)
+    );
+
+    const totalNetFreight = valueNetFreight(
+      this._unmaskMoney(totalDriver),
+      this._unmaskMoney(totalFreight),
+      this._unmaskMoney(totalAmountSpent)
+    );
 
     result = {
       httpStatus: httpStatus.OK,
@@ -404,16 +461,14 @@ export default {
         status: freight.status,
         start_freight_city: freight.start_freight_city,
         final_freight_city: freight.final_freight_city,
-        previous_average: freight.liter_of_fuel_per_km,
+        previous_average: `${freight.liter_of_fuel_per_km / 100} M`,
         distance: kmTravel.distance.text,
-        consumption: totalLiters,
-        KM_price: Math.round(totalValuePerKm * 100) / 100,
-        fuel_estimate: Math.round(totalAmountSpent * 100) / 100,
+        consumption: `${totalLiters} L`,
+        KM_price: totalValuePerKm,
+        fuel_estimate: totalAmountSpent,
         full_freight: totalFreight,
-        driver_commission: driver.percentage_commission
-          ? (totalFreight * driver.percentage_commission) / 100
-          : totalFreight - driver.fixed_commission,
-        net_freight: 0,
+        driver_commission: totalDriver,
+        net_freight: totalNetFreight,
       },
     };
 
