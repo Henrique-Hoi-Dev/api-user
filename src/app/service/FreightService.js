@@ -10,6 +10,7 @@ import DepositMoney from '../models/DepositMoney';
 import Driver from '../models/Driver';
 
 import ApiGoogle from '../providers/router_map_google';
+import { format } from 'date-fns';
 
 export default {
   async _findValurDriver(id) {
@@ -157,163 +158,85 @@ export default {
     return result;
   },
 
-  async getIdFreight(req, res) {
+  _formatRealValue(value) {
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+    return formatter.format(value);
+  },
+
+  async getIdFreight(freightId, res) {
     let result = {};
 
-    let freight = await Freight.findByPk(req.id, {
-      include: [
-        {
-          model: Restock,
-          as: 'restock',
-          attributes: [
-            'id',
-            'name_establishment',
-            'city',
-            'date',
-            'value_fuel',
-            'total_nota_value',
-            'total_value_fuel',
-            'liters_fuel',
-          ],
-        },
-        {
-          model: TravelExpenses,
-          as: 'travel_expense',
-          attributes: [
-            'id',
-            'name_establishment',
-            'type_establishment',
-            'expense_description',
-            'value',
-          ],
-        },
-        {
-          model: DepositMoney,
-          as: 'deposit_money',
-          attributes: ['id', 'type_transaction', 'local', 'type_bank', 'value'],
-        },
-      ],
-    });
+    let freight = await Freight.findByPk(freightId);
 
     if (!freight) {
       result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Freight not found' };
       return result;
     }
 
-    const valueDriver = await this._findValurDriver(
-      freight.financial_statements_id
-    );
+    const restock = await Restock.findAll({
+      where: { freight_id: freightId },
+    });
 
-    const valueDiesel = freight.preview_value_diesel;
-    const preview_valueGross =
-      Math.round((freight.preview_tonne * freight.value_tonne) / 100) * 100;
+    const travelExpenses = await TravelExpenses.findAll({
+      where: { freight_id: freightId },
+    });
 
-    const amountSpentOnFuel = valueDiesel / freight.liter_of_fuel_per_km;
-    const resultValue =
-      Math.round(freight.travel_km_total / 1000) *
-      Math.round(amountSpentOnFuel);
-
-    const discounted_fuel = preview_valueGross - Math.round(resultValue);
-
-    let valueNet = {};
-
-    if (valueDriver.driverValue.percentage > 0) {
-      valueNet = {
-        res:
-          discounted_fuel -
-          discounted_fuel * (valueDriver.driverValue.percentage / 100),
-      };
-    }
-
-    if (valueDriver.driverValue.fixedValue > 0) {
-      valueNet = { res: discounted_fuel - valueDriver.driverValue.fixedValue };
-    }
-
-    if (valueDriver.driverDaily.dailyValue >= 0) {
-      valueNet = valueNet.res - valueDriver.driverDaily.dailyValue;
-    }
-
-    const valueTotalExpensesTravel = await this._findValueExpensesTravel(
-      freight.travel_expense
-    );
-    const valueTotalOfFuelTravel = await this._findValueOfFuel(freight.restock);
-    const valueTotalDepositMoney = await this._findValueDepositMoney(
-      freight.deposit_money
-    );
+    const depositMoney = await DepositMoney.findAll({
+      where: { freight_id: freightId },
+    });
 
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
       dataResult: {
-        first_check: {
-          start_freight_city: freight.start_freight_city,
-          final_freight_city: freight.final_freight_city,
-          location_truck: freight.location_of_the_truck,
-          start_current_km: freight.start_current_km,
-          travel_km_total: freight.travel_km_total,
-          liter_of_fuel_per_km: freight.liter_of_fuel_per_km,
-          preview_tonne: freight.preview_tonne,
-          preview_value_diesel: freight.preview_value_diesel,
-          value_tonne: freight.value_tonne,
-          status: freight.status,
-          item_total: {
-            valueGross: preview_valueGross, // valor bruto
-            fuel_expense: Math.round(resultValue), // valor combustível
-            fuel_discount_on_shipping: discounted_fuel, // valor frete com desconto combustível
-            valueNet: Math.round(valueNet), // valor liquido
+        freightTotal: 0,
+        freightNet: 0,
+        fuelValueTotal: 0,
+        expenses: 0,
+        driverCommission: 0,
+        restock: restock.map((res) => ({
+          date: format(res.date, 'yyyy-MM-dd'),
+          time: format(res.date, 'HH:mm'),
+          local: res.city,
+          liters_fuel: res.liters_fuel,
+          value_fuel: this._formatRealValue(res.value_fuel / 100),
+          payment: {
+            flag: res.payment.flag,
+            modo: res.payment.modo,
+            value: this._formatRealValue(res.payment.value / 100),
+            parcels: res.payment.parcels,
           },
-        },
-        // check apoapproved
-        second_check: {
-          final_km: freight.final_km,
-          final_total_tonne: freight.final_total_tonne,
-          toll_value: freight.toll_value,
-          discharge: freight.discharge,
-          img_proof_cte: freight.img_proof_cte,
-          img_proof_ticket: freight.img_proof_ticket,
-          img_proof_freight_letter: freight.img_proof_freight_letter,
-          item_total: {
-            total_value_fuel: valueTotalOfFuelTravel,
-            total_value_expenses: valueTotalExpensesTravel,
-            total_deposit_money: valueTotalDepositMoney,
+        })),
+        travelExpenses: travelExpenses.map((res) => ({
+          date: format(res.date, 'yyyy-MM-dd'),
+          time: format(res.date, 'HH:mm'),
+          local: res.city,
+          expenseDescription: res.expense_descriptionm,
+          payment: {
+            flag: res.payment.flag,
+            modo: res.payment.modo,
+            value: this._formatRealValue(res.payment.value / 100),
+            parcels: res.payment.parcels,
           },
-        },
-        restock: freight.restock,
-        travel_expense: freight.travel_expense,
-        deposit_money: freight.deposit_money,
+        })),
+        depositMoney: depositMoney.map((res) => ({
+          date: format(res.createdAt, 'yyyy-MM-dd'),
+          time: format(res.createdAt, 'HH:mm'),
+          local: res.local,
+          typeBank: res.type_bank,
+          payment: {
+            flag: res.payment.flag,
+            modo: res.payment.modo,
+            value: this._formatRealValue(res.payment.value / 100),
+            parcels: res.payment.parcels,
+          },
+        })),
       },
     };
-
-    if (freight.status === 'FINISHED') {
-      const financial = await FinancialStatements.findByPk(
-        freight.financial_statements_id
-      );
-      const value = freight.final_total_tonne * freight.value_tonne;
-
-      console.log('entro', value);
-
-      const discount =
-        value - (valueTotalOfFuelTravel + valueTotalExpensesTravel);
-
-      await financial.update({
-        total_value: discount,
-      });
-    }
-
-    if (freight.final_km === null)
-      delete result.dataResult.second_check.final_km;
-    if (freight.final_total_tonne === null)
-      delete result.dataResult.second_check.final_total_tonne;
-    if (freight.toll_value === null)
-      delete result.dataResult.second_check.toll_value;
-    if (freight.discharge === null)
-      delete result.dataResult.second_check.discharge;
-    if (freight.img_proof_cte === null)
-      delete result.dataResult.second_check.img_proof_cte;
-    if (freight.img_proof_ticket === null)
-      delete result.dataResult.second_check.img_proof_ticket;
-    if (freight.img_proof_freight_letter === null)
-      delete result.dataResult.second_check.img_proof_freight_letter;
 
     return result;
   },
@@ -328,6 +251,11 @@ export default {
     let result = {};
 
     const freight = await Freight.findByPk(id);
+
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
 
     const driver = await FinancialStatements.findByPk(
       freight.financial_statements_id
@@ -362,11 +290,6 @@ export default {
       };
       return result;
     }
-
-    const formatter = new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
 
     function calculatesLiters(distance, consumption) {
       const distanceInKm = distance / 1000;

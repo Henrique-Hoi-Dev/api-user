@@ -6,12 +6,27 @@ class TravelExpenses extends Model {
       {
         financial_statements_id: Sequelize.INTEGER,
         freight_id: Sequelize.INTEGER,
+        city: Sequelize.STRING,
+        date: Sequelize.DATE,
         type_establishment: Sequelize.STRING,
         name_establishment: Sequelize.STRING,
         expense_description: Sequelize.STRING,
         dfe: Sequelize.STRING,
         value: Sequelize.INTEGER,
         proof_img: Sequelize.STRING,
+        payment: {
+          type: Sequelize.JSONB,
+          allowNull: false,
+          defaultValue: {
+            modo: '',
+            value: 0,
+            parcels: 0,
+            flag: '',
+          },
+          validate: {
+            notEmpty: true,
+          },
+        },
       },
       {
         sequelize,

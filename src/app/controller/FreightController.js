@@ -31,7 +31,7 @@ class FreightController {
 
   async getIdFreight(req, res) {
     try {
-      let response = await FreightService.getIdFreight(req.params);
+      let response = await FreightService.getIdFreight(req.params.id);
 
       if (response.httpStatus === 200) {
         return res.send(response);

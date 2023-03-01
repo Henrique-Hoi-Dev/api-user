@@ -41,6 +41,19 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      payment: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {
+          modo: '',
+          value: 0,
+          parcels: 0,
+          flag: '',
+        },
+        validate: {
+          notEmpty: true,
+        },
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

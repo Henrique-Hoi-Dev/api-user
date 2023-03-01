@@ -21,6 +21,14 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
+      city: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      date: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       type_establishment: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -44,6 +52,19 @@ module.exports = {
       proof_img: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      payment: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {
+          modo: '',
+          value: 0,
+          parcels: 0,
+          flag: '',
+        },
+        validate: {
+          notEmpty: true,
+        },
       },
       created_at: {
         type: Sequelize.DATE,

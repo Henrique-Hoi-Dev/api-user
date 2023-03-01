@@ -13,6 +13,19 @@ class Restock extends Model {
         liters_fuel: Sequelize.INTEGER,
         total_value_fuel: Sequelize.INTEGER,
         total_nota_value: Sequelize.INTEGER,
+        payment: {
+          type: Sequelize.JSONB,
+          allowNull: false,
+          defaultValue: {
+            modo: '',
+            value: 0,
+            parcels: 0,
+            flag: '',
+          },
+          validate: {
+            notEmpty: true,
+          },
+        },
       },
       {
         sequelize,
