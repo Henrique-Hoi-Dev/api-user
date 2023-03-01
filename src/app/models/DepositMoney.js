@@ -9,7 +9,7 @@ class DepositMoney extends Model {
         type_transaction: Sequelize.STRING,
         local: Sequelize.STRING,
         type_bank: Sequelize.STRING,
-        value: Sequelize.BIGINT,
+        value: Sequelize.INTEGER,
         proof_img: Sequelize.STRING,
       },
       {
