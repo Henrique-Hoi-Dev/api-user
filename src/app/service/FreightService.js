@@ -320,7 +320,7 @@ export default {
 
   _unmaskMoney(string) {
     return Number(
-      string.toString()?.replace('.', '').replace('.', '').replace(/\D/g, '')
+      string.toString().replace('.', '').replace('.', '').replace(/\D/g, '')
     );
   },
 
