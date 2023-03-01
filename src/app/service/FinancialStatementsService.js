@@ -224,6 +224,7 @@ export default {
       dataResult: {
         ...financial.dataValues,
         freight: freight.map((res) => ({
+          id: res.id,
           data: res.createdAt,
           status: res.status,
           locationTruck: res.location_of_the_truck,
