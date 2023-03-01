@@ -84,7 +84,6 @@ routes
   )
   .get('/user/first-check/:id', FreightController.firstCheckId)
   .get('/user/freight/:id', FreightController.getIdFreight)
-  .get('/freights', FreightController.getAllFreight)
   .delete('/user/freight/:id', FreightController.deleteFreight);
 
 routes.get(

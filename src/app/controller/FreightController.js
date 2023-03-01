@@ -15,20 +15,6 @@ class FreightController {
     }
   }
 
-  async getAllFreight(req, res) {
-    try {
-      let response = await FreightService.getAllFreight(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
-    }
-  }
-
   async getIdFreight(req, res) {
     try {
       let response = await FreightService.getIdFreight(req.params.id);

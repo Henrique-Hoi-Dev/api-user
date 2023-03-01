@@ -38,7 +38,7 @@ class FinancialStatementsController {
   async getIdFinancialStatements(req, res) {
     try {
       let response = await FinancialStatementsService.getIdFinancialStatements(
-        req.params
+        req.params.id
       );
 
       if (response.httpStatus === 200) {

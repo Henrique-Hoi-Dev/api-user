@@ -120,44 +120,6 @@ export default {
     return result;
   },
 
-  async getAllFreight(req, res) {
-    let result = {};
-
-    const {
-      page = 1,
-      limit = 100,
-      sort_order = 'ASC',
-      sort_field = 'id',
-    } = req.query;
-
-    const total = (await Freight.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
-    const freights = await Freight.findAll({
-      order: [[sort_field, sort_order]],
-      limit: limit,
-      offset: page - 1 ? (page - 1) * limit : 0,
-      include: {
-        model: FinancialStatements,
-        as: 'financialStatements',
-        attributes: ['driver_name', 'truck_board'],
-      },
-    });
-
-    const currentPage = Number(page);
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      total,
-      totalPages,
-      currentPage,
-      dataResult: freights,
-    };
-
-    return result;
-  },
-
   _formatRealValue(value) {
     const formatter = new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -181,13 +143,34 @@ export default {
       where: { freight_id: freightId },
     });
 
+    if (!restock) {
+      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Restock not found' };
+      return result;
+    }
+
     const travelExpenses = await TravelExpenses.findAll({
       where: { freight_id: freightId },
     });
 
+    if (!travelExpenses) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        msg: 'Travel expenses not found',
+      };
+      return result;
+    }
+
     const depositMoney = await DepositMoney.findAll({
       where: { freight_id: freightId },
     });
+
+    if (!depositMoney) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        msg: 'Deposit money not found',
+      };
+      return result;
+    }
 
     result = {
       httpStatus: httpStatus.OK,

@@ -1,6 +1,6 @@
 import httpStatus from 'http-status-codes';
 import { Op } from 'sequelize';
-import { format, formatISO, isAfter, parseISO } from 'date-fns';
+import { isAfter, parseISO } from 'date-fns';
 
 import Driver from '../models/Driver';
 import Truck from '../models/Truck';
@@ -164,55 +164,10 @@ export default {
       order: [[sort_field, sort_order]],
       limit: limit,
       offset: page - 1 ? (page - 1) * limit : 0,
-      attributes: [
-        'id',
-        'creator_user_id',
-        'driver_id',
-        'truck_id',
-        'cart_id',
-        'status',
-        'start_km',
-        'final_km',
-        'start_date',
-        'final_date',
-        'driver_name',
-        'percentage_commission',
-        'fixed_commission',
-        'daily',
-        'truck_models',
-        'truck_board',
-        'cart_models',
-        'cart_board',
-        'invoicing_all',
-        'medium_fuel_all',
-        'total_value',
-        'truck_avatar',
-      ],
       include: {
         model: Freight,
         where: status_check ? whereStatus : null,
         as: 'freigth',
-        attributes: [
-          'id',
-          'financial_statements_id',
-          'start_freight_city',
-          'final_freight_city',
-          'location_of_the_truck',
-          'contractor',
-          'truck_current_km',
-          'status',
-          'preview_tonne',
-          'value_tonne',
-          'liter_of_fuel_per_km',
-          'preview_value_diesel',
-          'truck_km_completed_trip',
-          'tons_loaded',
-          'toll_value',
-          'discharge',
-          'img_proof_cte',
-          'img_proof_ticket',
-          'img_proof_freight_letter',
-        ],
       },
     });
 
@@ -230,62 +185,29 @@ export default {
     return result;
   },
 
-  async getIdFinancialStatements(req, res) {
+  async getIdFinancialStatements(id) {
     let result = {};
 
-    let financialStatement = await FinancialStatements.findByPk(req.id, {
-      attributes: [
-        'id',
-        'creator_user_id',
-        'driver_id',
-        'truck_id',
-        'cart_id',
-        'status',
-        'start_km',
-        'final_km',
-        'start_date',
-        'final_date',
-        'driver_name',
-        'percentage_commission',
-        'fixed_commission',
-        'daily',
-        'truck_models',
-        'truck_board',
-        'cart_models',
-        'cart_board',
-        'invoicing_all',
-        'medium_fuel_all',
-        'total_value',
-        'truck_avatar',
-      ],
-      include: {
-        model: Freight,
-        as: 'freigth',
-        attributes: [
-          'id',
-          'financial_statements_id',
-          'start_freight_city',
-          'final_freight_city',
-          'location_of_the_truck',
-          'contractor',
-          'truck_current_km',
-          'status',
-          'preview_tonne',
-          'value_tonne',
-          'liter_of_fuel_per_km',
-          'preview_value_diesel',
-          'truck_km_completed_trip',
-          'tons_loaded',
-          'toll_value',
-          'discharge',
-          'img_proof_cte',
-          'img_proof_ticket',
-          'img_proof_freight_letter',
-        ],
-      },
+    const financial = await FinancialStatements.findByPk(id);
+
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
     });
 
-    if (!financialStatement) {
+    const freight = await Freight.findAll({
+      where: { financial_statements_id: financial.id },
+    });
+
+    if (!freight) {
+      result = {
+        httpStatus: httpStatus.BAD_REQUEST,
+        responseData: { msg: 'Freight not found' },
+      };
+      return result;
+    }
+
+    if (!financial) {
       result = {
         httpStatus: httpStatus.BAD_REQUEST,
         responseData: { msg: 'Financial Statements not found' },
@@ -293,11 +215,29 @@ export default {
       return result;
     }
 
+    function valueTotalTonne(tonne, valueTonne) {
+      const valueTonneReal = valueTonne / 100;
+      const tonneDiv = tonne / 1000;
+
+      const calculate = tonneDiv * valueTonneReal;
+
+      return formatter.format(calculate.toFixed(2));
+    }
+
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
-      dataResult: financialStatement,
+      dataResult: {
+        ...financial.dataValues,
+        freight: freight.map((res) => ({
+          status: res.status,
+          locationTruck: res.location_of_the_truck,
+          finalFreightCity: res.final_freight_city,
+          totalFreight: valueTotalTonne(res.preview_tonne, res.value_tonne),
+        })),
+      },
     };
+
     return result;
   },
 
