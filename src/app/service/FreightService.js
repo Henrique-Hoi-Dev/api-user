@@ -215,7 +215,7 @@ export default {
           date: format(res.date, 'yyyy-MM-dd'),
           time: format(res.date, 'HH:mm'),
           local: res.city,
-          expenseDescription: res.expense_descriptionm,
+          expenseDescription: res.expense_description,
           payment: {
             flag: res.payment.flag,
             modo: res.payment.modo,
