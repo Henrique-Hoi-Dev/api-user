@@ -273,6 +273,7 @@ export default {
       httpStatus: httpStatus.OK,
       status: 'successful',
       dataResult: {
+        status: freight.status,
         freightTotal: totalFreight,
         totalDriver: totalDriver,
         fuelValueTotal: totalAmountSpent,
