@@ -263,6 +263,12 @@ export default {
       this._unmaskMoney(totalFreight)
     );
 
+    const totalNetFreight = this._valueNetFreight(
+      this._unmaskMoney(totalDriver),
+      this._unmaskMoney(totalFreight),
+      this._unmaskMoney(totalAmountSpent)
+    );
+
     result = {
       httpStatus: httpStatus.OK,
       status: 'successful',
@@ -270,6 +276,7 @@ export default {
         freightTotal: totalFreight,
         totalDriver: totalDriver,
         fuelValueTotal: totalAmountSpent,
+        totalNetFreight: totalNetFreight,
         expenses: 0,
         totalLiters: totalLiters,
         driverCommission:
