@@ -438,14 +438,14 @@ export default {
     return result;
   },
 
-  async approvedFreight(body, res) {
+  async approvedFreight(body, id) {
     let result = {};
 
-    const freight = await Freight.findByPk(res.id);
-
-    const typeUser = await User.findByPk(body.user_id);
-
-    const driverId = await Driver.findByPk(body.driver_id);
+    const [freight, typeUser, driverId] = await Promise.all([
+      Freight.findByPk(id),
+      User.findByPk(body.user_id),
+      Driver.findByPk(body.driver_id),
+    ]);
 
     if (!freight) {
       result = {
@@ -455,10 +455,10 @@ export default {
       return result;
     }
 
-    if (freight.status === 'APPROVED') {
+    if (freight.status === 'STARTING_TRIP') {
       result = {
         httpStatus: httpStatus.CONFLICT,
-        dataResult: { msg: 'This shipping has already been approved.' },
+        msg: 'This freight is already in travel.',
       };
       return result;
     }
@@ -466,7 +466,7 @@ export default {
     if (!typeUser) {
       result = {
         httpStatus: httpStatus.BAD_REQUEST,
-        dataResult: { msg: 'This user is not MASTER' },
+        msg: 'This user is not MASTER',
       };
       return result;
     }
@@ -474,7 +474,7 @@ export default {
     if (!driverId) {
       result = {
         httpStatus: httpStatus.BAD_REQUEST,
-        dataResult: { msg: 'Driver not found' },
+        msg: 'Driver not found',
       };
       return result;
     }

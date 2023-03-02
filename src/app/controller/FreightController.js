@@ -45,7 +45,10 @@ class FreightController {
 
   async approvedFreight(req, res) {
     try {
-      let response = await FreightService.approvedFreight(req.body, req.params);
+      let response = await FreightService.approvedFreight(
+        req.body,
+        req.params.id
+      );
 
       if (response.httpStatus === 200) {
         return res.send(response);
