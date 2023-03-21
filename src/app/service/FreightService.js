@@ -349,10 +349,6 @@ export default {
       currency: 'BRL',
     });
 
-    const driver = await FinancialStatements.findByPk(
-      freight.financial_statements_id
-    );
-
     if (!freight) {
       result = {
         httpStatus: httpStatus.BAD_REQUEST,
@@ -360,6 +356,10 @@ export default {
       };
       return result;
     }
+
+    const driver = await FinancialStatements.findByPk(
+      freight.financial_statements_id
+    );
 
     if (!driver) {
       result = {
