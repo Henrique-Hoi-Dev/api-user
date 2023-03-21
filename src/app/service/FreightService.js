@@ -132,6 +132,12 @@ export default {
     return this._formatRealValue(calculate / 100);
   },
 
+  _leftoverLiquid(totalFreight, totalAmountSpent) {
+    const calculate = totalFreight - totalAmountSpent;
+
+    return this._formatRealValue(calculate / 100);
+  },
+
   _valueDriver(percentage, fixedValue, totalFreight) {
     if (percentage > 0) {
       const percentageReal = percentage / 100;
@@ -418,6 +424,11 @@ export default {
       this._unmaskMoney(totalAmountSpent)
     );
 
+    const totalleftoverLiquid = this._leftoverLiquid(
+      this._unmaskMoney(totalFreight),
+      this._unmaskMoney(totalAmountSpent)
+    );
+
     result = {
       httpStatus: httpStatus.OK,
       responseData: {
@@ -432,6 +443,7 @@ export default {
         full_freight: totalFreight,
         driver_commission: totalDriver,
         net_freight: totalNetFreight,
+        leftover_liquid: totalleftoverLiquid,
       },
     };
 
@@ -455,7 +467,7 @@ export default {
       return result;
     }
 
-    if (freight.status === 'STARTING_TRIP') {
+    if (freight.status === 'APPROVED') {
       result = {
         httpStatus: httpStatus.CONFLICT,
         msg: 'This freight is already in travel.',
