@@ -166,7 +166,7 @@ export default {
 
     const notifications = await Notification.findAll({
       where: { financial_statements_id: financial.id },
-      attributes: ['id', 'content'],
+      attributes: ['id', 'content', 'createdAt'],
     });
 
     return {
