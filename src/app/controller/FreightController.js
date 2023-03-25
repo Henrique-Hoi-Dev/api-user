@@ -1,76 +1,53 @@
+import HttpStatus from 'http-status';
 import FreightService from '../service/FreightService';
 
 class FreightController {
-  async createFreight(req, res) {
+  async create(req, res, next) {
     try {
-      let response = await FreightService.createFreight(req.body);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await FreightService.create(req.body);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getIdFreight(req, res) {
+  async getId(req, res, next) {
     try {
-      let response = await FreightService.getIdFreight(req.params.id);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await FreightService.getId(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async firstCheckId(req, res) {
+  async firstCheckId(req, res, next) {
     try {
-      let response = await FreightService.firstCheckId(req.params.id);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await FreightService.firstCheckId(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async approvedFreight(req, res) {
+  async update(req, res, next) {
     try {
-      let response = await FreightService.approvedFreight(
+      const data = await FreightService.update(
+        req.userProps,
         req.body,
         req.params.id
       );
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async deleteFreight(req, res) {
+  async delete(req, res, next) {
     try {
-      let response = await FreightService.deleteFreight(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await FreightService.delete(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(200).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 }

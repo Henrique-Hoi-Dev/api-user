@@ -1,24 +1,21 @@
 import * as Yup from 'yup';
-import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
 
 import Driver from '../models/Driver';
 import FinancialStatements from '../models/FinancialStatements';
 
 export default {
-  async createDriver(req, res) {
-    let result = {};
-
-    let {
+  async create(body) {
+    const {
       name_user,
       password,
       name,
       value_fix = 0,
       percentage = 0,
       daily = 0,
-    } = req;
+    } = body;
 
-    let body = {
+    let data = {
       name_user: name_user.toLowerCase(),
       password,
       name,
@@ -34,35 +31,21 @@ export default {
       where: { name_user: body.name_user },
     });
 
-    if (driverExist) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This driver name user already exists.',
-      };
-      return result;
-    }
+    if (driverExist) throw Error('This driver name user already exists.');
 
     const schema = Yup.object().shape({
       name_user: Yup.string().required(),
       password: Yup.string().required().min(6),
     });
 
-    if (!(await schema.isValid(body))) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Validation failed!',
-      };
-      return result;
-    }
+    if (!(await schema.isValid(data))) throw Error('Validation failed!');
 
-    await Driver.create(body);
+    await Driver.create(data);
 
-    result = { httpStatus: httpStatus.CREATED, status: 'successful' };
-    return result;
+    return { msg: 'successful' };
   },
 
   async getAllSelect(req, res) {
-    let result = {};
     const select = await Driver.findAll({
       where: {
         id: {
@@ -89,18 +72,12 @@ export default {
       ],
     });
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: [...select.concat(...selectFinancial)],
     };
-
-    return result;
   },
 
-  async getAllDriver(req, res) {
-    let result = {};
-
+  async getAll(query) {
     const {
       page = 1,
       limit = 100,
@@ -109,7 +86,7 @@ export default {
       name,
       id,
       search,
-    } = req.query;
+    } = query;
 
     const where = {};
     // if (id) where.id = id;
@@ -145,22 +122,16 @@ export default {
 
     const currentPage = Number(page);
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
+      dataResult: drivers,
       total,
       totalPages,
       currentPage,
-      dataResult: drivers,
     };
-
-    return result;
   },
 
-  async getIdDriver(req, res) {
-    let result = {};
-
-    let driver = await Driver.findByPk(req.id, {
+  async getId(id) {
+    const driver = await Driver.findByPk(id, {
       attributes: [
         'id',
         'name',
@@ -179,28 +150,14 @@ export default {
       ],
     });
 
-    if (!driver) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Driver not found' },
-      };
-      return result;
-    }
+    if (!driver) throw Error('Driver not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: driver,
     };
-    return result;
   },
 
-  async updateDriver(req, res) {
-    let result = {};
-
-    let drivers = req;
-    let driverId = res.id;
-
+  async update(body, id) {
     const schema = Yup.object().shape({
       name: Yup.string(),
       oldPassword: Yup.string().min(8),
@@ -214,29 +171,18 @@ export default {
       ),
     });
 
-    if (!(await schema.isValid(drivers))) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Validation failed!',
-      };
-      return result;
-    }
+    if (!(await schema.isValid(body))) throw Error('Validation failed!');
 
-    const { oldPassword } = drivers;
+    const { oldPassword } = body;
 
-    const driver = await Driver.findByPk(driverId);
+    const driver = await Driver.findByPk(id);
 
-    if (oldPassword && !(await driver.checkPassword(oldPassword))) {
-      result = {
-        httpStatus: httpStatus.METHOD_FAILURE,
-        msg: 'Password does not match!',
-      };
-      return result;
-    }
+    if (oldPassword && !(await driver.checkPassword(oldPassword)))
+      throw Error('Password does not match!');
 
-    await driver.update(drivers);
+    await driver.update(body);
 
-    const driverResult = await Driver.findByPk(driverId, {
+    const driverResult = await Driver.findByPk(id, {
       attributes: [
         'id',
         'name',
@@ -256,38 +202,22 @@ export default {
       ],
     });
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: driverResult,
     };
-    return result;
   },
 
-  async deleteDriver(req, res) {
-    let result = {};
-
-    const id = req.id;
-
+  async delete(id) {
     const driver = await Driver.destroy({
       where: {
         id: id,
       },
     });
 
-    if (!driver) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Driver not found' },
-      };
-      return result;
-    }
+    if (!driver) throw Error('Driver not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       responseData: { msg: 'Deleted driver' },
     };
-    return result;
   },
 };

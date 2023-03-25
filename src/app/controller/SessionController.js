@@ -1,19 +1,13 @@
+import HttpStatus from 'http-status';
 import SessionService from '../service/SessionService';
 
 class SessionController {
-  
   async sessionUser(req, res) {
     try {
-      let response = await SessionService.sessionUser(req.headers);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-        
+      const data = await SessionService.sessionUser(req.headers);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 }

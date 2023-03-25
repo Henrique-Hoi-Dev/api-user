@@ -1,12 +1,10 @@
-import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
 
 import FinancialStatements from '../models/FinancialStatements';
 import Truck from '../models/Truck';
 
 export default {
-  async createTruck(req, res) {
-    let result = {};
+  async create(body) {
     let {
       truck_models,
       truck_name_brand,
@@ -16,32 +14,20 @@ export default {
       truck_chassis,
       truck_year,
       truck_avatar,
-    } = req;
+    } = body;
 
     const chassisExist = await Truck.findOne({
       where: { truck_chassis: truck_chassis },
     });
+    if (chassisExist) throw Error('This chassis truck already exists.');
+
     const boardExist = await Truck.findOne({
       where: { truck_board: truck_board },
     });
 
-    if (chassisExist) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This chassis truck already exists.',
-      };
-      return result;
-    }
+    if (boardExist) throw Error('This board truck already exists.');
 
-    if (boardExist) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This board truck already exists.',
-      };
-      return result;
-    }
-
-    const truckBody = {
+    const data = {
       truck_models,
       truck_name_brand,
       truck_board,
@@ -52,14 +38,12 @@ export default {
       truck_avatar,
     };
 
-    await Truck.create(truckBody);
+    await Truck.create(data);
 
-    result = { httpStatus: httpStatus.OK, status: 'successful' };
-    return result;
+    return { msg: 'successful' };
   },
 
   async getAllSelect(req, res) {
-    let result = {};
     const select = await Truck.findAll({
       where: {
         id: {
@@ -86,18 +70,12 @@ export default {
       ],
     });
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: [...select.concat(...selectFinancial)],
     };
-
-    return result;
   },
 
-  async getAllTruck(req, res) {
-    let result = {};
-
+  async getAll(query) {
     const {
       page = 1,
       limit = 100,
@@ -106,7 +84,7 @@ export default {
       truck_models,
       id,
       search,
-    } = req.query;
+    } = query;
 
     const where = {};
     // if (id) where.id = id;
@@ -144,22 +122,16 @@ export default {
 
     const currentPage = Number(page);
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
+      dataResult: trucks,
       total,
       totalPages,
       currentPage,
-      dataResult: trucks,
     };
-
-    return result;
   },
 
-  async getIdTruck(req, res) {
-    let result = {};
-
-    let truck = await Truck.findByPk(req.id, {
+  async getId(id) {
+    const truck = await Truck.findByPk(id, {
       attributes: [
         'id',
         'truck_models',
@@ -173,34 +145,22 @@ export default {
       ],
     });
 
-    if (!truck) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Truck not found' },
-      };
-      return result;
-    }
+    if (!truck) throw Error('Truck not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: truck,
     };
-    return result;
   },
 
-  async updateTruck(req, res) {
-    let result = {};
-    let truckId = res.id;
-
-    let {
+  async update(body, id) {
+    const {
       truck_models,
       truck_name_brand,
       truck_color,
       truck_km,
       truck_year,
       truck_avatar,
-    } = req;
+    } = body;
 
     // const chassisExist = await Truck.findOne({ where: { truck_chassis: truck_chassis } });
     // const boardExist = await Truck.findOne({ where: { truck_board: truck_board } });
@@ -215,7 +175,7 @@ export default {
     //   return result;
     // }
 
-    const truckBody = {
+    const data = {
       truck_models,
       truck_name_brand,
       truck_color,
@@ -224,10 +184,10 @@ export default {
       truck_avatar,
     };
 
-    const truck = await Truck.findByPk(truckId);
-    await truck.update(truckBody);
+    const truck = await Truck.findByPk(id);
+    await truck.update(data);
 
-    const truckResult = await Truck.findByPk(truckId, {
+    const truckResult = await Truck.findByPk(id, {
       attributes: [
         'id',
         'truck_models',
@@ -241,38 +201,22 @@ export default {
       ],
     });
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: truckResult,
     };
-    return result;
   },
 
-  async deleteTruck(req, res) {
-    let result = {};
-
-    const id = req.id;
-
+  async delete(id) {
     const truck = await Truck.destroy({
       where: {
         id: id,
       },
     });
 
-    if (!truck) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Truck not found' },
-      };
-      return result;
-    }
+    if (!truck) throw Error('Truck not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       responseData: { msg: 'Deleted truck' },
     };
-    return result;
   },
 };

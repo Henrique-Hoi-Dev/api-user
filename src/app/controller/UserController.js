@@ -1,94 +1,58 @@
+import HttpStatus from 'http-status';
 import UserService from '../service/UserService';
 
 class UserController {
-
-  async createUser(req, res) {
+  async create(req, res, next) {
     try {
-      let response = await UserService.createUser(req.body);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-            
+      const data = await UserService.create(req.body);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ error: error.message })
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getAllUser(req, res) {
+  async getAll(req, res, next) {
     try {
-      let response = await UserService.getAllUser(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-
+      const data = await UserService.getAll(req.query);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getIdUser(req, res) { 
+  async getId(req, res, next) {
     try {
-      let response = await UserService.getIdUser(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-
+      const data = await UserService.getId(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async updateUser(req, res) {
+  async update(req, res, next) {
     try {
-      let response = await UserService.updateUser(req.body, req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-
+      const data = await UserService.update(req.body, req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
-  } 
+  }
 
-  async addRole(req, res) {
+  async addRole(req, res, next) {
     try {
-      let response = await UserService.addRole(req.body, req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-
+      const data = await UserService.addRole(req.body, req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message })
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
-  } 
+  }
 
-  async deleteUser(req, res) {
+  async delete(req, res, next) {
     try {
-      let response = await UserService.deleteUser(req.params);
-      
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response)
-      }
-
+      const data = await UserService.delete(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(200).json({ mgs: error.message})
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 }

@@ -13,78 +13,6 @@ import ApiGoogle from '../providers/router_map_google';
 import { format } from 'date-fns';
 
 export default {
-  async _findValurDriver(id) {
-    let result = {};
-    let driverDaily = {};
-    let driverValue = {};
-
-    const financial = await FinancialStatements.findByPk(id);
-    if (!financial) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Financial not found',
-      };
-      return result;
-    }
-
-    if (financial.percentage_commission > 0) {
-      driverValue = { percentage: financial.percentage_commission };
-    }
-    if (financial.fixed_commission > 0) {
-      driverValue = { fixedValue: financial.fixed_commission };
-    }
-    if (financial.daily > 0) {
-      driverDaily = { dailyValue: financial.daily };
-    }
-
-    return (result = { driverDaily, driverValue });
-  },
-
-  async _findValueExpensesTravel(value) {
-    const quantityExpenses = value.map(function (res) {
-      return parseInt(res.dataValues.value);
-    });
-    const totalQuantityExpenses = quantityExpenses.reduce(function (
-      previousValue,
-      currentValue
-    ) {
-      return Number(previousValue) + Number(currentValue);
-    },
-    0 && quantityExpenses);
-
-    return totalQuantityExpenses;
-  },
-
-  async _findValueOfFuel(value) {
-    const quantityRestock = value.map(function (res) {
-      return parseInt(res.dataValues.total_value_fuel);
-    });
-    const totalQuantityRestock = quantityRestock.reduce(function (
-      previousValue,
-      currentValue
-    ) {
-      return Number(previousValue) + Number(currentValue);
-    },
-    0 && quantityRestock);
-
-    return totalQuantityRestock;
-  },
-
-  async _findValueDepositMoney(value) {
-    const quantityDepositMoney = value.map(function (res) {
-      return parseInt(res.dataValues.value);
-    });
-    const totalQuantityDepositMoney = quantityDepositMoney.reduce(function (
-      previousValue,
-      currentValue
-    ) {
-      return Number(previousValue) + Number(currentValue);
-    },
-    0 && quantityDepositMoney);
-
-    return totalQuantityDepositMoney;
-  },
-
   async _googleQuery(startCity, finalCity) {
     const kmTravel = await ApiGoogle.getRoute(startCity, finalCity, 'driving');
 
@@ -151,7 +79,7 @@ export default {
     }
   },
 
-  async createFreight(req, res) {
+  async create(body) {
     let result = {};
     let freightBody = req;
 
@@ -172,7 +100,7 @@ export default {
       return result;
     }
 
-    await Freight.create(freightBody);
+    await Freight.create(body);
 
     await Notification.create({
       content: `${userFinancial.name}, Requisitou Um Novo Frete Para Você!`,
@@ -186,27 +114,16 @@ export default {
     return result;
   },
 
-  async getIdFreight(freightId) {
-    let result = {};
-
+  async getId(freightId) {
     const freight = await Freight.findByPk(freightId);
 
-    if (!freight) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Freight not found' };
-      return result;
-    }
+    if (!freight) throw Error('Freight not found');
 
     const financial = await FinancialStatements.findByPk(
       freight.financial_statements_id
     );
 
-    if (!financial) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Financial not found',
-      };
-      return result;
-    }
+    if (!financial) throw Error('Financial not found');
 
     const driver = await Driver.findByPk(financial.driver_id);
 
@@ -214,34 +131,19 @@ export default {
       where: { freight_id: freightId },
     });
 
-    if (!restock) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Restock not found' };
-      return result;
-    }
+    if (!restock) throw Error('Restock not found');
 
     const travelExpenses = await TravelExpenses.findAll({
       where: { freight_id: freightId },
     });
 
-    if (!travelExpenses) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Travel expenses not found',
-      };
-      return result;
-    }
+    if (!travelExpenses) throw Error('Travel expenses not found');
 
     const depositMoney = await DepositMoney.findAll({
       where: { freight_id: freightId },
     });
 
-    if (!depositMoney) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Deposit money not found',
-      };
-      return result;
-    }
+    if (!depositMoney) throw Error('Deposit money not found');
 
     const kmTravel = await this._googleQuery(
       freight.start_freight_city,
@@ -275,9 +177,7 @@ export default {
       this._unmaskMoney(totalAmountSpent)
     );
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: {
         status: freight.status,
         freightTotal: totalFreight,
@@ -329,8 +229,6 @@ export default {
         })),
       },
     };
-
-    return result;
   },
 
   _unmaskMoney(string) {
@@ -340,8 +238,6 @@ export default {
   },
 
   async firstCheckId(id) {
-    let result = {};
-
     const freight = await Freight.findByPk(id);
 
     const formatter = new Intl.NumberFormat('pt-BR', {
@@ -349,38 +245,20 @@ export default {
       currency: 'BRL',
     });
 
-    if (!freight) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Freight not found' },
-      };
-      return result;
-    }
+    if (!freight) throw Error('Freight not found');
 
     const driver = await FinancialStatements.findByPk(
       freight.financial_statements_id
     );
 
-    if (!driver) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Driver not found' },
-      };
-      return result;
-    }
+    if (!driver) throw Error('Driver not found');
 
     const kmTravel = await this._googleQuery(
       freight.start_freight_city,
       freight.final_freight_city
     );
 
-    if (!kmTravel) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Erro api google' },
-      };
-      return result;
-    }
+    if (!kmTravel) throw Error('Erro api google');
 
     function valuePerKm(distance, totalLiters, fuelValue) {
       const distanceInKm = distance / 1000;
@@ -429,8 +307,7 @@ export default {
       this._unmaskMoney(totalAmountSpent)
     );
 
-    result = {
-      httpStatus: httpStatus.OK,
+    return {
       responseData: {
         status: freight.status,
         start_freight_city: freight.start_freight_city,
@@ -446,92 +323,52 @@ export default {
         leftover_liquid: totalleftoverLiquid,
       },
     };
-
-    return result;
   },
 
-  async approvedFreight(body, id) {
-    let result = {};
-
-    const [freight, typeUser, driverId] = await Promise.all([
+  async update(user, body, id) {
+    const [freight, driver] = await Promise.all([
       Freight.findByPk(id),
-      User.findByPk(body.user_id),
       Driver.findByPk(body.driver_id),
     ]);
 
-    if (!freight) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        dataResult: { msg: 'Freight not found' },
-      };
-      return result;
-    }
+    if (!user.type_role === 'MASTER') throw Error('This user is not MASTER');
+    if (!freight) throw Error('Freight not found');
+    if (!driver) throw Error('Driver not found');
 
     if (freight.status === 'APPROVED') {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This freight is already in travel.',
-      };
-      return result;
-    }
-
-    if (!typeUser) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'This user is not MASTER',
-      };
-      return result;
-    }
-
-    if (!driverId) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Driver not found',
-      };
-      return result;
-    }
-
-    if (typeUser.type_role === 'MASTER') {
       await freight.update({
         status: body.status,
       });
 
-      await Notification.create({
-        content: `${
-          typeUser.name
-        }, Aceitou Seu Check Frete, DE ${freight.start_freight_city.toUpperCase()} PARA ${freight.final_freight_city.toUpperCase()} Tenha uma BOA VIAGEM`,
-        driver_id: driverId.id,
+      const financial = await FinancialStatements.findOne({
+        where: { driver_id: driver.id, status: true },
       });
 
-      result = { httpStatus: httpStatus.OK, status: 'successful' };
-      return result;
+      if (!financial) throw Error('Financial not found');
+
+      await Notification.create({
+        content: `${
+          user.name
+        }, Aceitou Seu Check Frete, DE ${freight.start_freight_city.toUpperCase()} PARA ${freight.final_freight_city.toUpperCase()} Tenha uma BOA VIAGEM`,
+        driver_id: driver.id,
+        financial_statements_id: financial.id,
+      });
+
+      return { status: 'APPROVED' };
     }
+
+    return {};
   },
 
-  async deleteFreight(req, res) {
-    let result = {};
-
-    const id = req.id;
-
+  async delete(id) {
     const freight = await Freight.destroy({
       where: {
         id: id,
       },
     });
 
-    if (!freight) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Freight not found' },
-      };
-      return result;
-    }
+    if (!freight) throw Error('Freight not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      responseData: { msg: 'Deleted freight' },
-    };
-    return result;
+    return { msg: 'Deleted freight' };
   },
 };

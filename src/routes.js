@@ -16,10 +16,10 @@ import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
 const routes = new Router();
 
-routes.post('/user/register', UserController.createUser);
+routes.post('/user/register', UserController.create);
 routes.post('/user/authenticate', SessionController.sessionUser);
 
-routes.post('/driver/register', DriverController.createDriver);
+routes.post('/driver/register', DriverController.create);
 
 // sistema de relatorios
 // routes.get("/download", (req, res) => {
@@ -37,81 +37,66 @@ routes.post('/driver/register', DriverController.createDriver);
 routes.use(authMiddleware);
 
 routes
-  .put('/user/:id', verifyIfUserHasRole('MASTER'), UserController.updateUser)
-  .get('/user/:id', verifyIfUserHasRole('MASTER'), UserController.getIdUser)
-  .get('/users', verifyIfUserHasRole('MASTER'), UserController.getAllUser)
-  .delete(
-    '/user/:id',
-    verifyIfUserHasRole('MASTER'),
-    UserController.deleteUser
-  );
+  .put('/user/:id', verifyIfUserHasRole('MASTER'), UserController.update)
+  .get('/user/:id', verifyIfUserHasRole('MASTER'), UserController.getId)
+  .get('/users', verifyIfUserHasRole('MASTER'), UserController.getAll)
+  .delete('/user/:id', verifyIfUserHasRole('MASTER'), UserController.delete);
 
 routes
-  .get('/user/driver/:id', DriverController.getIdDriver)
-  .get('/drivers', DriverController.getAllDriver)
+  .get('/user/driver/:id', DriverController.getId)
+  .get('/drivers', DriverController.getAll)
   .get('/drivers-select', DriverController.getAllSelect)
-  .delete('/user/driver/:id', DriverController.deleteDriver);
+  .delete('/user/driver/:id', DriverController.delete);
 
 routes
-  .post(
-    '/user/financialStatement',
-    FinancialStatementsController.createFinancialStatements
-  )
-  .put(
-    '/user/financialStatement/:id',
-    FinancialStatementsController.updateFinancialStatements
-  )
-  .get(
-    '/user/financialStatement/:id',
-    FinancialStatementsController.getIdFinancialStatements
-  )
-  .get(
-    '/financialStatements',
-    FinancialStatementsController.getAllFinancialStatements
-  )
-  .delete(
-    '/user/financialStatement/:id',
-    FinancialStatementsController.deleteFinancialStatements
-  );
+  .post('/user/financialStatement', FinancialStatementsController.create)
+  .patch('/user/financialStatement/:id', FinancialStatementsController.update)
+  .get('/user/financialStatement/:id', FinancialStatementsController.getId)
+  .get('/financialStatements', FinancialStatementsController.getAll)
+  .delete('/user/financialStatement/:id', FinancialStatementsController.delete);
 
-// freight
 routes
-  .post('/user/freight', FreightController.createFreight)
+  .post('/user/freight', FreightController.create)
   .patch(
-    '/user/freight-approved/:id',
+    '/freight/:id',
     verifyIfUserHasRole('MASTER'),
-    FreightController.approvedFreight
+    FreightController.update
   )
-  .get('/user/first-check/:id', FreightController.firstCheckId)
-  .get('/user/freight/:id', FreightController.getIdFreight)
-  .delete('/user/freight/:id', FreightController.deleteFreight);
+  .get(
+    '/user/first-check/:id',
+    verifyIfUserHasRole('MASTER'),
+    FreightController.firstCheckId
+  )
+  .get('/user/freight/:id', FreightController.getId)
+  .delete('/user/freight/:id', FreightController.delete);
 
 routes.get(
   '/notifications',
   verifyIfUserHasRole('MASTER'),
   NotificationController.getAll
 );
+
 routes.put(
   '/notifications/:id',
   verifyIfUserHasRole('MASTER'),
-  NotificationController.update
+  NotificationController.updateRead
 );
 
 routes
-  .post('/user/truck', TruckController.createTruck)
-  .put('/user/truck/:id', TruckController.updateTruck)
-  .get('/user/truck/:id', TruckController.getIdTruck)
-  .get('/trucks', TruckController.getAllTruck)
+  .post('/user/truck', TruckController.create)
+  .put('/user/truck/:id', TruckController.update)
+  .get('/user/truck/:id', TruckController.getId)
+  .get('/trucks', TruckController.getAll)
   .get('/trucks-select', TruckController.getAllSelect)
-  .delete('/user/truck/:id', TruckController.deleteTruck);
+  .delete('/user/truck/:id', TruckController.delete);
 
 routes
-  .post('/user/cart', CartController.createCart)
-  .put('/user/cart/:id', CartController.updateCart)
-  .get('/user/cart/:id', CartController.getIdCart)
-  .get('/carts', CartController.getAllCart)
+  .post('/user/cart', CartController.create)
+  .put('/user/cart/:id', CartController.update)
+  .get('/user/cart/:id', CartController.getId)
+  .get('/carts', CartController.getAll)
   .get('/carts-select', CartController.getAllSelect)
-  .delete('/user/cart/:id', CartController.deleteCart);
+  .delete('/user/cart/:id', CartController.delete);
 
 routes
   .post(

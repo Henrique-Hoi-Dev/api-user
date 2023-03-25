@@ -23,6 +23,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
+      financial_statements_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       read: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

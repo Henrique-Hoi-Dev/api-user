@@ -1,241 +1,170 @@
 import * as Yup from 'yup';
-import httpStatus from 'http-status-codes';
 import { Op } from 'sequelize';
 
-import User from "../models/User";
-import Permission from "../models/Permission";
+import User from '../models/User';
+import Permission from '../models/Permission';
 
 export default {
-  async createUser(req, res) {
-    let result = {}
+  async create(body) {
+    let { email, name, password } = body;
 
-    let { email, name, password } = req
-    
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
       password: Yup.string().required().min(8),
     });
 
-    if (!(await schema.isValid(req))) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Validation failed!' };
-      return result
-    }
+    if (!(await schema.isValid(body))) throw Error('Validation failed!');
 
     // doing email verification
     const userExist = await User.findOne({ where: { email: email } });
 
-    if (userExist) {
-      result = { httpStatus: httpStatus.CONFLICT, msg: 'This user email already exists.' };
-      return result;
-    }
+    if (userExist) throw Error('This user email already exists.');
 
     const resultUser = await User.create({
       name,
       email,
-      password
+      password,
     });
 
-    const addPermissions = await Permission.findOne({ where: { role: resultUser.type_role }})
+    const addPermissions = await Permission.findOne({
+      where: { role: resultUser.type_role },
+    });
 
     await resultUser.update({
-      permission_id: addPermissions.id
-    })
+      permission_id: addPermissions.id,
+    });
 
-    result = { httpStatus: httpStatus.OK, status: "Registered User Successful!" }      
-    return result
+    return { msg: 'Registered User Successful!' };
   },
 
-  async getAllUser(req, res) {
-    let result = {}
+  async getAll(query) {
+    const {
+      page = 1,
+      limit = 100,
+      sort_order = 'ASC',
+      sort_field = 'name',
+      name,
+      id,
+    } = query;
 
-    const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'name', name, id } = req.query;
-
-    const where = {}
-    if (name) where.name = { [Op.iLike]: "%" + name + "%" };
+    const where = {};
+    if (name) where.name = { [Op.iLike]: '%' + name + '%' };
     if (id) where.id = id;
-    
+
     const total = (await User.findAll()).length;
-    const totalPages = Math.ceil(total / limit)
+    const totalPages = Math.ceil(total / limit);
 
     const users = await User.findAll({
       where: where,
-      order: [[ sort_field, sort_order ]],
+      order: [[sort_field, sort_order]],
       limit: limit,
-      offset: (page - 1) ? (page - 1) * limit : 0,
-      attributes: [ 
-        'id', 
-        'name', 
-        'email', 
-        'type_role', 
-      ], 
+      offset: page - 1 ? (page - 1) * limit : 0,
+      attributes: ['id', 'name', 'email', 'type_role'],
       include: {
         model: Permission,
-        as: "permissions",
-        attributes: [ 'id', 'role', 'actions']
-      }
+        as: 'permissions',
+        attributes: ['id', 'role', 'actions'],
+      },
     });
 
-    const currentPage = Number(page)
+    const currentPage = Number(page);
 
-    result = { 
-      httpStatus: httpStatus.OK, 
-      status: "successful", 
-      total, 
-      totalPages, 
-      currentPage, 
-      dataResult: users 
-    } 
-    
-    return result
+    return {
+      dataResult: users,
+      total,
+      totalPages,
+      currentPage,
+    };
   },
 
-  async getIdUser(req, res) {
-    let result = {}
-
-    let user = await User.findByPk(req.id, {
-      attributes: [ 
-        'id',
-        'name', 
-        'email', 
-        'type_role', 
-      ],
+  async getId(id) {
+    const user = await User.findByPk(id, {
+      attributes: ['id', 'name', 'email', 'type_role'],
       include: {
         model: Permission,
-        as: "permissions",
-        attributes: [ 'id', 'role', 'actions']
-      }
+        as: 'permissions',
+        attributes: ['id', 'role', 'actions'],
+      },
     });
 
-    if (!user) {
-      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'User not found' }}      
-      return result
-    }
+    if (!user) throw Error('User not found');
 
-    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: user }      
-    return result
+    return { dataResult: user };
   },
 
-  async updateUser(req, res) {   
-    let result = {}
-
-    let users = req
-    let userId = res.id
-
+  async update(body, id) {
     const schema = Yup.object().shape({
-        name: Yup.string(),
-        email: Yup.string().email(),
-        oldPassword: Yup.string().min(8),
-        password: Yup.string().min(8)
+      name: Yup.string(),
+      email: Yup.string().email(),
+      oldPassword: Yup.string().min(8),
+      password: Yup.string()
+        .min(8)
         .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field),
-        confirmPassword: Yup.string().when('password', (password, field) =>
+          oldPassword ? field.required() : field
+        ),
+      confirmPassword: Yup.string().when('password', (password, field) =>
         password ? field.required().oneOf([Yup.ref('password')]) : field
       ),
     });
 
-    if (!(await schema.isValid(users))) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Validation failed!' };
-      return result
-    }
+    if (!(await schema.isValid(body))) throw Error('Validation failed!');
 
-    const { email, oldPassword } = users ;
-    
-    const user = await User.findByPk(userId);
-    
-    if (email !== user.dataValues.email) {
+    const { email, oldPassword } = body;
+
+    const user = await User.findByPk(id);
+
+    if (email !== user.email) {
       const userExist = await User.findOne({ where: { email } });
 
-      if (userExist) {
-        result = { httpStatus: httpStatus.CONFLICT, msg: 'This user email already exists.' };
-        return result;
-      }
+      if (userExist) throw Error('This user email already exists.');
     }
 
-    if (oldPassword && !(await user.checkPassword(oldPassword))) {
-      result = { httpStatus: httpStatus.METHOD_FAILURE, msg: 'Password does not match!' };
-      return result;
-    }
+    if (oldPassword && !(await user.checkPassword(oldPassword)))
+      throw Error('Password does not match!');
 
     await user.update({
-      name: users.name,
-      password: users.password,
-      confirmPassword: users.confirmPassword
+      name: body.name,
+      password: body.password,
+      confirmPassword: body.confirmPassword,
     });
 
-    const userResult = await User.findByPk(userId, {
-      attributes: [
-        'id',
-        'name', 
-        'email', 
-        'type_role', 
-      ],
+    const userResult = await User.findByPk(id, {
+      attributes: ['id', 'name', 'email', 'type_role'],
     });
 
-    result = { httpStatus: httpStatus.OK, status: "successful", dataResult: userResult }      
-    return result
+    return { dataResult: userResult };
   },
 
+  async addRole(body, id) {
+    const user = await User.findByPk(id);
 
-  async addRole(req, res) {
-    let result = {}
+    if (!user) throw Error('User not found');
 
-    const findUser = await User.findByPk(res.id);
+    await user.update({
+      type_role: body.role.toUpperCase(),
+    });
 
-    if (!findUser) {
-      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'User not found' }}      
-      return result
-    }
+    const addPermissions = await Permission.findOne({
+      where: { role: user.type_role },
+    });
 
-    await findUser.update({ 
-      type_role: req.role.toUpperCase()
-     })
+    await user.update({
+      permission_id: addPermissions.id,
+    });
 
-    const addPermissions = await Permission.findOne({ where: { role: findUser.type_role }})
-
-    await findUser.update({
-      permission_id: addPermissions.id
-    })
-
-    result = {httpStatus: httpStatus.OK, status: "successful"}      
-    return result
+    return { msg: 'successful' };
   },
-  
-  async deleteUser(req, res) {
-    let result = {}
-    
-    const id  = req.id;
 
-    const users = await User.destroy({
+  async delete(id) {
+    const user = await User.destroy({
       where: {
         id: id,
       },
     });
 
-    if (!users) {
-      result = {httpStatus: httpStatus.BAD_REQUEST, responseData: { msg: 'User not found' }}      
-      return result
-    }
+    if (!user) throw Error('User not found');
 
-    result = {httpStatus: httpStatus.OK, status: "successful", responseData: { msg: 'Deleted user' }}      
-    return result
-  }
-
-  // sistema de relatorios
-  //   const fs = require("fs");
-  // const XLSX = require("xlsx");
-
-  // // Carregue o arquivo JSON como um objeto JavaScript
-  // const data = JSON.parse(fs.readFileSync("meu_arquivo.json", "utf8"));
-
-  // // Crie um objeto de planilha com o conteúdo do JSON
-  // const ws = XLSX.utils.json_to_sheet(data);
-
-  // // Crie um objeto de workbook com a planilha criada
-  // const wb = XLSX.utils.book_new();
-  // XLSX.utils.book_append_sheet(wb, ws);
-
-  // // Salve o workbook em formato xlsx
-  // XLSX.writeFile(wb, "meu_arquivo.xlsx");
-
-}
+    return { msg: 'Deleted user' };
+  },
+};

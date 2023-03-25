@@ -1,87 +1,58 @@
+import HttpStatus from 'http-status';
 import DriverService from '../service/DriverService';
 
 class DriverController {
-  async createDriver(req, res) {
+  async create(req, res, next) {
     try {
-      let response = await DriverService.createDriver(req.body);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await DriverService.create(req.body);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getAllDriver(req, res) {
+  async getAll(req, res, next) {
     try {
-      let response = await DriverService.getAllDriver(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await DriverService.getAll(req.query);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getAllSelect(req, res) {
+  async getAllSelect(req, res, next) {
     try {
-      let response = await DriverService.getAllSelect(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await DriverService.getAllSelect(req.query);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getIdDriver(req, res) {
+  async getId(req, res, next) {
     try {
-      let response = await DriverService.getIdDriver(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await DriverService.getId(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async updateDriver(req, res) {
+  async update(req, res, next) {
     try {
-      let response = await DriverService.updateDriver(req.body, req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await DriverService.update(req.body, req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async deleteDriver(req, res) {
+  async delete(req, res, next) {
     try {
-      let response = await DriverService.deleteDriver(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await DriverService.delete(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(200).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 }

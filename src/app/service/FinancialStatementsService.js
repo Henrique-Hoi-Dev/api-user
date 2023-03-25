@@ -11,10 +11,8 @@ import FinancialStatements from '../models/FinancialStatements';
 import User from '../models/User';
 
 export default {
-  async createFinancialStatements(user, body) {
-    let result = {};
-
-    let { driver_id, truck_id, cart_id, start_date } = body;
+  async create(user, body) {
+    const { driver_id, truck_id, cart_id, start_date } = body;
 
     const [userAdm, driver, truck, cart] = await Promise.all([
       User.findByPk(user.userId),
@@ -32,61 +30,31 @@ export default {
         parseISO(start_date),
         previousDate.setDate(currentDate.getDate() - 1)
       )
-    ) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Cannot create fixed in the past',
-      };
-      return result;
-    } else if (!userAdm) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' };
-      return result;
-    } else if (!driver) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Driver not found' };
-      return result;
-    } else if (!truck) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Truck not found' };
-      return result;
-    } else if (!cart) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Cart not found' };
-      return result;
-    }
+    )
+      throw Error('Cannot create fixed in the past');
+    if (!userAdm) throw Error('User not found');
+    if (!driver) throw Error('Driver not found');
+    if (!truck) throw Error('Truck not found');
+    if (!cart) throw Error('Cart not found');
 
     const existFileOpen = await FinancialStatements.findAll({
       where: { driver_id: driver_id, status: true },
     });
 
-    if (existFileOpen.length > 0) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'Driver already has an open file',
-      };
-      return result;
-    }
+    if (existFileOpen.length > 0)
+      throw Error('Driver already has an open file');
 
     const truckOnSheet = await FinancialStatements.findAll({
       where: { truck_id: truck_id, status: true },
     });
 
-    if (truckOnSheet.length > 0) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'Truck already has an open file',
-      };
-      return result;
-    }
+    if (truckOnSheet.length > 0) throw Error('Truck already has an open file');
 
     const cartOnSheet = await FinancialStatements.findAll({
       where: { cart_id: cart_id, status: true },
     });
 
-    if (cartOnSheet.length > 0) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'Cart already has an open file',
-      };
-      return result;
-    }
+    if (cartOnSheet.length > 0) throw Error('Cart already has an open file');
 
     const { name, value_fix, percentage, daily } = driver.dataValues;
     const { truck_models, truck_board, truck_avatar } = truck.dataValues;
@@ -120,13 +88,10 @@ export default {
       cart: cart_bodyworks,
     });
 
-    result = { httpStatus: httpStatus.CREATED, status: 'successful' };
-    return result;
+    return { msg: 'successful' };
   },
 
-  async getAllFinancialStatements(req, res) {
-    let result = {};
-
+  async getAll(query) {
     const {
       page = 1,
       limit = 100,
@@ -135,7 +100,7 @@ export default {
       status_check,
       status,
       search,
-    } = req.query;
+    } = query;
 
     const where = {};
     if (status) where.status = status;
@@ -167,60 +132,44 @@ export default {
 
     const currentPage = Number(page);
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
+      dataResult: financialStatements,
       total,
       totalPages,
       currentPage,
-      dataResult: financialStatements,
     };
-
-    return result;
   },
 
-  async getIdFinancialStatements(id) {
-    let result = {};
-
-    const financial = await FinancialStatements.findByPk(id);
-
+  _valueTotalTonne(tonne, valueTonne) {
     const formatter = new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     });
 
+    const valueTonneReal = valueTonne / 100;
+    const tonneDiv = tonne / 1000;
+
+    const calculate = tonneDiv * valueTonneReal;
+
+    return formatter.format(calculate.toFixed(2));
+  },
+
+  async getId(id) {
+    const financial = await FinancialStatements.findByPk(id);
+
+    if (!financial) throw Error('Financial Statements not found');
+
     const freight = await Freight.findAll({
       where: { financial_statements_id: financial.id },
     });
+    if (!freight) throw Error('Freight not found');
 
-    if (!freight) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Freight not found' },
-      };
-      return result;
-    }
+    const notifications = await Notification.findAll({
+      where: { financial_statements_id: financial.id },
+      attributes: ['id', 'content'],
+    });
 
-    if (!financial) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Financial Statements not found' },
-      };
-      return result;
-    }
-
-    function valueTotalTonne(tonne, valueTonne) {
-      const valueTonneReal = valueTonne / 100;
-      const tonneDiv = tonne / 1000;
-
-      const calculate = tonneDiv * valueTonneReal;
-
-      return formatter.format(calculate.toFixed(2));
-    }
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: {
         ...financial.dataValues,
         freight: freight.map((res) => ({
@@ -229,38 +178,26 @@ export default {
           status: res.status,
           locationTruck: res.location_of_the_truck,
           finalFreightCity: res.final_freight_city,
-          totalFreight: valueTotalTonne(res.preview_tonne, res.value_tonne),
+          totalFreight: this._valueTotalTonne(
+            res.preview_tonne,
+            res.value_tonne
+          ),
         })),
+        notifications: notifications.map((res) => res.dataValues),
       },
     };
-
-    return result;
   },
 
-  async updateFinancialStatements(req, res) {
-    let result = {};
+  async update(body, id) {
+    const financialStatement = await FinancialStatements.findByPk(id);
 
-    let financialStatements = req;
+    if (!financialStatement) throw Error('Financial not found');
 
-    let financialStatementId = res.id;
+    const result = await financialStatement.update(body);
 
-    const financialStatement = await FinancialStatements.findByPk(
-      financialStatementId
-    );
+    const driverFinancial = await Driver.findByPk(result.driver_id);
 
-    if (!financialStatement) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Financial not found',
-      };
-      return result;
-    }
-
-    const resultUpdate = await financialStatement.update(financialStatements);
-
-    const driverFinancial = await Driver.findByPk(resultUpdate.driver_id);
-
-    const { truck_models, cart_models, total_value } = resultUpdate;
+    const { truck_models, cart_models, total_value } = result;
 
     await driverFinancial.update({
       credit: total_value,
@@ -268,55 +205,27 @@ export default {
       cart: cart_models,
     });
 
-    result = { httpStatus: httpStatus.OK, status: 'successful' };
     return result;
   },
 
-  async deleteFinancialStatements(req, res) {
-    let result = {};
+  async delete(id) {
+    const financial = await FinancialStatements.findByPk(id);
+    if (!financial) throw Errro('Financial not found');
 
-    const id = req.id;
+    const user = await User.findByPk(financial.creator_user_id);
+    if (!user) throw Errro('User not found');
 
-    const propsFinancial = await FinancialStatements.findByPk(id);
-    const nameUser = await User.findByPk(propsFinancial.creator_user_id);
-
-    if (!propsFinancial) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Financial not found',
-      };
-      return result;
-    }
-
-    if (!nameUser) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' };
-      return result;
-    }
-
-    const financialStatement = await FinancialStatements.destroy({
+    const retult = await FinancialStatements.destroy({
       where: {
         id: id,
       },
     });
 
     await Notification.create({
-      content: `${nameUser.name}, Excluio Sua Ficha!`,
-      driver_id: propsFinancial.driver_id,
+      content: `${user.name}, Excluio Sua Ficha!`,
+      driver_id: financial.driver_id,
     });
 
-    if (!financialStatement) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Financial Statements not found' },
-      };
-      return result;
-    }
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      responseData: { msg: 'Deleted Financial Statements ' },
-    };
-    return result;
+    return retult;
   },
 };

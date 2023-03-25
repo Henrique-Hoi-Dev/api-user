@@ -1,23 +1,13 @@
-import httpStatus from 'http-status-codes';
-
 import User from '../models/User';
 import Notifications from '../models/Notification';
 
 export default {
-  async getAll(req, res) {
-    let result = {};
-
+  async getAll(req) {
     const checkIsMaster = await User.findOne({
       where: { id: req.userId, type_role: 'MASTER' },
     });
 
-    if (!checkIsMaster) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'User not is Master',
-      };
-      return result;
-    }
+    if (!checkIsMaster) throw Error('User not is Master');
 
     const notifications = await Notifications.findAll({
       where: { user_id: req.userId, read: false },
@@ -45,55 +35,21 @@ export default {
       ],
     });
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: { notifications, history },
-    };
-
-    return result;
+    return { notifications, history };
   },
 
-  async update(req, res) {
-    let result = {};
+  async updateRead(id) {
+    const notification = await Notifications.findByPk(id);
 
-    let notificationId = res.id;
+    if (!notification) throw Error('Notification not found');
+    if (notification.user_id === null)
+      throw Error('Do not have permission for this notification');
+    if (notification.read === true) throw Error('Has already been read.');
 
-    const notificationReq = await Notifications.findByPk(notificationId);
+    await notification.update({ read: true });
 
-    if (!notificationReq) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Notification not found',
-      };
-      return result;
-    }
-
-    if (notificationReq.user_id === null) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Do not have permission for this notification',
-      };
-      return result;
-    }
-
-    if (notificationReq.read === true) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        dataResult: { msg: 'Has already been read.' },
-      };
-      return result;
-    }
-
-    await notificationReq.update({ read: true });
-
-    const notification = await Notifications.findByPk(notificationId);
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: notification,
-    };
-    return result;
+    return await Notifications.findByPk(id, {
+      attributes: ['id', 'content', 'read'],
+    });
   },
 };

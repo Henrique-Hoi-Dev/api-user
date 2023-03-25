@@ -1,87 +1,58 @@
+import HttpStatus from 'http-status';
 import TruckService from '../service/TruckService';
 
 class TruckController {
-  async createTruck(req, res) {
+  async create(req, res, next) {
     try {
-      let response = await TruckService.createTruck(req.body);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await TruckService.create(req.body);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getAllTruck(req, res) {
+  async getAll(req, res, next) {
     try {
-      let response = await TruckService.getAllTruck(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await TruckService.getAll(req.query);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getAllSelect(req, res) {
+  async getAllSelect(req, res, next) {
     try {
-      let response = await TruckService.getAllSelect(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await TruckService.getAllSelect(req.query);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async getIdTruck(req, res) {
+  async getId(req, res, next) {
     try {
-      let response = await TruckService.getIdTruck(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await TruckService.getId(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async updateTruck(req, res) {
+  async update(req, res, next) {
     try {
-      let response = await TruckService.updateTruck(req.body, req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await TruckService.update(req.body, req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 
-  async deleteTruck(req, res) {
+  async delete(req, res, next) {
     try {
-      let response = await TruckService.deleteTruck(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
+      const data = await TruckService.delete(req.params.id);
+      return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
-      return res.status(200).json({ mgs: error.message });
+      next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
     }
   }
 }
