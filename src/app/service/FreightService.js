@@ -335,7 +335,7 @@ export default {
     if (!freight) throw Error('Freight not found');
     if (!driver) throw Error('Driver not found');
 
-    if (freight.status === 'APPROVED') {
+    if (freight.status === 'APPROVAL_PROCESS') {
       await freight.update({
         status: body.status,
       });
