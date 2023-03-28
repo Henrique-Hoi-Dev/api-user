@@ -49,7 +49,7 @@ export default {
     await notification.update({ read: true });
 
     return await Notifications.findByPk(id, {
-      attributes: ['id', 'content', 'read'],
+      attributes: ['id', 'content', 'read', 'freight_id', 'driver_id'],
     });
   },
 };

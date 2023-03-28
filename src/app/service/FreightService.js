@@ -336,25 +336,25 @@ export default {
     if (!driver) throw Error('Driver not found');
 
     if (freight.status === 'APPROVAL_PROCESS') {
-      await freight.update({
+      const result = await freight.update({
         status: body.status,
       });
 
       const financial = await FinancialStatements.findOne({
         where: { driver_id: driver.id, status: true },
       });
-
       if (!financial) throw Error('Financial not found');
 
-      await Notification.create({
-        content: `${
-          user.name
-        }, Aceitou Seu Check Frete, DE ${freight.start_freight_city.toUpperCase()} PARA ${freight.final_freight_city.toUpperCase()} Tenha uma BOA VIAGEM`,
-        driver_id: driver.id,
-        financial_statements_id: financial.id,
-      });
-
-      return { status: 'APPROVED' };
+      if (result.status === 'APPROVED') {
+        await Notification.create({
+          content: `${
+            user.name
+          }, Aceitou Seu Check Frete, DE ${freight.start_freight_city.toUpperCase()} PARA ${freight.final_freight_city.toUpperCase()} Tenha uma BOA VIAGEM`,
+          driver_id: driver.id,
+          financial_statements_id: financial.id,
+        });
+        return { status: 'APPROVED' };
+      }
     }
 
     return {};
