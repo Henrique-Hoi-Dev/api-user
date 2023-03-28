@@ -58,7 +58,7 @@ routes
 routes
   .post('/user/freight', FreightController.create)
   .patch(
-    '/freight/:id',
+    '/user/freight/:id',
     verifyIfUserHasRole('MASTER'),
     FreightController.update
   )
