@@ -156,10 +156,6 @@ export default {
 
   async getId(userId, id) {
     const financial = await FinancialStatements.findByPk(id);
-    console.log(
-      '🚀 ~ file: FinancialStatementsService.js:159 ~ getId ~ financial:',
-      financial
-    );
 
     if (!financial) throw Error('Financial Statements not found');
 

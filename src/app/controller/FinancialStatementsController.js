@@ -44,7 +44,7 @@ class FinancialStatementsController {
     }
   }
 
-  async delete(req, res) {
+  async delete(req, res, next) {
     try {
       const data = await FinancialStatementsService.delete(req.params.id);
       return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));

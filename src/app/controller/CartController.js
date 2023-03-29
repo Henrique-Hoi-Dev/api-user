@@ -29,7 +29,7 @@ class CartController {
     }
   }
 
-  async getId(req, res) {
+  async getId(req, res, next) {
     try {
       const data = await CartService.getId(req.params.id);
       return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
@@ -38,7 +38,7 @@ class CartController {
     }
   }
 
-  async update(req, res) {
+  async update(req, res, next) {
     try {
       const data = await CartService.update(req.body, req.params.id);
       return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
@@ -47,7 +47,7 @@ class CartController {
     }
   }
 
-  async delete(req, res) {
+  async delete(req, res, next) {
     try {
       const data = await CartService.delete(req.params.id);
       return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
