@@ -43,6 +43,7 @@ routes
   .delete('/user/:id', verifyIfUserHasRole('MASTER'), UserController.delete);
 
 routes
+  .put('/user/driver/:id', DriverController.update)
   .get('/user/driver/:id', DriverController.getId)
   .get('/drivers', DriverController.getAll)
   .get('/drivers-select', DriverController.getAllSelect)
