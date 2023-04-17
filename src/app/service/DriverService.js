@@ -144,6 +144,7 @@ export default {
         'date_admission',
         'date_birthday',
         'credit',
+        'transactions',
         'value_fix',
         'percentage',
         'daily',

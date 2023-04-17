@@ -76,6 +76,17 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
+      credit: Sequelize.INTEGER,
+      transactions: {
+        type: Sequelize.ARRAY({
+          type: Sequelize.JSONB,
+          defaultValue: {
+            typeTransactions: Sequelize.STRING,
+            value: Sequelize.INTEGER,
+          },
+        }),
+        defaultValue: [],
+      },
       value_fix: {
         type: Sequelize.INTEGER,
         allowNull: true,

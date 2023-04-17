@@ -9,6 +9,7 @@ import CartController from './app/controller/CartController';
 import NotificationController from './app/controller/NotificationController';
 import DriverController from './app/controller/DriverController';
 import PermissionController from './app/controller/PermissionController';
+import CreditController from './app/controller/CreditController';
 
 import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
@@ -82,6 +83,12 @@ routes.put(
   verifyIfUserHasRole('MASTER'),
   NotificationController.updateRead
 );
+
+routes
+  .post('/user/credit', CreditController.create)
+  .get('/credits', CreditController.getAll)
+  .get('/user/credit/:id', CreditController.getId)
+  .delete('/user/credit/:id', CreditController.delete);
 
 routes
   .post('/user/truck', TruckController.create)

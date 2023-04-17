@@ -33,6 +33,15 @@ class Driver extends Model {
         truck: Sequelize.STRING,
         // financial data
         credit: Sequelize.INTEGER,
+        transactions: {
+          type: Sequelize.ARRAY(
+            Sequelize.JSONB({
+              typeTransactions: Sequelize.STRING,
+              value: Sequelize.INTEGER,
+            })
+          ),
+          defaultValue: null,
+        },
         value_fix: Sequelize.INTEGER,
         percentage: Sequelize.INTEGER,
         daily: Sequelize.INTEGER,
@@ -57,10 +66,26 @@ class Driver extends Model {
       foreignKey: 'driver_id',
       as: 'financialStatements',
     });
+    this.hasMany(models.Credit, {
+      foreignKey: 'driver_id',
+      as: 'credits',
+    });
   }
 
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
+  }
+
+  addTransaction(transaction) {
+    const transactions = this.transactions || [];
+    transactions.push(transaction);
+    this.transactions = transactions;
+  }
+
+  removeTransaction(index) {
+    const transactions = this.transactions || [];
+    transactions.splice(index, 1);
+    this.transactions = transactions;
   }
 }
 
