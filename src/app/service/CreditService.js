@@ -5,13 +5,13 @@ import Driver from '../models/Driver';
 export default {
   async create(body) {
     const financialProps = await FinancialStatements.findOne({
-      where: { id: body.financial_id },
+      where: { driver_id: body.driver_id, status: true },
     });
     if (!financialProps) throw Error('Financial not found.');
 
     const result = await Credit.create({
-      driver_id: financialProps.driver_id,
-      financial_statements_id: body.financial_id,
+      driver_id: body.driver_id,
+      financial_statements_id: financialProps.id,
       value: body.value,
       description: body.description,
     });
