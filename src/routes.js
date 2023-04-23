@@ -85,10 +85,18 @@ routes.put(
 );
 
 routes
-  .post('/user/credit', CreditController.create)
-  .get('/credits', CreditController.getAll)
-  .get('/user/credit/:id', CreditController.getId)
-  .delete('/user/credit/:id', CreditController.delete);
+  .post('/user/credit', verifyIfUserHasRole('MASTER'), CreditController.create)
+  .get('/credits', verifyIfUserHasRole('MASTER'), CreditController.getAll)
+  .get(
+    '/user/credit/:id',
+    verifyIfUserHasRole('MASTER'),
+    CreditController.getId
+  )
+  .delete(
+    '/user/credit/:id',
+    verifyIfUserHasRole('MASTER'),
+    CreditController.delete
+  );
 
 routes
   .post('/user/truck', TruckController.create)
