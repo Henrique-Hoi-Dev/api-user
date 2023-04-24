@@ -6,6 +6,7 @@ class Credit extends Model {
       {
         driver_id: Sequelize.INTEGER,
         financial_statements_id: Sequelize.INTEGER,
+        freight_id: Sequelize.INTEGER,
         value: {
           type: Sequelize.INTEGER,
           defaultValue: 0,
