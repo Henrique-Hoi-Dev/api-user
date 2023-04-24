@@ -1,6 +1,7 @@
 import Credit from '../models/Credit';
 import FinancialStatements from '../models/FinancialStatements';
 import Driver from '../models/Driver';
+import Notification from '../models/Notification';
 
 export default {
   async create(body) {
@@ -22,6 +23,11 @@ export default {
       typeTransactions: result.description,
     });
 
+    await Notification.create({
+      content: `${driverFind.name}, Você recebeu um crédito!`,
+      driver_id: body.driver_id,
+    });
+
     const driver = await Driver.findByPk(driverFind.id);
     const values = driverFind.transactions.map((res) => res.value);
     const total = values.reduce((acc, cur) => acc + cur, 0);
@@ -31,7 +37,7 @@ export default {
       credit: total,
     });
 
-    return resultF;
+    return { resultF, result };
   },
 
   async getAll(query) {

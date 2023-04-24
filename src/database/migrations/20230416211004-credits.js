@@ -24,10 +24,11 @@ module.exports = {
       value: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
+        allowNull: false,
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       created_at: {
         type: Sequelize.DATE,
