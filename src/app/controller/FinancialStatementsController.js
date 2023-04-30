@@ -22,10 +22,7 @@ class FinancialStatementsController {
 
   async getId(req, res, next) {
     try {
-      const data = await FinancialStatementsService.getId(
-        req.userId,
-        req.params.id
-      );
+      const data = await FinancialStatementsService.getId(req.params.id);
       return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
     } catch (error) {
       next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
