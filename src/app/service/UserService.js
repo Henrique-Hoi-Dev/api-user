@@ -52,9 +52,6 @@ export default {
     if (name) where.name = { [Op.iLike]: '%' + name + '%' };
     if (id) where.id = id;
 
-    const total = (await User.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
     const users = await User.findAll({
       where: where,
       order: [[sort_field, sort_order]],
@@ -67,6 +64,9 @@ export default {
         attributes: ['id', 'role', 'actions'],
       },
     });
+
+    const total = users.length;
+    const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
 

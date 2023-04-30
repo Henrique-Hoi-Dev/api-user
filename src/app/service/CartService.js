@@ -34,9 +34,6 @@ export default {
     const where = {};
     // if (id) where.id = id;
 
-    const total = (await Cart.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
     const carts = await Cart.findAll({
       where: search
         ? {
@@ -66,6 +63,9 @@ export default {
         'cart_board',
       ],
     });
+
+    const total = carts.length;
+    const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
 

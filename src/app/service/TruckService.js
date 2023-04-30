@@ -89,9 +89,6 @@ export default {
     const where = {};
     // if (id) where.id = id;
 
-    const total = (await Truck.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
     const trucks = await Truck.findAll({
       where: search
         ? {
@@ -119,6 +116,9 @@ export default {
         'truck_avatar',
       ],
     });
+
+    const total = trucks.length;
+    const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
 

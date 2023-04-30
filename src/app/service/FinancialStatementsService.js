@@ -108,9 +108,6 @@ export default {
     const whereStatus = {};
     if (status_check) whereStatus.status = status_check;
 
-    const total = (await FinancialStatements.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
     const financialStatements = await FinancialStatements.findAll({
       where: search
         ? {
@@ -123,12 +120,22 @@ export default {
       order: [[sort_field, sort_order]],
       limit: limit,
       offset: page - 1 ? (page - 1) * limit : 0,
-      include: {
-        model: Freight,
-        where: status_check ? whereStatus : null,
-        as: 'freigth',
-      },
+      include: [
+        {
+          model: Driver,
+          as: 'driver',
+          attributes: ['credit'],
+        },
+        {
+          model: Freight,
+          where: status_check ? whereStatus : null,
+          as: 'freigth',
+        },
+      ],
     });
+
+    const total = financialStatements.length;
+    const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
 

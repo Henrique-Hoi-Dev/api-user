@@ -91,9 +91,6 @@ export default {
     const where = {};
     // if (id) where.id = id;
 
-    const total = (await Driver.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
     const drivers = await Driver.findAll({
       where: search
         ? {
@@ -119,6 +116,8 @@ export default {
         'truck',
       ],
     });
+    const total = drivers.length;
+    const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
 

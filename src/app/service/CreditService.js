@@ -68,14 +68,14 @@ export default {
       sort_field = 'id',
     } = query;
 
-    const total = (await Credit.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
     const credits = await Credit.findAll({
       order: [[sort_field, sort_order]],
       limit: limit,
       offset: page - 1 ? (page - 1) * limit : 0,
     });
+
+    const total = credits.length;
+    const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
 
