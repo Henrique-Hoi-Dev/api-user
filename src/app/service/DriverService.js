@@ -116,7 +116,8 @@ export default {
         'truck',
       ],
     });
-    const total = drivers.length;
+
+    const total = await Driver.count();
     const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);

@@ -64,7 +64,7 @@ export default {
       ],
     });
 
-    const total = carts.length;
+    const total = await Cart.count();
     const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);

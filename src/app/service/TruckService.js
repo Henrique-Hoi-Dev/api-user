@@ -81,8 +81,8 @@ export default {
       limit = 100,
       sort_order = 'ASC',
       sort_field = 'id',
-      truck_models,
-      id,
+      // truck_models,
+      // id,
       search,
     } = query;
 
@@ -117,7 +117,7 @@ export default {
       ],
     });
 
-    const total = trucks.length;
+    const total = await Truck.count();
     const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);

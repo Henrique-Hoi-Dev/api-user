@@ -134,7 +134,7 @@ export default {
       ],
     });
 
-    const total = financialStatements.length;
+    const total = await FinancialStatements.count();
     const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);

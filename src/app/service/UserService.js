@@ -65,7 +65,7 @@ export default {
       },
     });
 
-    const total = users.length;
+    const total = await User.count();
     const totalPages = Math.ceil(total / limit);
 
     const currentPage = Number(page);
