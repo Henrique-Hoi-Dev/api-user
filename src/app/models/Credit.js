@@ -11,6 +11,9 @@ class Credit extends Model {
           type: Sequelize.INTEGER,
           defaultValue: 0,
         },
+        type: Sequelize.ENUM({
+          values: ['DEBT', 'CREDIT'],
+        }),
         description: Sequelize.STRING,
       },
       {

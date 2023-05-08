@@ -5,6 +5,15 @@ import Notification from '../models/Notification';
 import Freight from '../models/Freight';
 
 export default {
+  _formatRealValue(value) {
+    const formatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+
+    return formatter.format(value);
+  },
+
   async create(body) {
     const financialProps = await FinancialStatements.findOne({
       where: { driver_id: body.driver_id, status: true },
@@ -24,6 +33,7 @@ export default {
       financial_statements_id: financialProps.id,
       value: body.value,
       description: body.description,
+      type: body.type,
     });
 
     const driverFind = await Driver.findByPk(result.driver_id);
@@ -32,29 +42,56 @@ export default {
       value: result.value,
       typeTransactions: result.description,
       date: new Date(),
+      type: result.type,
     });
 
     await Notification.create({
-      content: `${driverFind.name}, Você recebeu um crédito!`,
+      content: `${driverFind.name}, Foi registrado um ${
+        result.type === 'DEBT' ? 'Débito' : 'Crédito'
+      }! no valor de ${this._formatRealValue(body.value / 100)}`,
       driver_id: body.driver_id,
     });
 
     const driver = await Driver.findByPk(driverFind.id);
-    console.log('🚀 ~ file: CreditService.js:37 ~ create ~ driver:', driver);
-    const values = driverFind.transactions
-      .map((res) => {
-        if (res !== null) {
-          return res.value;
-        }
-      })
-      .filter((value) => typeof value === 'number');
-    console.log('🚀 ~ file: CreditService.js:43 ~ values ~ values:', values);
-    const total = values.reduce((acc, cur) => acc + cur, 0);
-    console.log('🚀 ~ file: CreditService.js:44 ~ create ~ total:', total);
+
+    // const values = driverFind.transactions
+    //   .map((res) => {
+    //     if (res !== null) {
+    //       return res.value;
+    //     }
+    //   })
+    //   .filter((value) => typeof value === 'number');
+
+    const { creditTransactions, debitTransactions } =
+      driverFind.transactions.reduce(
+        (acc, transaction) => {
+          if (transaction !== null) {
+            if (transaction.type === 'CREDIT') {
+              acc.creditTransactions.push(transaction.value);
+            } else if (transaction.type === 'DEBT') {
+              acc.debitTransactions.push(transaction.value);
+            }
+          }
+          return acc;
+        },
+        { creditTransactions: [], debitTransactions: [] }
+      );
+    console.log(
+      '🚀 ~ file: CreditService.js:77 ~ create ~ creditTransactions:',
+      creditTransactions
+    );
+    console.log(
+      '🚀 ~ file: CreditService.js:77 ~ create ~ debitTransactions:',
+      debitTransactions
+    );
+
+    const totalCredit = creditTransactions.reduce((acc, cur) => acc + cur, 0);
+    const totalDebit = debitTransactions.reduce((acc, cur) => acc + cur, 0);
+    const netAmount = totalCredit - totalDebit;
 
     const resultF = await driver.update({
       transactions: driverFind.transactions,
-      credit: total,
+      credit: netAmount,
     });
 
     return { resultF, result };
