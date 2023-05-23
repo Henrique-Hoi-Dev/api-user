@@ -33,7 +33,7 @@ export default {
       financial_statements_id: financialProps.id,
       value: body.value,
       description: body.description,
-      type: body.type,
+      type_method: body.type_method,
     });
 
     const driverFind = await Driver.findByPk(result.driver_id);
@@ -42,12 +42,12 @@ export default {
       value: result.value,
       typeTransactions: result.description,
       date: new Date(),
-      type: result.type,
+      type_method: result.type_method,
     });
 
     await Notification.create({
       content: `${driverFind.name}, Foi registrado um ${
-        result.type === 'DEBT' ? 'Débito' : 'Crédito'
+        result.type_method === 'DEBIT' ? 'Débito' : 'Crédito'
       }! no valor de ${this._formatRealValue(body.value / 100)}`,
       driver_id: body.driver_id,
     });
@@ -66,9 +66,9 @@ export default {
       driverFind.transactions.reduce(
         (acc, transaction) => {
           if (transaction !== null) {
-            if (transaction.type === 'CREDIT') {
+            if (transaction.type_method === 'CREDIT') {
               acc.creditTransactions.push(transaction.value);
-            } else if (transaction.type === 'DEBT') {
+            } else if (transaction.type_method === 'DEBIT') {
               acc.debitTransactions.push(transaction.value);
             }
           }

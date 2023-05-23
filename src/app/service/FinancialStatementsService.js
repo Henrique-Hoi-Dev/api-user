@@ -1,6 +1,6 @@
-import httpStatus from 'http-status-codes';
 import { Op } from 'sequelize';
-import { isAfter, parseISO } from 'date-fns';
+import { isAfter, parseISO, sub } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 import Driver from '../models/Driver';
 import Truck from '../models/Truck';
@@ -32,6 +32,16 @@ export default {
       )
     )
       throw Error('Cannot create fixed in the past');
+    // const saoPauloTimezone = 'America/Sao_Paulo';
+
+    // const currentDate = zonedTimeToUtc(new Date(), saoPauloTimezone);
+    // const previousDate = sub(currentDate, { days: 1 });
+
+    // const startDate = parseISO(start_date);
+
+    // if (!isAfter(startDate, previousDate)) {
+    //   throw Error('Cannot create fixed in the past');
+    // }
     if (!userAdm) throw Error('User not found');
     if (!driver) throw Error('Driver not found');
     if (!truck) throw Error('Truck not found');

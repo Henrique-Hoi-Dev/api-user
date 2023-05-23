@@ -37,8 +37,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      type: Sequelize.ENUM({
-        values: ['DEBT', 'CREDIT'],
+      type_method: Sequelize.ENUM({
+        values: ['DEBIT', 'CREDIT'],
       }),
       created_at: {
         type: Sequelize.DATE,
