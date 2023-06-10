@@ -18,6 +18,9 @@ export default {
     const financialProps = await FinancialStatements.findOne({
       where: { driver_id: body.driver_id, status: true },
     });
+
+    if (!financialProps) throw Error('Fixa não encontrada.');
+
     const freight = await Freight.findOne({
       where: {
         financial_statements_id: financialProps.id,
@@ -25,7 +28,7 @@ export default {
       },
     });
 
-    if (!financialProps) throw Error('Financial not found.');
+    if (!freight) throw Error('Não existe frente em viagem!');
 
     const result = await Credit.create({
       driver_id: body.driver_id,
@@ -76,14 +79,6 @@ export default {
         },
         { creditTransactions: [], debitTransactions: [] }
       );
-    console.log(
-      '🚀 ~ file: CreditService.js:77 ~ create ~ creditTransactions:',
-      creditTransactions
-    );
-    console.log(
-      '🚀 ~ file: CreditService.js:77 ~ create ~ debitTransactions:',
-      debitTransactions
-    );
 
     const totalCredit = creditTransactions.reduce((acc, cur) => acc + cur, 0);
     const totalDebit = debitTransactions.reduce((acc, cur) => acc + cur, 0);
