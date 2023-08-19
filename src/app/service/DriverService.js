@@ -40,7 +40,7 @@ export default {
         return { msg: 'successful' };
     },
 
-    async getAllSelect(req, res) {
+    async getAllSelect() {
         const select = await Driver.findAll({
             where: {
                 id: {
@@ -60,7 +60,7 @@ export default {
                     where: {
                         status: false,
                     },
-                    attributes: ['id', 'driver_id', 'cpf'],
+                    attributes: ['id', 'driver_id', 'driver_name'],
                 },
             ],
         });
