@@ -6,7 +6,6 @@ class Driver extends Model {
     super.init(
       {
         name: Sequelize.STRING,
-        name_user: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
         status: {

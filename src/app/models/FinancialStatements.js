@@ -40,6 +40,16 @@ class FinancialStatements extends Model {
           type: Sequelize.INTEGER,
           defaultValue: 0,
         },
+        transactions: {
+          type: Sequelize.ARRAY(
+            Sequelize.JSONB({
+              typeTransactions: Sequelize.STRING,
+              value: Sequelize.INTEGER,
+              date: Sequelize.DATE,
+            })
+          ),
+          defaultValue: null,
+        },
       },
       {
         sequelize,
@@ -69,6 +79,12 @@ class FinancialStatements extends Model {
       foreignKey: 'financial_statements_id',
       as: 'travel_expense',
     });
+  }
+
+  addTransaction(transaction) {
+    const transactions = this.transactions || [];
+    transactions.push(transaction);
+    this.transactions = transactions;
   }
 }
 

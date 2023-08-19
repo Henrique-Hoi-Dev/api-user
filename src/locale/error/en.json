@@ -1,5 +1,6 @@
 {
     "VALIDATION_ERROR": "Validation error",
+    "THIS_CPF_ALREADY_EXISTS": "This cpf already exists.",
     "USER_NOT_FOUND": "User not found",
     "INVALID_ROLE": "Role provided is invalid",
     "INSUFFICIENT_PERMISSIONS": "User does not have the required permission",

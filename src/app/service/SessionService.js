@@ -7,47 +7,32 @@ import authConfig from '../../config/auth';
 import Permission from '../models/Permission';
 
 export default {
-  async sessionUser(body) {
-    const schema = Yup.object().shape({
-      email: Yup.string().email().required(),
-      password: Yup.string().required(),
-    });
+    async sessionUser(body) {
+        const schema = Yup.object().shape({
+            email: Yup.string().email().required(),
+            password: Yup.string().required(),
+        });
 
-    if (!(await schema.isValid(body))) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Validation failed!',
-      };
-      return result;
-    }
+        if (!(await schema.isValid(body))) throw Error('VALIDATION_ERROR');
 
-    const { email, password } = body;
+        const { email, password } = body;
 
-    const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' };
-      return result;
-    }
+        if (!user) throw Error('USER_NOT_FOUND');
 
-    if (!(await user.checkPassword(password)))
-      throw Error('Password is incorrect');
+        if (!(await user.checkPassword(password))) throw Error('INVALID_USER_PASSWORD');
 
-    const { id, name, type_role, permission_id } = user;
+        const { id, name, type_role, permission_id } = user;
 
-    const permissions = await Permission.findByPk(permission_id, {
-      attributes: ['role', 'actions'],
-    });
+        const permissions = await Permission.findByPk(permission_id, {
+            attributes: ['role', 'actions'],
+        });
 
-    const userProps = { id, name, email, type_role, permissions },
-      token = jwt.sign(
-        { id, name, email, type_role, permissions },
-        authConfig.secret,
-        {
-          expiresIn: authConfig.expiresIn,
-        }
-      );
+        const token = jwt.sign({ id, name, email, type_role, permissions }, authConfig.secret, {
+            expiresIn: authConfig.expiresIn,
+        });
 
-    return { dataResult: { userProps, token } };
-  },
+        return { dataResult: { token } };
+    },
 };

@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 import { isAfter, parseISO, sub } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+// import { zonedTimeToUtc } from 'date-fns-tz';
 
 import Driver from '../models/Driver';
 import Truck from '../models/Truck';

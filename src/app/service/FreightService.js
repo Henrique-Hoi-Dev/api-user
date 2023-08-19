@@ -343,6 +343,7 @@ export default {
       const financial = await FinancialStatements.findOne({
         where: { driver_id: driver.id, status: true },
       });
+
       if (!financial) throw Error('Financial not found');
 
       if (result.status === 'APPROVED') {

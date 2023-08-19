@@ -17,10 +17,10 @@ import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
 const routes = new Router();
 
-routes.post('/user/register', UserController.create);
-routes.post('/user/authenticate', SessionController.sessionUser);
+routes.post('/user/signup', UserController.create);
+routes.post('/user/signin', SessionController.sessionUser);
 
-routes.post('/driver/register', DriverController.create);
+routes.post('/driver/signup', DriverController.create);
 
 // sistema de relatorios
 // routes.get("/download", (req, res) => {

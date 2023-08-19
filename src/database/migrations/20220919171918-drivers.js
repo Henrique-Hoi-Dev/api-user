@@ -11,10 +11,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      name_user: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       password_hash: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -41,7 +37,7 @@ module.exports = {
       },
       cpf: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       date_admission: {
         type: Sequelize.DATE,
