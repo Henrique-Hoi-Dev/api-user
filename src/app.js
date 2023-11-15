@@ -9,26 +9,26 @@ import 'dotenv/config';
 // import './database';
 
 class App {
-  constructor() {
-    this.server = express();
+    constructor() {
+        this.server = express();
 
-    this.middlewares();
-    this.routes();
-    this.sequelize();
-  }
+        this.middlewares();
+        this.routes();
+        this.sequelize();
+    }
 
-  middlewares() {
-    this.server.use(cors());
-    this.server.use(express.json());
-  }
+    middlewares() {
+        this.server.use(cors());
+        this.server.use(express.json());
+    }
 
-  routes() {
-    this.server.use(routes);
-  }
+    routes() {
+        this.server.use(routes);
+    }
 
-  sequelize() {
-    sequelize;
-  }
+    sequelize() {
+        sequelize;
+    }
 }
 
 export default new App().server;
