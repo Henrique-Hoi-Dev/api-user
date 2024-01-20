@@ -2,8 +2,6 @@ import jwt from 'jsonwebtoken';
 import HttpStatus from 'http-status';
 import { promisify } from 'util';
 
-import authConfig from '../../config/auth';
-
 // faz validação do usuário para que possa fazer mudanças no seu cadastro
 export default async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -15,7 +13,7 @@ export default async (req, res, next) => {
     const [, token] = authHeader.split(' ');
 
     try {
-        const decoded = await promisify(jwt.verify)(token, authConfig.secret);
+        const decoded = await promisify(jwt.verify)(token, process.env.TOKEN_KEY);
 
         req.userId = decoded.id;
         req.userProps = decoded;

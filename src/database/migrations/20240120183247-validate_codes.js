@@ -1,27 +1,30 @@
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('data_drivers', {
+        return queryInterface.createTable('validate_codes', {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            driver_name: {
+            cpf: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            truck_models: {
-                type: Sequelize.STRING,
+            expiration_date: {
+                type: Sequelize.DATE,
                 allowNull: false,
             },
-            cart_models: {
+            code: {
                 type: Sequelize.STRING,
                 allowNull: false,
+                unique: true,
             },
-            credit: {
-                type: Sequelize.DOUBLE,
-                allowNull: false,
+            status: {
+                type: Sequelize.ENUM({
+                    values: ['AVAILABLE', 'EXPIRED', 'USED'],
+                }),
+                defaultValue: 'AVAILABLE',
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -35,6 +38,6 @@ module.exports = {
     },
 
     down: (queryInterface) => {
-        return queryInterface.dropTable('data_drivers');
+        return queryInterface.dropTable('validate_codes');
     },
 };

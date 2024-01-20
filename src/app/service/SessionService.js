@@ -1,9 +1,7 @@
 import jwt from 'jsonwebtoken';
 import * as Yup from 'yup';
-import httpStatus from 'http-status-codes';
 
 import User from '../models/User';
-import authConfig from '../../config/auth';
 import Permission from '../models/Permission';
 
 export default {
@@ -29,10 +27,10 @@ export default {
             attributes: ['role', 'actions'],
         });
 
-        const token = jwt.sign({ id, name, email, type_role, permissions }, authConfig.secret, {
-            expiresIn: authConfig.expiresIn,
+        const token = jwt.sign({ id, name, email, type_role, permissions }, process.env.TOKEN_KEY, {
+            expiresIn: process.env.TOKEN_EXP,
         });
 
-        return { dataResult: { token } };
+        return { token };
     },
 };

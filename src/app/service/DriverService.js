@@ -14,6 +14,8 @@ export default {
             cpf: validCpf,
             password: body.password,
             name: body.name,
+            phone: body.phone,
+            email: body.email,
             type_position: 'COLLABORATOR',
             credit: 0,
             value_fix: body.value_fix || 0,

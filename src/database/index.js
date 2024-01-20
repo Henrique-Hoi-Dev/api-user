@@ -14,41 +14,41 @@ import Notification from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
 import Permission from '../app/models/Permission';
 import Credit from '../app/models/Credit';
+// import ValidateCode from '../app/models/ValidateCode';
 
 import databaseConfig from '../config/database.js';
 
 import 'dotenv/config';
 
 const models = [
-  User,
-  Driver,
-  Truck,
-  Cart,
-  Freight,
-  DepositMoney,
-  DataDriver,
-  Notification,
-  FinancialStatements,
-  TravelExpenses,
-  Restock,
-  Permission,
-  Credit,
+    User,
+    Driver,
+    Truck,
+    Cart,
+    Freight,
+    DepositMoney,
+    DataDriver,
+    Notification,
+    FinancialStatements,
+    TravelExpenses,
+    Restock,
+    Permission,
+    Credit,
+    // ValidateCode,
 ];
 
 class Database {
-  constructor() {
-    this.init();
-  }
+    constructor() {
+        this.init();
+    }
 
-  init() {
-    this.connetion = new Sequelize(databaseConfig);
+    init() {
+        this.connetion = new Sequelize(databaseConfig);
 
-    models
-      .map((model) => model.init(this.connetion))
-      .map(
-        (model) => model.associate && model.associate(this.connetion.models)
-      );
-  }
+        models
+            .map((model) => model.init(this.connetion))
+            .map((model) => model.associate && model.associate(this.connetion.models));
+    }
 }
 
 export default new Database();
