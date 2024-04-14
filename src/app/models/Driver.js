@@ -7,7 +7,7 @@ class Driver extends Model {
             {
                 // info base
                 name: Sequelize.STRING,
-                phone: Sequelize.STRING,
+                phone: { type: Sequelize.STRING, unique: true },
                 email: {
                     type: Sequelize.STRING,
                     unique: true,
