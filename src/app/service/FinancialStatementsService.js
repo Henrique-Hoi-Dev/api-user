@@ -15,7 +15,7 @@ export default {
         const { driver_id, truck_id, cart_id, start_date } = body;
 
         const [userAdm, driver, truck, cart] = await Promise.all([
-            User.findByPk(user.userId),
+            User.findByPk(user.id),
             Driver.findByPk(driver_id),
             Truck.findByPk(truck_id),
             Cart.findByPk(cart_id),
@@ -26,39 +26,30 @@ export default {
         previousDate.setDate(currentDate.getDate() - 1);
 
         if (!isAfter(parseISO(start_date), previousDate.setDate(currentDate.getDate() - 1)))
-            throw Error('Cannot create fixed in the past');
-        // const saoPauloTimezone = 'America/Sao_Paulo';
+            throw Error('CANNOT_CREATE_FIXED_IN_THE_PAST');
 
-        // const currentDate = zonedTimeToUtc(new Date(), saoPauloTimezone);
-        // const previousDate = sub(currentDate, { days: 1 });
-
-        // const startDate = parseISO(start_date);
-
-        // if (!isAfter(startDate, previousDate)) {
-        //   throw Error('Cannot create fixed in the past');
-        // }
-        if (!userAdm) throw Error('User not found');
-        if (!driver) throw Error('Driver not found');
-        if (!truck) throw Error('Truck not found');
-        if (!cart) throw Error('Cart not found');
+        if (!userAdm) throw Error('USER_NOT_FOUND');
+        if (!driver) throw Error('DRIVER_NOT_FOUND');
+        if (!truck) throw Error('TRUCK_NOT_FOUND');
+        if (!cart) throw Error('CART_NOT_FOUND');
 
         const existFileOpen = await FinancialStatements.findAll({
             where: { driver_id: driver_id, status: true },
         });
 
-        if (existFileOpen.length > 0) throw Error('Driver already has an open file');
+        if (existFileOpen.length > 0) throw Error('DRIVER_ALREADY_HAS_AN_OPEN_FILE');
 
         const truckOnSheet = await FinancialStatements.findAll({
             where: { truck_id: truck_id, status: true },
         });
 
-        if (truckOnSheet.length > 0) throw Error('Truck already has an open file');
+        if (truckOnSheet.length > 0) throw Error('TRUCK_ALREADY_HAS_AN_OPEN_FILE');
 
         const cartOnSheet = await FinancialStatements.findAll({
             where: { cart_id: cart_id, status: true },
         });
 
-        if (cartOnSheet.length > 0) throw Error('Cart already has an open file');
+        if (cartOnSheet.length > 0) throw Error('CART_ALREADY_HAS_AN_OPEN_FILE');
 
         const { name, value_fix, percentage, daily } = driver.dataValues;
         const { truck_models, truck_board, truck_avatar } = truck.dataValues;
@@ -87,12 +78,11 @@ export default {
         });
 
         await driver.update({
-            credit: 0,
             truck: truck_models,
             cart: cart_bodyworks,
         });
 
-        return { msg: 'successful' };
+        return { msg: 'SUCCESSFUL' };
     },
 
     async getAll(query) {
