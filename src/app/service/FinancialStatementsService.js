@@ -56,7 +56,7 @@ export default {
         const { cart_bodyworks, cart_board } = cart.dataValues;
 
         await FinancialStatements.create({
-            creator_user_id: user.userId,
+            creator_user_id: user.id,
             driver_id,
             truck_id,
             cart_id,
