@@ -1,13 +1,11 @@
 module.exports = {
-    up: async (queryInterface, Sequelize) => {
-        await queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
-
+    up: (queryInterface, Sequelize) => {
         return queryInterface.createTable('freights', {
             id: {
-                type: Sequelize.UUID,
-                defaultValue: Sequelize.literal('uuid_generate_v4()'),
-                primaryKey: true,
+                type: Sequelize.INTEGER,
                 allowNull: false,
+                autoIncrement: true,
+                primaryKey: true,
             },
             financial_statements_id: {
                 type: Sequelize.INTEGER,

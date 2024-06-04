@@ -115,7 +115,7 @@ export default {
                 {
                     model: Freight,
                     where: status_check ? whereStatus : null,
-                    as: 'freigth',
+                    as: 'freight',
                 },
             ],
         });
