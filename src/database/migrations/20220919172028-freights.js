@@ -1,11 +1,13 @@
 module.exports = {
-    up: (queryInterface, Sequelize) => {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+
         return queryInterface.createTable('freights', {
             id: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
-                autoIncrement: true,
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.literal('uuid_generate_v4()'),
                 primaryKey: true,
+                allowNull: false,
             },
             financial_statements_id: {
                 type: Sequelize.INTEGER,
@@ -28,7 +30,6 @@ module.exports = {
             },
             truck_current_km: {
                 type: Sequelize.INTEGER,
-                allowNull: false,
             },
             liter_of_fuel_per_km: {
                 type: Sequelize.INTEGER,
@@ -45,7 +46,6 @@ module.exports = {
             status: {
                 type: Sequelize.ENUM,
                 values: ['APPROVAL_PROCESS', 'APPROVED', 'STARTING_TRIP', 'DENIED', 'FINISHED'],
-                defaultValue: 'APPROVAL_PROCESS',
             },
 
             // level two
