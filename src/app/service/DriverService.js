@@ -10,6 +10,18 @@ export default {
         const cpf = body.cpf.replace(/\D/g, '');
         const validCpf = validateCpf(cpf);
 
+        const schema = Yup.object().shape({
+            name: Yup.string().required(),
+            cpf: Yup.string().required(),
+            password: Yup.string().required().min(8),
+        });
+
+        if (!(await schema.isValid(body))) throw new Error('VALIDATION_ERROR');
+
+        if (!body.value_fix && !body.percentage) {
+            throw new Error('NEED_SOME_PAYMENT');
+        }
+
         const data = {
             cpf: validCpf,
             password: body.password,
@@ -17,10 +29,9 @@ export default {
             phone: body.phone,
             email: body.email,
             type_position: 'COLLABORATOR',
-            credit: 0,
-            value_fix: body.value_fix || 0,
-            percentage: body.percentage || 0,
-            daily: body.daily || 0,
+            value_fix: body.value_fix,
+            percentage: body.percentage,
+            daily: body.daily,
         };
 
         // doing name user verification
@@ -29,13 +40,6 @@ export default {
         });
 
         if (driverExist) throw new Error('THIS_CPF_ALREADY_EXISTS');
-
-        const schema = Yup.object().shape({
-            cpf: Yup.string().required(),
-            password: Yup.string().required().min(6),
-        });
-
-        if (!(await schema.isValid(body))) throw Error('VALIDATION_ERROR');
 
         await Driver.create(data);
 

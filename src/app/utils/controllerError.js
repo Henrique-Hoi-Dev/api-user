@@ -26,8 +26,6 @@ export default {
     },
 
     handleError(error) {
-        console.log('🚀 ~ file: controllerError.js:4 ~ handleError ~ error:', error);
-
         if (error.response && error.config) return this.sanitizeError(error);
 
         if (this.errorHandler) {

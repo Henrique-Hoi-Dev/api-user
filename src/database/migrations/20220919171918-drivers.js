@@ -18,7 +18,6 @@ module.exports = {
             },
             email: {
                 type: Sequelize.STRING,
-                allowNull: false,
                 unique: true,
             },
             cpf: {
@@ -33,31 +32,24 @@ module.exports = {
             },
             number_cnh: {
                 type: Sequelize.STRING,
-                allowNull: true,
             },
             valid_cnh: {
                 type: Sequelize.DATE,
-                allowNull: true,
             },
             date_valid_mopp: {
                 type: Sequelize.DATE,
-                allowNull: true,
             },
             date_valid_nr20: {
                 type: Sequelize.DATE,
-                allowNull: true,
             },
             date_valid_nr35: {
                 type: Sequelize.DATE,
-                allowNull: true,
             },
             date_admission: {
                 type: Sequelize.DATE,
-                allowNull: true,
             },
             date_birthday: {
                 type: Sequelize.DATE,
-                allowNull: true,
             },
             status: {
                 type: Sequelize.ENUM,
@@ -70,19 +62,16 @@ module.exports = {
             },
             permission_id: {
                 type: Sequelize.INTEGER,
-                allowNull: true,
             },
             cart: {
                 type: Sequelize.STRING,
-                allowNull: true,
             },
             truck: {
                 type: Sequelize.STRING,
-                allowNull: true,
             },
             credit: {
                 type: Sequelize.INTEGER,
-                allowNull: true,
+                defaultValue: 0,
             },
             credit: Sequelize.INTEGER,
             transactions: {
@@ -97,15 +86,15 @@ module.exports = {
             },
             value_fix: {
                 type: Sequelize.INTEGER,
-                allowNull: true,
+                defaultValue: 0,
             },
             percentage: {
                 type: Sequelize.INTEGER,
-                allowNull: true,
+                defaultValue: 0,
             },
             daily: {
                 type: Sequelize.INTEGER,
-                allowNull: true,
+                defaultValue: 0,
             },
             created_at: {
                 type: Sequelize.DATE,

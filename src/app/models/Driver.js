@@ -43,7 +43,7 @@ class Driver extends Model {
                 truck: Sequelize.STRING,
 
                 // financial data
-                credit: Sequelize.INTEGER,
+                credit: { type: Sequelize.INTEGER, defaultValue: 0 },
                 transactions: {
                     type: Sequelize.ARRAY(
                         Sequelize.JSONB({
@@ -54,9 +54,9 @@ class Driver extends Model {
                     ),
                     defaultValue: null,
                 },
-                value_fix: Sequelize.INTEGER,
-                percentage: Sequelize.INTEGER,
-                daily: Sequelize.INTEGER,
+                value_fix: { type: Sequelize.INTEGER, defaultValue: 0 },
+                percentage: { type: Sequelize.INTEGER, defaultValue: 0 },
+                daily: { type: Sequelize.INTEGER, defaultValue: 0 },
             },
             {
                 sequelize,

@@ -1,6 +1,6 @@
 module.exports = (cpf) => {
     if (cpf.length !== 11) {
-        throw new Error('must be a valid CPF');
+        throw new Error('MUST_BE_A_VALID_CPF');
     }
     if (
         cpf === '00000000000' ||
@@ -14,7 +14,7 @@ module.exports = (cpf) => {
         cpf === '88888888888' ||
         cpf === '99999999999'
     ) {
-        throw new Error('must be a valid CPF');
+        throw new Error('MUST_BE_A_VALID_CPF');
     }
     let add = 0;
     for (let i = 0; i < 9; i++) {
@@ -25,7 +25,7 @@ module.exports = (cpf) => {
         rev = 0;
     }
     if (rev !== parseInt(cpf.charAt(9))) {
-        throw new Error('must be a valid CPF');
+        throw new Error('MUST_BE_A_VALID_CPF');
     }
     add = 0;
     for (let i = 0; i < 10; i++) {
@@ -36,7 +36,7 @@ module.exports = (cpf) => {
         rev = 0;
     }
     if (rev !== parseInt(cpf.charAt(10))) {
-        throw new Error('must be a valid CPF');
+        throw new Error('MUST_BE_A_VALID_CPF');
     }
     return cpf;
 };
