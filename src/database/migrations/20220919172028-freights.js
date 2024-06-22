@@ -43,7 +43,7 @@ module.exports = {
             },
             status: {
                 type: Sequelize.ENUM,
-                values: ['APPROVAL_PROCESS', 'APPROVED', 'STARTING_TRIP', 'DENIED', 'FINISHED'],
+                values: ['PENDING', 'APPROVED', 'STARTING_TRIP', 'DENIED', 'FINISHED'],
             },
 
             // level two

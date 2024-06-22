@@ -16,7 +16,7 @@ class Freight extends Model {
                 value_tonne: Sequelize.INTEGER, // valor por tonelada
 
                 status: Sequelize.ENUM({
-                    values: ['DRAFT', 'APPROVAL_PROCESS', 'APPROVED', 'STARTING_TRIP', 'DENIED', 'FINISHED'],
+                    values: ['DRAFT', 'PENDING', 'APPROVED', 'STARTING_TRIP', 'DENIED', 'FINISHED'],
                     defaultValue: 'DRAFT',
                 }),
 
