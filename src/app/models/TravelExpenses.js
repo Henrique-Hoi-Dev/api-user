@@ -13,7 +13,11 @@ class TravelExpenses extends Model {
                 expense_description: Sequelize.STRING,
                 dfe: Sequelize.STRING,
                 value: Sequelize.INTEGER,
-                proof_img: Sequelize.STRING,
+                img_receipt: {
+                    type: DataTypes.JSONB,
+                    allowNull: true,
+                    defaultValue: {},
+                },
                 payment: {
                     type: Sequelize.JSONB,
                     allowNull: false,

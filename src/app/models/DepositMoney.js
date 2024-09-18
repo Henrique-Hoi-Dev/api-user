@@ -18,7 +18,11 @@ class DepositMoney extends Model {
                     values: BRAZILIANBANKSENUM,
                 },
                 value: Sequelize.INTEGER,
-                proof_img: Sequelize.STRING,
+                img_receipt: {
+                    type: DataTypes.JSONB,
+                    allowNull: true,
+                    defaultValue: {},
+                },
                 payment: {
                     type: Sequelize.JSONB,
                     allowNull: false,

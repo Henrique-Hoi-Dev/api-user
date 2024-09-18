@@ -62,8 +62,8 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: true,
             },
-            proof_img: {
-                type: Sequelize.STRING,
+            img_receipt: {
+                type: Sequelize.JSONB,
                 allowNull: true,
             },
             payment: {

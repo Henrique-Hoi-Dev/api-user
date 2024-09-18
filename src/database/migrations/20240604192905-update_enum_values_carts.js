@@ -14,11 +14,11 @@ module.exports = {
 
         // Atualizar a coluna para usar o novo enum
         await queryInterface.sequelize.query(`
-      ALTER TABLE "carts" 
-      ALTER COLUMN "cart_bodyworks" 
-      TYPE "enum_carts_cart_bodyworks" 
-      USING "cart_bodyworks"::text::"enum_carts_cart_bodyworks";
-    `);
+            ALTER TABLE "carts" 
+            ALTER COLUMN "cart_bodyworks" 
+            TYPE "enum_carts_cart_bodyworks" 
+            USING "cart_bodyworks"::text::"enum_carts_cart_bodyworks"; 
+        `);
 
         // Remover o enum antigo, garantindo que nenhuma coluna ainda o referencie
         await queryInterface.sequelize.query('DROP TYPE "enum_carts_cart_bodyworks_old";');

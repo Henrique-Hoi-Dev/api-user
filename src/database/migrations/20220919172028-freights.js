@@ -60,13 +60,16 @@ module.exports = {
                 type: Sequelize.INTEGER,
             },
             img_proof_cte: {
-                type: Sequelize.STRING,
+                type: Sequelize.JSONB,
+                allowNull: true,
             },
             img_proof_ticket: {
-                type: Sequelize.STRING,
+                type: Sequelize.JSONB,
+                allowNull: true,
             },
             img_proof_freight_letter: {
-                type: Sequelize.STRING,
+                type: Sequelize.JSONB,
+                allowNull: true,
             },
             created_at: {
                 type: Sequelize.DATE,
