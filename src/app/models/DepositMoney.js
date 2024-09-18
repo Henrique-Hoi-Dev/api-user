@@ -1,4 +1,4 @@
-import Sequelize, { Model } from 'sequelize';
+import Sequelize, { DataTypes, Model } from 'sequelize';
 import { BRAZILIANBANKSENUM, DEPOSITMONEYENUM } from '../utils/enums_deposit';
 
 class DepositMoney extends Model {
