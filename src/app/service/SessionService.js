@@ -1,51 +1,36 @@
 import jwt from 'jsonwebtoken';
 import * as Yup from 'yup';
-import httpStatus from 'http-status-codes';
 
 import User from '../models/User';
-import authConfig from '../../config/auth';
 import Permission from '../models/Permission';
 
 export default {
+    async sessionUser(body) {
+        const schema = Yup.object().shape({
+            email: Yup.string().email().required(),
+            password: Yup.string().required(),
+        });
 
-  async sessionUser(req, res) {
-    let result = {}
-    let body = req
+        if (!(await schema.isValid(body))) throw Error('VALIDATION_ERROR');
 
-    const schema = Yup.object().shape({
-      email: Yup.string().email().required(),
-      password: Yup.string().required(),
-    });
+        const { email, password } = body;
 
-    if (!(await schema.isValid(body))) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Validation failed!' };
-      return result
-    }
+        const user = await User.findOne({ where: { email } });
 
-    const { email, password } = body;
-    
-    const user = await User.findOne({ where: { email } });
+        if (!user) throw Error('USER_NOT_FOUND');
 
-    if (!user) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'User not found' }      
-      return result
-    }
+        if (!(await user.checkPassword(password))) throw Error('INVALID_USER_PASSWORD');
 
-    if (!(await user.checkPassword(password))) {
-      result = { httpStatus: httpStatus.BAD_REQUEST, msg: 'Password is incorrect' }      
-      return result
-    }
+        const { id, name, type_role, permission_id } = user;
 
-    const { id, name, type_role, permission_id } = user;
+        const permissions = await Permission.findByPk(permission_id, {
+            attributes: ['role', 'actions'],
+        });
 
-    const permissions = await Permission.findByPk(permission_id, { attributes: ["role", "actions"]})
+        const token = jwt.sign({ id, name, email, type_role, permissions }, process.env.TOKEN_KEY, {
+            expiresIn: process.env.TOKEN_EXP,
+        });
 
-    const userProps = { id, name, email, type_role, permissions },
-      token = jwt.sign({ id, type_role, permissions }, authConfig.secret, {
-      expiresIn: authConfig.expiresIn,
-    });
-
-    result = { httpStatus: httpStatus.OK, dataResult: {userProps, token} }      
-    return result
-  },
-}
+        return { token };
+    },
+};

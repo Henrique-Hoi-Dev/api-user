@@ -1,33 +1,34 @@
 import express from 'express';
 import routes from './routes';
 import cors from 'cors';
-// import sequelize from './database/sequelize';
+import sequelize from './database/sequelize';
 
 import 'dotenv/config';
 
 // só para rodar migration na Produção ou confinguração local
-import './database';
+// import './database';
 
 class App {
-  constructor() {
-    this.server = express();
+    constructor() {
+        this.server = express();
 
-    this.middlewares();
-    this.routes();
-    // this.sequelize();
-  }
+        this.middlewares();
+        this.routes();
+        this.sequelize();
+    }
 
-  middlewares() {
-    this.server.use(cors());
-    this.server.use(express.json());
-  }
+    middlewares() {
+        this.server.use(cors());
+        this.server.use(express.json());
+    }
 
-  routes() {
-    this.server.use(routes);
-  }
+    routes() {
+        this.server.use(routes);
+    }
 
-  sequelize() {
-    sequelize;
+    sequelize() {
+        sequelize;
+    }
 }
 
 export default new App().server;

@@ -1,81 +1,26 @@
-import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
 
 import Cart from '../models/Cart';
 import FinancialStatements from '../models/FinancialStatements';
 
 export default {
-  async createCart(req, res) {
-    let result = {};
-    let cartBody = req;
-
+  async create(body) {
     const chassisExist = await Cart.findOne({
-      where: { cart_chassis: cartBody.cart_chassis },
+      where: { cart_chassis: body.cart_chassis },
     });
+    if (chassisExist) throw Error('This chassis cart already exists.');
+
     const boardExist = await Cart.findOne({
-      where: { cart_board: cartBody.cart_board },
+      where: { cart_board: body.cart_board },
     });
+    if (boardExist) throw Error('This board cart already exists.');
 
-    if (chassisExist) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This chassis cart already exists.',
-      };
-      return result;
-    }
+    await Cart.create(body);
 
-    if (boardExist) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This board cart already exists.',
-      };
-      return result;
-    }
-
-    await Cart.create(cartBody);
-
-    result = { httpStatus: httpStatus.CREATED, status: 'successful' };
-    return result;
+    return { msg: 'successful' };
   },
 
-  async getAllSelect(req, res) {
-    let result = {};
-    const select = await Cart.findAll({
-      where: {
-        id: {
-          [Op.notIn]: literal(`(SELECT "cart_id" FROM "financial_statements")`),
-        },
-      },
-      attributes: ['id', 'cart_models'],
-    });
-
-    const selectFinancial = await Cart.findAll({
-      attributes: ['id', 'cart_models'],
-      include: [
-        {
-          model: FinancialStatements,
-          as: 'financialStatements',
-          required: true,
-          where: {
-            status: false,
-          },
-          attributes: ['id', 'cart_id', 'cart_models'],
-        },
-      ],
-    });
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: [...select.concat(...selectFinancial)],
-    };
-
-    return result;
-  },
-
-  async getAllCart(req, res) {
-    let result = {};
-
+  async getAll(query) {
     const {
       page = 1,
       limit = 100,
@@ -84,13 +29,10 @@ export default {
       cart_models,
       id,
       search,
-    } = req.query;
+    } = query;
 
     const where = {};
     // if (id) where.id = id;
-
-    const total = (await Cart.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
 
     const carts = await Cart.findAll({
       where: search
@@ -122,24 +64,51 @@ export default {
       ],
     });
 
+    const total = await Cart.count();
+    const totalPages = Math.ceil(total / limit);
+
     const currentPage = Number(page);
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
+      dataResult: carts,
       total,
       totalPages,
       currentPage,
-      dataResult: carts,
     };
-
-    return result;
   },
 
-  async getIdCart(req, res) {
-    let result = {};
+  async getAllSelect(req, res) {
+    const select = await Cart.findAll({
+      where: {
+        id: {
+          [Op.notIn]: literal(`(SELECT "cart_id" FROM "financial_statements")`),
+        },
+      },
+      attributes: ['id', 'cart_models'],
+    });
 
-    let cart = await Cart.findByPk(req.id, {
+    const selectFinancial = await Cart.findAll({
+      attributes: ['id', 'cart_models'],
+      include: [
+        {
+          model: FinancialStatements,
+          as: 'financialStatements',
+          required: true,
+          where: {
+            status: false,
+          },
+          attributes: ['id', 'cart_id', 'cart_models'],
+        },
+      ],
+    });
+
+    return {
+      dataResult: [...select.concat(...selectFinancial)],
+    };
+  },
+
+  async getId(id) {
+    let cart = await Cart.findByPk(id, {
       attributes: [
         'id',
         'cart_models',
@@ -155,33 +124,19 @@ export default {
       ],
     });
 
-    if (!cart) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Cart not found' },
-      };
-      return result;
-    }
+    if (!cart) throw Error('Cart not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: cart,
     };
-    return result;
   },
 
-  async updateCart(req, res) {
-    let result = {};
+  async update(body, id) {
+    const cart = await Cart.findByPk(id);
 
-    let carts = req;
-    let cartId = res.id;
+    await cart.update(body);
 
-    const cart = await Cart.findByPk(cartId);
-
-    await cart.update(carts);
-
-    const cartResult = await Cart.findByPk(cartId, {
+    const cartResult = await Cart.findByPk(id, {
       attributes: [
         'id',
         'cart_models',
@@ -197,38 +152,22 @@ export default {
       ],
     });
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       dataResult: cartResult,
     };
-    return result;
   },
 
-  async deleteCart(req, res) {
-    let result = {};
-
-    const id = req.id;
-
+  async delete(id) {
     const cart = await Cart.destroy({
       where: {
         id: id,
       },
     });
 
-    if (!cart) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Cart not found' },
-      };
-      return result;
-    }
+    if (!cart) throw Error('Cart not found');
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
+    return {
       responseData: { msg: 'Deleted cart' },
     };
-    return result;
   },
 };

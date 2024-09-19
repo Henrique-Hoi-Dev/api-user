@@ -1,100 +1,58 @@
-import httpStatus from 'http-status-codes';
-
 import User from '../models/User';
-// import Notification from "../schemas/Notification";
 import Notifications from '../models/Notification';
 
 export default {
-  async getAll(req, res) {
-    let result = {};
+    async getAll(req) {
+        const checkIsMaster = await User.findOne({
+            where: { id: req.userId, type_role: 'MASTER' },
+        });
 
-    const checkIsMaster = await User.findOne({
-      where: { id: req.userId, type_role: 'MASTER' },
-    });
+        if (!checkIsMaster) throw Error('User not is Master');
 
-    if (!checkIsMaster) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'User not is Master',
-      };
-      return result;
-    }
+        const notifications = await Notifications.findAll({
+            where: { user_id: req.userId, read: false },
+            order: [['created_at', 'DESC']],
+            attributes: [
+                'id',
+                'content',
+                'read',
+                'created_at',
+                'freight_id',
+                'driver_id',
+                'user_id',
+                'financial_statements_id',
+            ],
+        });
 
-    const notifications = await Notifications.findAll({
-      where: { user_id: req.userId, read: false },
-      order: [['created_at', 'DESC']],
-      attributes: [
-        'id',
-        'content',
-        'read',
-        'created_at',
-        'freight_id',
-        'driver_id',
-      ],
-    });
+        const history = await Notifications.findAll({
+            where: { user_id: req.userId, read: true },
+            order: [['created_at', 'DESC']],
+            attributes: [
+                'id',
+                'content',
+                'read',
+                'created_at',
+                'freight_id',
+                'driver_id',
+                'user_id',
+                'financial_statements_id',
+            ],
+        });
 
-    const history = await Notifications.findAll({
-      where: { user_id: req.userId, read: true },
-      order: [['created_at', 'DESC']],
-      attributes: [
-        'id',
-        'content',
-        'read',
-        'created_at',
-        'freight_id',
-        'driver_id',
-      ],
-    });
+        return { notifications, history };
+    },
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: { notifications, history },
-    };
+    async updateRead(id) {
+        const notification = await Notifications.findByPk(id);
 
-    return result;
-  },
+        if (!notification) throw Error('Notification not found');
+        if (notification.user_id === null) throw Error('Do not have permission for this notification');
+        if (notification.read === true) throw Error('Has already been read.');
 
-  async update(req, res) {
-    let result = {};
+        await notification.update({ read: true });
 
-    let notificationId = res.id;
-
-    const notificationReq = await Notifications.findByPk(notificationId);
-
-    if (!notificationReq) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Notification not found',
-      };
-      return result;
-    }
-
-    if (notificationReq.user_id === null) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Do not have permission for this notification',
-      };
-      return result;
-    }
-
-    if (notificationReq.read === true) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        dataResult: { msg: 'Has already been read.' },
-      };
-      return result;
-    }
-
-    await notificationReq.update({ read: true });
-
-    const notification = await Notifications.findByPk(notificationId);
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: notification,
-    };
-    return result;
-  },
+        return await Notifications.findByPk(id, {
+            attributes: ['id', 'content', 'read', 'freight_id', 'driver_id'],
+        });
+    },
 };

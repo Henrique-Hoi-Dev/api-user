@@ -1,293 +1,202 @@
 import * as Yup from 'yup';
-import httpStatus from 'http-status-codes';
 import { Op, literal } from 'sequelize';
 
 import Driver from '../models/Driver';
 import FinancialStatements from '../models/FinancialStatements';
+import validateCpf from '../utils/validateCpf';
 
 export default {
-  async createDriver(req, res) {
-    let result = {};
+    async create(body) {
+        const cpf = body.cpf.replace(/\D/g, '');
+        const validCpf = validateCpf(cpf);
 
-    let {
-      name_user,
-      password,
-      name,
-      value_fix = 0,
-      percentage = 0,
-      daily = 0,
-    } = req;
+        const schema = Yup.object().shape({
+            name: Yup.string().required(),
+            cpf: Yup.string().required(),
+            password: Yup.string().required().min(8),
+        });
 
-    let body = {
-      name_user: name_user.toLowerCase(),
-      password,
-      name,
-      type_position: 'collaborator',
-      credit: 0,
-      value_fix,
-      percentage,
-      daily,
-    };
+        if (!(await schema.isValid(body))) throw new Error('VALIDATION_ERROR');
 
-    // doing name user verification
-    const driverExist = await Driver.findOne({
-      where: { name_user: body.name_user },
-    });
+        if (!body.value_fix && !body.percentage) {
+            throw new Error('NEED_SOME_PAYMENT');
+        }
 
-    if (driverExist) {
-      result = {
-        httpStatus: httpStatus.CONFLICT,
-        msg: 'This driver name user already exists.',
-      };
-      return result;
-    }
+        const data = {
+            cpf: validCpf,
+            password: body.password,
+            name: body.name,
+            phone: body.phone,
+            email: body.email,
+            type_position: 'COLLABORATOR',
+            value_fix: body.value_fix,
+            percentage: body.percentage,
+            daily: body.daily,
+        };
 
-    const schema = Yup.object().shape({
-      name_user: Yup.string().required(),
-      password: Yup.string().required().min(6),
-    });
+        // doing name user verification
+        const driverExist = await Driver.findOne({
+            where: { cpf: validCpf },
+        });
 
-    if (!(await schema.isValid(body))) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Validation failed!',
-      };
-      return result;
-    }
+        if (driverExist) throw new Error('THIS_CPF_ALREADY_EXISTS');
 
-    await Driver.create(body);
+        await Driver.create(data);
 
-    result = { httpStatus: httpStatus.CREATED, status: 'successful' };
-    return result;
-  },
+        return { msg: 'successful' };
+    },
 
-  async getAllSelect(req, res) {
-    let result = {};
-    const select = await Driver.findAll({
-      where: {
-        id: {
-          [Op.notIn]: literal(
-            `(SELECT "driver_id" FROM "financial_statements")`
-          ),
-        },
-      },
-      attributes: ['id', 'name'],
-    });
+    async getAllSelect() {
+        const select = await Driver.findAll({
+            where: {
+                id: {
+                    [Op.notIn]: literal(`(SELECT "driver_id" FROM "financial_statements")`),
+                },
+            },
+            attributes: ['id', 'name'],
+        });
 
-    const selectFinancial = await Driver.findAll({
-      attributes: ['id', 'name'],
-      include: [
-        {
-          model: FinancialStatements,
-          as: 'financialStatements',
-          required: true,
-          where: {
-            status: false,
-          },
-          attributes: ['id', 'driver_id', 'driver_name'],
-        },
-      ],
-    });
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: [...select.concat(...selectFinancial)],
-    };
-
-    return result;
-  },
-
-  async getAllDriver(req, res) {
-    let result = {};
-
-    const {
-      page = 1,
-      limit = 100,
-      sort_order = 'ASC',
-      sort_field = 'id',
-      name,
-      id,
-      search,
-    } = req.query;
-
-    const where = {};
-    // if (id) where.id = id;
-
-    const total = (await Driver.findAll()).length;
-    const totalPages = Math.ceil(total / limit);
-
-    const drivers = await Driver.findAll({
-      where: search
-        ? {
-            [Op.or]: [
-              // { id: search },
-              { truck: { [Op.iLike]: `%${search}%` } },
-              { name: { [Op.iLike]: `%${search}%` } },
+        const selectFinancial = await Driver.findAll({
+            attributes: ['id', 'name'],
+            include: [
+                {
+                    model: FinancialStatements,
+                    as: 'financialStatements',
+                    required: true,
+                    where: {
+                        status: false,
+                    },
+                    attributes: ['id', 'driver_id', 'driver_name'],
+                },
             ],
-          }
-        : where,
-      order: [[sort_field, sort_order]],
-      limit: limit,
-      offset: page - 1 ? (page - 1) * limit : 0,
-      attributes: [
-        'id',
-        'name',
-        'name_user',
-        'credit',
-        'value_fix',
-        'percentage',
-        'daily',
-        'cart',
-        'truck',
-      ],
-    });
+        });
 
-    const currentPage = Number(page);
+        return {
+            dataResult: [...select.concat(...selectFinancial)],
+        };
+    },
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      total,
-      totalPages,
-      currentPage,
-      dataResult: drivers,
-    };
+    async getAll(query) {
+        const { page = 1, limit = 100, sort_order = 'ASC', sort_field = 'id', name, id, search } = query;
 
-    return result;
-  },
+        const where = {};
+        // if (id) where.id = id;
 
-  async getIdDriver(req, res) {
-    let result = {};
+        const drivers = await Driver.findAll({
+            where: search
+                ? {
+                      [Op.or]: [
+                          // { id: search },
+                          { truck: { [Op.iLike]: `%${search}%` } },
+                          { name: { [Op.iLike]: `%${search}%` } },
+                      ],
+                  }
+                : where,
+            order: [[sort_field, sort_order]],
+            limit: limit,
+            offset: page - 1 ? (page - 1) * limit : 0,
+            attributes: ['id', 'name', 'cpf', 'credit', 'value_fix', 'percentage', 'daily', 'cart', 'truck'],
+        });
 
-    let driver = await Driver.findByPk(req.id, {
-      attributes: [
-        'id',
-        'name',
-        'number_cnh',
-        'valid_cnh',
-        'date_valid_mopp',
-        'date_valid_nr20',
-        'date_valid_nr35',
-        'cpf',
-        'date_admission',
-        'date_birthday',
-        'credit',
-        'value_fix',
-        'percentage',
-        'daily',
-      ],
-    });
+        const total = await Driver.count();
+        const totalPages = Math.ceil(total / limit);
 
-    if (!driver) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Driver not found' },
-      };
-      return result;
-    }
+        const currentPage = Number(page);
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: driver,
-    };
-    return result;
-  },
+        return {
+            dataResult: drivers,
+            total,
+            totalPages,
+            currentPage,
+        };
+    },
 
-  async updateDriver(req, res) {
-    let result = {};
+    async getId(id) {
+        const driver = await Driver.findByPk(id, {
+            attributes: [
+                'id',
+                'name',
+                'number_cnh',
+                'valid_cnh',
+                'date_valid_mopp',
+                'date_valid_nr20',
+                'date_valid_nr35',
+                'cpf',
+                'date_admission',
+                'date_birthday',
+                'credit',
+                'value_fix',
+                'percentage',
+                'daily',
+                'transactions',
+            ],
+        });
 
-    let drivers = req;
-    let driverId = res.id;
+        if (!driver) throw Error('Driver not found');
 
-    const schema = Yup.object().shape({
-      name: Yup.string(),
-      oldPassword: Yup.string().min(8),
-      password: Yup.string()
-        .min(8)
-        .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
-        ),
-      confirmPassword: Yup.string().when('password', (password, field) =>
-        password ? field.required().oneOf([Yup.ref('password')]) : field
-      ),
-    });
+        return {
+            dataResult: driver,
+        };
+    },
 
-    if (!(await schema.isValid(drivers))) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        msg: 'Validation failed!',
-      };
-      return result;
-    }
+    async update(body, id) {
+        const schema = Yup.object().shape({
+            name: Yup.string(),
+            oldPassword: Yup.string().min(8),
+            password: Yup.string()
+                .min(8)
+                .when('oldPassword', (oldPassword, field) => (oldPassword ? field.required() : field)),
+            confirmPassword: Yup.string().when('password', (password, field) =>
+                password ? field.required().oneOf([Yup.ref('password')]) : field
+            ),
+        });
 
-    const { oldPassword } = drivers;
+        if (!(await schema.isValid(body))) throw Error('Validation failed!');
 
-    const driver = await Driver.findByPk(driverId);
+        const { oldPassword } = body;
 
-    if (oldPassword && !(await driver.checkPassword(oldPassword))) {
-      result = {
-        httpStatus: httpStatus.METHOD_FAILURE,
-        msg: 'Password does not match!',
-      };
-      return result;
-    }
+        const driver = await Driver.findByPk(id);
 
-    await driver.update(drivers);
+        if (oldPassword && !(await driver.checkPassword(oldPassword))) throw Error('Password does not match!');
 
-    const driverResult = await Driver.findByPk(driverId, {
-      attributes: [
-        'id',
-        'name',
-        'name_user',
-        'number_cnh',
-        'valid_cnh',
-        'date_valid_mopp',
-        'date_valid_nr20',
-        'date_valid_nr35',
-        'cpf',
-        'date_admission',
-        'date_birthday',
-        'credit',
-        'value_fix',
-        'percentage',
-        'daily',
-      ],
-    });
+        await driver.update(body);
 
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      dataResult: driverResult,
-    };
-    return result;
-  },
+        const driverResult = await Driver.findByPk(id, {
+            attributes: [
+                'id',
+                'name',
+                'cpf',
+                'number_cnh',
+                'valid_cnh',
+                'date_valid_mopp',
+                'date_valid_nr20',
+                'date_valid_nr35',
+                'cpf',
+                'date_admission',
+                'date_birthday',
+                'credit',
+                'value_fix',
+                'percentage',
+                'daily',
+            ],
+        });
 
-  async deleteDriver(req, res) {
-    let result = {};
+        return {
+            dataResult: driverResult,
+        };
+    },
 
-    const id = req.id;
+    async delete(id) {
+        const driver = await Driver.destroy({
+            where: {
+                id: id,
+            },
+        });
 
-    const driver = await Driver.destroy({
-      where: {
-        id: id,
-      },
-    });
+        if (!driver) throw Error('Driver not found');
 
-    if (!driver) {
-      result = {
-        httpStatus: httpStatus.BAD_REQUEST,
-        responseData: { msg: 'Driver not found' },
-      };
-      return result;
-    }
-
-    result = {
-      httpStatus: httpStatus.OK,
-      status: 'successful',
-      responseData: { msg: 'Deleted driver' },
-    };
-    return result;
-  },
+        return {
+            responseData: { msg: 'Deleted driver' },
+        };
+    },
 };

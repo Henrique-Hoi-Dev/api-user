@@ -1,89 +1,51 @@
+import HttpStatus from 'http-status';
 import FreightService from '../service/FreightService';
 
 class FreightController {
-  async createFreight(req, res) {
-    try {
-      let response = await FreightService.createFreight(req.body);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
+    async create(req, res, next) {
+        try {
+            const data = await FreightService.create(req.body);
+            return res.status(HttpStatus.CREATED).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async getAllFreight(req, res) {
-    try {
-      let response = await FreightService.getAllFreight(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async getId(req, res, next) {
+        try {
+            const data = await FreightService.getId(req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async getIdFreight(req, res) {
-    try {
-      let response = await FreightService.getIdFreight(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async firstCheckId(req, res, next) {
+        try {
+            const data = await FreightService.firstCheckId(req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async firstCheckId(req, res) {
-    try {
-      let response = await FreightService.firstCheckId(req.params.id);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async update(req, res, next) {
+        try {
+            const data = await FreightService.update(req.userProps, req.body, req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async approvedFreight(req, res) {
-    try {
-      let response = await FreightService.approvedFreight(req.body, req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async delete(req, res, next) {
+        try {
+            const data = await FreightService.delete(req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
-
-  async deleteFreight(req, res) {
-    try {
-      let response = await FreightService.deleteFreight(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(200).json({ mgs: error.message });
-    }
-  }
 }
 
 export default new FreightController();

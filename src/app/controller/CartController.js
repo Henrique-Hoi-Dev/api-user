@@ -1,89 +1,60 @@
+import HttpStatus from 'http-status';
 import CartService from '../service/CartService';
 
 class CartController {
-  async createCart(req, res) {
-    try {
-      let response = await CartService.createCart(req.body);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
+    async create(req, res, next) {
+        try {
+            const data = await CartService.create(req.body);
+            return res.status(HttpStatus.CREATED).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async getAllCart(req, res) {
-    try {
-      let response = await CartService.getAllCart(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async getAll(req, res, next) {
+        try {
+            const data = await CartService.getAll(req.query);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async getAllSelect(req, res) {
-    try {
-      let response = await CartService.getAllSelect(req, res);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async getAllSelect(req, res, next) {
+        try {
+            const data = await CartService.getAllSelect(req.query);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async getIdCart(req, res) {
-    try {
-      let response = await CartService.getIdCart(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async getId(req, res, next) {
+        try {
+            const data = await CartService.getId(req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async updateCart(req, res) {
-    try {
-      let response = await CartService.updateCart(req.body, req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(400).json({ mgs: error.message });
+    async update(req, res, next) {
+        try {
+            const data = await CartService.update(req.body, req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 
-  async deleteCart(req, res) {
-    try {
-      let response = await CartService.deleteCart(req.params);
-
-      if (response.httpStatus === 200) {
-        return res.send(response);
-      } else {
-        return res.status(response.httpStatus).json(response);
-      }
-    } catch (error) {
-      return res.status(200).json({ mgs: error.message });
+    async delete(req, res, next) {
+        try {
+            const data = await CartService.delete(req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
     }
-  }
 }
 
 export default new CartController();

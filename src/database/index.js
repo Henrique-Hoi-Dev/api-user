@@ -10,56 +10,45 @@ import Restock from '../app/models/Restock';
 import TravelExpenses from '../app/models/TravelExpenses';
 import DataDriver from '../app/models/DataDriver';
 import DepositMoney from '../app/models/DepositMoney';
-import Notifications from '../app/models/Notification';
+import Notification from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
 import Permission from '../app/models/Permission';
+import Credit from '../app/models/Credit';
+// import ValidateCode from '../app/models/ValidateCode';
 
 import databaseConfig from '../config/database.js';
 
 import 'dotenv/config';
 
 const models = [
-  User,
-  Driver,
-  Truck,
-  Cart,
-  Freight,
-  DepositMoney,
-  DataDriver,
-  Notifications,
-  Notification,
-  FinancialStatements,
-  TravelExpenses,
-  Restock,
-  Permission,
+    User,
+    Driver,
+    Truck,
+    Cart,
+    Freight,
+    DepositMoney,
+    DataDriver,
+    Notification,
+    FinancialStatements,
+    TravelExpenses,
+    Restock,
+    Permission,
+    Credit,
+    // ValidateCode,
 ];
 
 class Database {
-  constructor() {
-    this.init();
-    this.mongo();
-  }
+    constructor() {
+        this.init();
+    }
 
-  init() {
-    this.connetion = new Sequelize(databaseConfig);
+    init() {
+        this.connetion = new Sequelize(databaseConfig);
 
-    models
-      .map((model) => model.init(this.connetion))
-      .map(
-        (model) => model.associate && model.associate(this.connetion.models)
-      );
-  }
-
-  mongo() {
-    this.mongoConnection = mongoose.connect(
-      process.env.DATABASE_URL_MONGO,
-      {
-        useNewUrlParser: true,
-        // useFindAndModify: true
-      },
-      console.log('moongo URL', process.env.DATABASE_URL_MONGO)
-    );
-  }
+        models
+            .map((model) => model.init(this.connetion))
+            .map((model) => model.associate && model.associate(this.connetion.models));
+    }
 }
 
 export default new Database();
