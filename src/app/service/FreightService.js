@@ -11,6 +11,7 @@ import Driver from '../models/Driver';
 
 import ApiGoogle from '../providers/router_map_google';
 import { format } from 'date-fns';
+import { formatWithTimezone } from '../utils/formatTimeZone';
 
 export default {
     async _googleQuery(startCity, finalCity) {
@@ -170,8 +171,8 @@ export default {
                 startCity: freight.start_freight_city,
                 finalCity: freight.final_freight_city,
                 restock: restock.map((res) => ({
-                    date: format(res.date, 'yyyy-MM-dd'),
-                    time: format(res.date, 'HH:mm'),
+                    date: formatWithTimezone(res?.registration_date, 'yyyy-MM-dd'),
+                    time: formatWithTimezone(res?.registration_date, 'HH:mm'),
                     local: res.city,
                     liters_fuel: res.liters_fuel,
                     value_fuel: this._formatRealValue(res.value_fuel / 100),
@@ -183,8 +184,8 @@ export default {
                     },
                 })),
                 travelExpenses: travelExpenses.map((res) => ({
-                    date: format(res.date, 'yyyy-MM-dd'),
-                    time: format(res.date, 'HH:mm'),
+                    date: formatWithTimezone(res?.registration_date, 'yyyy-MM-dd'),
+                    time: formatWithTimezone(res?.registration_date, 'HH:mm'),
                     local: res.city,
                     expenseDescription: res.expense_description,
                     payment: {
@@ -195,8 +196,8 @@ export default {
                     },
                 })),
                 depositMoney: depositMoney.map((res) => ({
-                    date: format(res.createdAt, 'yyyy-MM-dd'),
-                    time: format(res.createdAt, 'HH:mm'),
+                    date: format(res?.registration_date, 'yyyy-MM-dd'),
+                    time: format(res?.registration_date, 'HH:mm'),
                     local: res.local,
                     typeBank: res.type_bank,
                     payment: {
