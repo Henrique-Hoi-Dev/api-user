@@ -26,7 +26,7 @@ export default {
             cpf: validCpf,
             password: body.password,
             name: body.name,
-            phone: body.phone,
+            phone: `+55${body.phone}`,
             email: body.email,
             type_position: 'COLLABORATOR',
             value_fix: body.value_fix,
