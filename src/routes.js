@@ -20,8 +20,6 @@ const routes = new Router();
 routes.post('/user/signup', UserController.create);
 routes.post('/user/signin', SessionController.sessionUser);
 
-routes.post('/driver/signup', DriverController.create);
-
 routes.use(authMiddleware);
 
 routes
@@ -33,6 +31,7 @@ routes
 routes
     .put('/user/driver/:id', DriverController.update)
     .get('/user/driver/:id', DriverController.getId)
+    .post('/driver/signup', DriverController.create)
     .get('/drivers', DriverController.getAll)
     .get('/drivers-select', DriverController.getAllSelect)
     .delete('/user/driver/:id', DriverController.delete);
