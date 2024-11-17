@@ -198,17 +198,18 @@ export default {
     },
 
     async delete(id) {
-        const truck = await Truck.destroy({
-            where: {
-                id: id,
-            },
-        });
-
+        const truck = await Truck.findByPk(id);
         if (!truck) throw Error('TRUCK_NOT_FOUND');
 
         const isInUse = await FinancialStatements.findAll({ truck_board: truck.truck_board, status: true });
 
         if (isInUse) throw Error('CANNOT_DELETE_TRUCK_IN_USE');
+
+        await Truck.destroy({
+            where: {
+                id: id,
+            },
+        });
 
         return {
             responseData: { msg: 'Deleted truck' },

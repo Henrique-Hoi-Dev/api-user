@@ -150,18 +150,18 @@ export default {
     },
 
     async delete(id) {
-        const cart = await Cart.destroy({
-            where: {
-                id: id,
-            },
-        });
-
+        const cart = await Cart.findByPk(id);
         if (!cart) throw Error('CART_NOT_FOUND');
 
         const isInUse = await FinancialStatements.findAll({ cart_board: cart.cart_board, status: true });
 
         if (isInUse) throw Error('CANNOT_DELETE_CART_IN_USE');
 
+        await Cart.destroy({
+            where: {
+                id: id,
+            },
+        });
         return {
             responseData: { msg: 'Deleted cart' },
         };
