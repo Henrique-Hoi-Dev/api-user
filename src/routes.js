@@ -14,8 +14,6 @@ import multer from 'multer';
 
 import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
-// const fs = require("fs");
-
 const routes = new Router();
 
 routes.post('/user/signup', UserController.create);
@@ -84,5 +82,8 @@ routes
     .get('/permissions', verifyIfUserHasRole('MASTER'), PermissionController.getAllPermission);
 
 routes.put('/user/add-role/:id', verifyIfUserHasRole('MASTER'), UserController.addRole);
+
+routes.get('/citis', UserController.addRole);
+routes.get('/states', UserController.addRole);
 
 export default routes;

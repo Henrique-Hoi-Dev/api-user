@@ -13,6 +13,8 @@ import Notification from '../app/models/Notification';
 import FinancialStatements from '../app/models/FinancialStatements';
 import Permission from '../app/models/Permission';
 import Credit from '../app/models/Credit';
+import Cities from '../app/models/Cities.js';
+import States from '../app/models/States.js';
 // import ValidateCode from '../app/models/ValidateCode';
 
 import 'dotenv/config';
@@ -47,6 +49,8 @@ const models = [
     Restock,
     Permission,
     Credit,
+    Cities,
+    States,
     // ValidateCode,
 ];
 
