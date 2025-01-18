@@ -47,6 +47,15 @@ class TruckController {
         }
     }
 
+    async uploadImage(req, res, next) {
+        try {
+            const data = await TruckService.uploadImage(req.body, req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
+    }
+
     async delete(req, res, next) {
         try {
             const data = await TruckService.delete(req.params.id);

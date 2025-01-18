@@ -10,6 +10,7 @@ import NotificationController from './app/controller/NotificationController';
 import DriverController from './app/controller/DriverController';
 import PermissionController from './app/controller/PermissionController';
 import CreditController from './app/controller/CreditController';
+import multer from 'multer';
 
 import authMiddleware, { verifyIfUserHasRole } from './app/middlewares/auth';
 
@@ -66,6 +67,7 @@ routes
     .get('/user/truck/:id', TruckController.getId)
     .get('/trucks', TruckController.getAll)
     .get('/trucks-select', TruckController.getAllSelect)
+    .patch('/truck/upload-image/:id', multer().single('file'), TruckController.uploadImage)
     .delete('/user/truck/:id', TruckController.delete);
 
 routes

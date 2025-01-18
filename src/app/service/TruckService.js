@@ -2,6 +2,8 @@ import { Op, literal } from 'sequelize';
 
 import FinancialStatements from '../models/FinancialStatements';
 import Truck from '../models/Truck';
+import { generateRandomCode } from '../utils/crypto';
+import { deleteFile, sendFile } from '../providers/aws';
 
 export default {
     async create(body) {
@@ -41,6 +43,66 @@ export default {
         await Truck.create(data);
 
         return { msg: 'successful' };
+    },
+
+    async uploadImage(payload, { id }) {
+        const { file, body } = payload;
+
+        const truck = await Truck.findByPk(id);
+        if (!truck) throw Error('TRUCK_NOT_FOUND');
+
+        if (truck.img_receipt && truck.img_receipt.uuid) {
+            await this.deleteFile({ id });
+        }
+
+        if (!body.category) throw Error('CATEGORY_OR_TYPE_NOT_FOUND');
+
+        const originalFilename = file.originalname;
+
+        const code = generateRandomCode(9);
+
+        file.name = code;
+
+        await sendFile(payload);
+
+        const infoRestock = await truck.update({
+            img_receipt: {
+                uuid: file.name,
+                name: originalFilename,
+                mimetype: file.mimetype,
+                category: body.category,
+            },
+        });
+
+        return infoRestock;
+    },
+
+    async deleteFile({ id }) {
+        const truck = await Truck.findByPk(id);
+        if (!truck) throw Error('TRUCK_NOT_FOUND');
+
+        try {
+            await this._deleteFileIntegration({
+                filename: truck.img_receipt.uuid,
+                category: truck.img_receipt.category,
+            });
+
+            const infoTruck = await truck.update({
+                img_receipt: {},
+            });
+
+            return infoTruck;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async _deleteFileIntegration({ filename, category }) {
+        try {
+            return await deleteFile({ filename, category });
+        } catch (error) {
+            throw error;
+        }
     },
 
     async getAllSelect(req, res) {
