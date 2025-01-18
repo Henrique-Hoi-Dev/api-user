@@ -83,7 +83,4 @@ routes
 
 routes.put('/user/add-role/:id', verifyIfUserHasRole('MASTER'), UserController.addRole);
 
-routes.get('/citis', UserController.addRole);
-routes.get('/states', UserController.addRole);
-
 export default routes;
