@@ -38,6 +38,15 @@ class FinancialStatementsController {
         }
     }
 
+    async finishing(req, res, next) {
+        try {
+            const data = await FinancialStatementsService.finishing(req.body, req.params.id);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify(data)));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json({ mgs: error.message }));
+        }
+    }
+
     async delete(req, res, next) {
         try {
             const data = await FinancialStatementsService.delete(req.params.id);

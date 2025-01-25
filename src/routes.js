@@ -38,6 +38,7 @@ routes
 routes
     .post('/user/financialStatement', FinancialStatementsController.create)
     .patch('/user/financialStatement/:id', FinancialStatementsController.update)
+    .patch('/user/financialStatement/finishing/:id', FinancialStatementsController.finishing)
     .get('/user/financialStatement/:id', FinancialStatementsController.getId)
     .get('/financialStatements', FinancialStatementsController.getAll)
     .delete('/user/financialStatement/:id', FinancialStatementsController.delete);

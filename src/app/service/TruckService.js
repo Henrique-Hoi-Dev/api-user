@@ -112,11 +112,11 @@ export default {
                     [Op.notIn]: literal(`(SELECT "truck_id" FROM "financial_statements")`),
                 },
             },
-            attributes: ['id', 'truck_models'],
+            attributes: ['id', 'truck_models', 'truck_board'],
         });
 
         const selectFinancial = await Truck.findAll({
-            attributes: ['id', 'truck_models'],
+            attributes: ['id', 'truck_models', 'truck_board'],
             include: [
                 {
                     model: FinancialStatements,
@@ -125,7 +125,7 @@ export default {
                     where: {
                         status: false,
                     },
-                    attributes: ['id', 'truck_id', 'truck_models'],
+                    attributes: ['id', 'truck_id', 'truck_models', 'truck_board'],
                 },
             ],
         });

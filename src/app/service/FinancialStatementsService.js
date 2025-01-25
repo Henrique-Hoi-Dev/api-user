@@ -156,7 +156,7 @@ export default {
             },
         });
 
-        if (!financial) throw Error('Financial Statements not found');
+        if (!financial) throw Error('FINANCIAL_NOT_FOUN');
 
         const freight = await Freight.findAll({
             where: { financial_statements_id: financial.id },
@@ -190,7 +190,7 @@ export default {
     async update(body, id) {
         const financialStatement = await FinancialStatements.findByPk(id);
 
-        if (!financialStatement) throw Error('Financial not found');
+        if (!financialStatement) throw Error('FINANCIAL_NOT_FOUND');
 
         const result = await financialStatement.update(body);
 
@@ -207,12 +207,34 @@ export default {
         return result;
     },
 
+    async finishing(body, id) {
+        const financialStatement = await FinancialStatements.findByPk(id, {
+            include: {
+                model: Freight,
+                as: 'freight',
+            },
+        });
+        if (!financialStatement) throw Error('FINANCIAL_NOT_FOUND');
+
+        for (const item of financialStatement.freight) {
+            const freight = await Freight.findByPk(item.id);
+            if (freight.status === 'STARTING_TRIP') throw Error('TRIP_IN_PROGRESS');
+        }
+
+        const result = await financialStatement.update({
+            final_km: body.final_km,
+            status: body.status,
+        });
+
+        return result;
+    },
+
     async delete(id) {
         const financial = await FinancialStatements.findByPk(id);
-        if (!financial) throw Errro('Financial not found');
+        if (!financial) throw Errro('FINANCIAL_NOT_FOUND');
 
         const user = await User.findByPk(financial.creator_user_id);
-        if (!user) throw Errro('User not found');
+        if (!user) throw Errro('USER_NOT_FOUND');
 
         const retult = await FinancialStatements.destroy({
             where: {
