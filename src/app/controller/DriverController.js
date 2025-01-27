@@ -11,6 +11,15 @@ class DriverController {
         }
     }
 
+    async resetPassword(req, res, next) {
+        try {
+            const data = await DriverService.resetPassword(req.params);
+            return res.status(HttpStatus.OK).json(JSON.parse(JSON.stringify({ data })));
+        } catch (error) {
+            next(res.status(HttpStatus.BAD_REQUEST).json(error));
+        }
+    }
+
     async getAll(req, res, next) {
         try {
             const data = await DriverService.getAll(req.query);

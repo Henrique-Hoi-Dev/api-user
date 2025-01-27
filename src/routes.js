@@ -31,6 +31,7 @@ routes
     .put('/user/driver/:id', DriverController.update)
     .get('/user/driver/:id', DriverController.getId)
     .post('/driver/signup', DriverController.create)
+    .patch('/user/driver/reset-password/:cpf', DriverController.resetPassword)
     .get('/drivers', DriverController.getAll)
     .get('/drivers-select', DriverController.getAllSelect)
     .delete('/user/driver/:id', DriverController.delete);

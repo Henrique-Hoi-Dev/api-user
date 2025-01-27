@@ -46,6 +46,23 @@ export default {
         return { msg: 'successful' };
     },
 
+    async resetPassword({ cpf }) {
+        try {
+            const driver = await Driver.findOne({ where: { cpf } });
+            if (!driver) throw new Error('DRIVER_NOT_FOUND');
+
+            const defaultPassword = '12345678';
+            // Atualiza a senha do usuário
+            driver.password = defaultPassword;
+            await driver.save();
+
+            return 'Senha redefinida com sucesso para "12345678"';
+        } catch (error) {
+            console.error(error);
+            return error;
+        }
+    },
+
     async getAllSelect() {
         const select = await Driver.findAll({
             where: {
@@ -132,7 +149,7 @@ export default {
             ],
         });
 
-        if (!driver) throw Error('Driver not found');
+        if (!driver) throw Error('DRIVER_NOT_FOUND');
 
         return {
             dataResult: driver,
@@ -193,7 +210,7 @@ export default {
             },
         });
 
-        if (!driver) throw Error('Driver not found');
+        if (!driver) throw Error('DRIVER_NOT_FOUND');
 
         return {
             responseData: { msg: 'Deleted driver' },
