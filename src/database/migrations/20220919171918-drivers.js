@@ -63,6 +63,12 @@ module.exports = {
             permission_id: {
                 type: Sequelize.INTEGER,
             },
+            external_user_id: {
+                type: Sequelize.INTEGER,
+            },
+            player_id: {
+                type: Sequelize.INTEGER,
+            },
             cart: {
                 type: Sequelize.STRING,
             },
