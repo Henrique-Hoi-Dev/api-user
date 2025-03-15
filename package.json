@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "repository": "https://github.com/Henrique-Hoi-Dev/titon-api-user",
-    "author": "Henrique Hoinacki <riqueah@gmail.com>",
+    "author": "Henrique  <riqueah@gmail.com>",
     "license": "MIT",
     "dependencies": {
         "aws-sdk": "^2.1692.0",
