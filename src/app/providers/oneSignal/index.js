@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Client } from 'onesignal-node';
 require('dotenv/config');
 
@@ -15,11 +16,12 @@ export default {
         try {
             const notification = {
                 include_external_user_ids: externalUserIds,
+                name: 'Gerenciador',
                 headings: {
-                    pt: title,
+                    en: title,
                 },
                 contents: {
-                    pt: message,
+                    en: message,
                 },
                 app_id: process.env.ONESIGNAL_APP_ID,
                 // data: {
@@ -28,6 +30,7 @@ export default {
             };
 
             const response = await oneSignalClient.createNotification(notification);
+            console.log('notifica::::::::::::', response.body);
             return response.body;
         } catch (error) {
             console.error('Erro ao enviar notificação:', error);
@@ -51,6 +54,44 @@ export default {
             return response.body;
         } catch (error) {
             console.error('Erro ao enviar notificação para todos:', error);
+            throw error;
+        }
+    },
+
+    async getPlayers(limit = 50, offset = 0) {
+        try {
+            const response = await axios.get('https://onesignal.com/api/v1/players', {
+                params: {
+                    app_id: process.env.ONESIGNAL_APP_ID,
+                    limit,
+                    offset,
+                },
+                headers: {
+                    Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao buscar players:', error);
+            throw error;
+        }
+    },
+
+    async listNotifications(limit = 50, offset = 0) {
+        try {
+            const response = await axios.get('https://onesignal.com/api/v1/notifications', {
+                params: {
+                    app_id: process.env.ONESIGNAL_APP_ID,
+                    limit,
+                    offset,
+                },
+                headers: {
+                    Authorization: `Basic ${process.env.ONESIGNAL_API_KEY}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Erro ao buscar notificações:', error);
             throw error;
         }
     },

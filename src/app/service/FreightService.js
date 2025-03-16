@@ -324,6 +324,8 @@ export default {
                         title: 'Gerenciador',
                         message: 'Aceitou Seu Check Frete',
                     });
+                    const mobilesids = await OneSignalProvider.getPlayers();
+                    console.log('log de test para pegar usuarios', mobilesids);
                 }
                 return { status: 'APPROVED' };
             }
