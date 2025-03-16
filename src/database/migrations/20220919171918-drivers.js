@@ -64,10 +64,10 @@ module.exports = {
                 type: Sequelize.INTEGER,
             },
             external_user_id: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
             },
             player_id: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
             },
             cart: {
                 type: Sequelize.STRING,

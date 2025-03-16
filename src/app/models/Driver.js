@@ -30,8 +30,8 @@ class Driver extends Model {
                 permission_id: Sequelize.INTEGER,
 
                 // notification ids
-                external_user_id: Sequelize.INTEGER,
-                player_id: Sequelize.INTEGER,
+                external_user_id: Sequelize.STRING,
+                player_id: Sequelize.STRING,
 
                 // driver personal data
                 number_cnh: Sequelize.STRING,
