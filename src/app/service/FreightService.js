@@ -8,6 +8,7 @@ import Restock from '../models/Restock';
 import TravelExpenses from '../models/TravelExpenses';
 import DepositMoney from '../models/DepositMoney';
 import Driver from '../models/Driver';
+import OneSignalProvider from '../providers/OneSignal';
 
 import ApiGoogle from '../providers/router_map_google';
 import { formatWithTimezone } from '../utils/formatTimeZone';
@@ -316,6 +317,14 @@ export default {
                     driver_id: driver.id,
                     financial_statements_id: financial.id,
                 });
+
+                if (driver.player_id) {
+                    await OneSignalProvider.sendToUsers({
+                        externalUserIds: [driver.player_id],
+                        title: 'Gerenciador',
+                        message: 'Aceitou Seu Check Frete',
+                    });
+                }
                 return { status: 'APPROVED' };
             }
         }
