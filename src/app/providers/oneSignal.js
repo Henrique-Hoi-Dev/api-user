@@ -1,9 +1,6 @@
-import OneSignal from 'onesignal-node';
+import { Client } from 'onesignal-node';
 
-const appId = process.env.ONESIGNAL_APP_ID; // ID do seu app OneSignal
-const apiKey = process.env.ONESIGNAL_API_KEY; // REST API Key do OneSignal
-
-const oneSignalClient = new OneSignal.Client(appId, apiKey);
+const oneSignalClient = new Client(process.env.ONESIGNAL_APP_ID, process.env.ONESIGNAL_API_KEY);
 
 export default {
     /**
@@ -23,7 +20,7 @@ export default {
                 contents: {
                     pt: message,
                 },
-                app_id: appId,
+                app_id: process.env.ONESIGNAL_APP_ID,
                 // data: {
                 //     foo: 'bar',
                 // },
