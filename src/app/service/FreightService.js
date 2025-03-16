@@ -8,7 +8,7 @@ import Restock from '../models/Restock';
 import TravelExpenses from '../models/TravelExpenses';
 import DepositMoney from '../models/DepositMoney';
 import Driver from '../models/Driver';
-import OneSignalProvider from '../providers/OneSignal';
+import OneSignalProvider from '../providers/oneSignal';
 
 import ApiGoogle from '../providers/router_map_google';
 import { formatWithTimezone } from '../utils/formatTimeZone';
