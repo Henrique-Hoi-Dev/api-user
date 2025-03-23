@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 import { Op, literal } from 'sequelize';
+import { generateToken } from '../utils/jwt';
+import { sendSMS } from '../providers/aws';
 
 import Driver from '../models/Driver';
 import FinancialStatements from '../models/FinancialStatements';
@@ -51,15 +53,22 @@ export default {
             const driver = await Driver.findOne({ where: { cpf } });
             if (!driver) throw new Error('DRIVER_NOT_FOUND');
 
-            const defaultPassword = '12345678';
-            // Atualiza a senha do usuário
-            driver.password = defaultPassword;
-            await driver.save();
+            const newToke = generateToken({ cpf: cpf });
+            const resetUrl = `${
+                process.env.FRONT_URL || 'http://localhost:3000'
+            }/driver/forgot-password?token=${newToke}`;
 
-            return 'Senha redefinida com sucesso para "12345678"';
+            const message = `Gerenciador fez uma redefinição da sua senha. Clique no link abaixo para criar uma nova senha. Atenção: este link é válido por apenas 2 horas: ${resetUrl}`;
+
+            await sendSMS({
+                phoneNumber: driver.phone,
+                message: message,
+            });
+
+            return resetUrl;
         } catch (error) {
             console.error(error);
-            return error;
+            throw Error(error);
         }
     },
 
